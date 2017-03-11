@@ -188,14 +188,14 @@
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-前言"><span class="toc-text">1 前言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-AS规范"><span class="toc-text">2 AS规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-命名规范"><span class="toc-text">3 命名规范</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-前言"><span class="toc-text">1 前言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-AS规范"><span class="toc-text">2 AS规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-命名规范"><span class="toc-text">3 命名规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-资源文件规范"><span class="toc-text">4 资源文件规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-版本统一规范"><span class="toc-text">5 版本统一规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-注释规范"><span class="toc-text">6 注释规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-测试规范"><span class="toc-text">7 测试规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-其他规范"><span class="toc-text">8 其他规范</span></a></li></ol>
     </div>
 
         <p>#安卓开发规范</p>
 <p>@(Android高级)[开发规范]</p>
 <hr>
 <p>摘要</p>
-<p>[TOC]</p>
+<p><code>[TOC]</code></p>
 <h4 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h4><p>为了利于项目维护以及规范开发，促进成员之间Code Review的效率，必须按照一定的开发规范。</p>
 <h4 id="2-AS规范"><a href="#2-AS规范" class="headerlink" title="2 AS规范"></a>2 AS规范</h4><p>工欲善其事，必先利其器。</p>
 <ol>
@@ -305,8 +305,7 @@
 <p>3.9 类型变量名</p>
 <p>类型变量可用以下两种风格之一进行命名：</p>
 <p>单个的大写字母，后面可以跟一个数字(如：E, T, X, T2)。<br>以类命名方式(参考3.2 类名)，后面加个大写的T(如：RequestT, FooBarT)。</p>
-<p>####4 资源文件规范</p>
-<p>4.1 资源布局文件（XML文件（layout布局文件））</p>
+<h4 id="4-资源文件规范"><a href="#4-资源文件规范" class="headerlink" title="4 资源文件规范"></a>4 资源文件规范</h4><p>4.1 资源布局文件（XML文件（layout布局文件））</p>
 <p>全部小写，采用下划线命名法</p>
 <p>4.1.1 contentView命名</p>
 <p>必须以全部单词小写，单词间以下划线分割，使用名词或名词词组。</p>
@@ -489,8 +488,8 @@
 <p><strong>将一个大的style文件分割成多个文件</strong>， 你可以有多个styles.xml 文件。Android SDK支持其它文件，styles这个文件名称并没有作用，起作用的是在文件 里xml的<code>&lt;style&gt;</code>标签。<br>因此你可以有多个style文件styles.xml、style_home.xml、style_item_details.xml、styles_forms.xml。 不同于资源文件路径需要为系统构建起的有意义，在res/values目录下的文件可以任意命名。</p>
 <p>4.5 layout中的id命名</p>
 <p>命名模式为：view缩写<em>模块名</em>逻辑名，比如btn_main_search 使用AndroidStudio的插件ButterKnife Zelezny，生成注解非常方便，原生的话可以使用Android Code Generator插件。</p>
-<p>####5 版本统一规范<br>Android开发存在着众多版本的不同，比如compileSdkVersion、minSdkVersion、targetSdkVersion以及项目中依赖第三方库的版本，不同的module及不同的开发人员都有不同的版本，所以需要一个统一版本规范的文件。</p>
-<p>####6 注释规范<br>为了减少他人阅读你代码的痛苦值，请在关键地方做好注释。<br>6.1 类注释</p>
+<h4 id="5-版本统一规范"><a href="#5-版本统一规范" class="headerlink" title="5 版本统一规范"></a>5 版本统一规范</h4><p>Android开发存在着众多版本的不同，比如compileSdkVersion、minSdkVersion、targetSdkVersion以及项目中依赖第三方库的版本，不同的module及不同的开发人员都有不同的版本，所以需要一个统一版本规范的文件。</p>
+<h4 id="6-注释规范"><a href="#6-注释规范" class="headerlink" title="6 注释规范"></a>6 注释规范</h4><p>为了减少他人阅读你代码的痛苦值，请在关键地方做好注释。<br>6.1 类注释</p>
 <p>每个类完成后应该有作者姓名和联系方式的注释，对自己的代码负责。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;pre&gt;</div><div class="line"> *     author : Blankj</div><div class="line"> *     e-mail : xxx@xx</div><div class="line"> *     time   : 2017/03/07</div><div class="line"> *     desc   : xxxx描述</div><div class="line"> *     version: 1.0</div><div class="line"> * &lt;/pre&gt;</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WelcomeActivity</span> </span>&#123;</div><div class="line">       ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>具体可以在AS中自己配制，Settings → Editor → File and Code Templates → Includes → File Header，输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;pre&gt;</div><div class="line"> *     author : $&#123;USER&#125;</div><div class="line"> *     e-mail : xxx@xx</div><div class="line"> *     time   : $&#123;YEAR&#125;/$&#123;MONTH&#125;/$&#123;DAY&#125;</div><div class="line"> *     desc   : </div><div class="line"> *     version: 1.0</div><div class="line"> * &lt;/pre&gt;</div><div class="line"> */</div></pre></td></tr></table></figure></p>
 <p>这样便可在每次新建类的时候自动加上该头注释。</p>
@@ -502,10 +501,9 @@
 <blockquote>
 <p>Tip：在写多行注释时，如果你希望在必要时能重新换行(即注释像段落风格一样)，那么使用/<em> … </em>/。</p>
 </blockquote>
-<p>####7 测试规范<br> 业务开发完成之后，开发人员做单元测试，单元测试完成之后，保证单元测试全部通过同时单元测试代码覆盖率达到一定程度（这个需要开发和测试约定，理论上越高越好），开发提测。</p>
+<h4 id="7-测试规范"><a href="#7-测试规范" class="headerlink" title="7 测试规范"></a>7 测试规范</h4><p> 业务开发完成之后，开发人员做单元测试，单元测试完成之后，保证单元测试全部通过同时单元测试代码覆盖率达到一定程度（这个需要开发和测试约定，理论上越高越好），开发提测。</p>
 <p><code>// TODO...</code></p>
-<p>####8 其他规范</p>
-<ol>
+<h4 id="8-其他规范"><a href="#8-其他规范" class="headerlink" title="8 其他规范"></a>8 其他规范</h4><ol>
 <li>合理布局，有效运用<merge>、<viewstub>、<include>标签；</include></viewstub></merge></li>
 <li>Activity和Fragment里面有许多重复的操作以及操作步骤，所以我们都需要提供一个BaseActivity和BaseFragment，让所有的Activity和Fragment都继承这个基类。</li>
 <li>方法基本上都按照调用的先后顺序在各自区块中排列；</li>
