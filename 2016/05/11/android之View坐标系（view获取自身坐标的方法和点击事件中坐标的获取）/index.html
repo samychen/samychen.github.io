@@ -1,0 +1,340 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取） | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-05-11T06:06:15.000Z"><a href="/2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/">2016-05-11</a></time>
+        
+  
+    <h1 class="title">android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>在做一个view背景特效的时候被坐标的各个获取方法搞晕了，几篇抄来抄去的博客也没弄很清楚。</p>
+<p>现在把整个总结一下。</p>
+<p>其实只要把下面这张图看明白就没问题了。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-3251e6068bb1e1f5?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>涉及到的方法一共有下面几个：<br>view获取自身坐标：getLeft(),getTop(),getRight(),getBottom()<br>view获取自身宽高：getHeight(),getWidth()<br>motionEvent获取坐标：getX(),getY(),getRawX(),getRawY()<br>首先是view的几个方法，<br>获取自身的宽高的这两个方法很清楚，不用多说，获取坐标的这几个就有点混乱了。<br>根据上面的图应该会比较容易明白，图中屏幕上放了一个ViewGroup布局，里面有个View控件<br>getTop：获取到的，是view自身的顶边到其父布局顶边的距离<br>getLeft：获取到的，是view自身的左边到其父布局左边的距离<br>getRight：获取到的，是view自身的右边到其父布局左边的距离<br>getBottom：获取到的，是view自身的底边到其父布局顶边的距离</p>
+<p>这些方法获取到的数据可以用在什么地方呢？比如要实现一个自定义的特殊布局，像<a href="http://blog.csdn.net/singwhatiwanna/article/details/42614953这里要实现的是一个水波纹特效布局，该布局内的任何控件点击后都会出现波纹效果" target="_blank" rel="external">http://blog.csdn.net/singwhatiwanna/article/details/42614953这里要实现的是一个水波纹特效布局，该布局内的任何控件点击后都会出现波纹效果</a><br>那么在点击了布局内的一个控件之后，就要通过不断刷新布局，去更新这个控件上面的波纹半径，为了节省资源，每次刷新布局都时候不会整个布局都刷新，而只是通过<br><code>postInvalidateDelayed(INVALIDATE_DURATION, left, top, right, bottom);</code></p>
+<p>在布局的画布上每次只去更新点击事件所点击的对应的控件的位置，那么这里就可以用view的那四个方法，分别获取自身的四条边对应的坐标<br>从而让布局去刷新重绘。</p>
+<p>当然博客中是使用绝对坐标去计算的，因为这里实现的是一个布局，可能里面还会嵌套另外的布局，经过多次嵌套之后所获取到的值，是相对于控件直接对应的父布局（这个布局有可能已经是我们重写的布局的子布局了）的距离，这样去刷新的区域肯定是不准确的，所以博客里面使用相对屏幕的绝对坐标计算需要刷新的控件区域。</p>
+<p>如果这里自定义的不是布局，而只是一个控件的话，就可以通过以上方法获取到坐标，然后要求自己所在的布局去重绘这一区域就可以了。当然这只是一种思路，其实没必要去要求布局重绘，完全可以直接view自身重绘就可以了。</p>
+<p>然后是motionEvent的方法：</p>
+<p>getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离</p>
+<p>getY()：获取点击事件相对控件顶边的y轴坐标，即点击事件距离控件顶边的距离</p>
+<p>getRawX()：获取点击事件相对整个屏幕左边的x轴坐标，即点击事件距离整个屏幕左边的距离</p>
+<p>getRawY()：获取点击事件相对整个屏幕顶边的y轴坐标，即点击事件距离整个屏幕顶边的距离</p>
+<p>这些方法可以用在什么地方呢？</p>
+<p>getRawX和getRawY在之前那篇博客里广泛使用了，可以去那里看用法，getX()和getY()这两个方法在对view进行自定义的时候可能用的会比较多。</p>
+<p>###<a href="http://www.cnblogs.com/virtual-young/p/4578424.html" target="_blank" rel="external">MotionEvent中getRawX、getRawY与getX、getY以及View中的getScrollX、getScrollY</a></p>
+<p>1.getRawX、getRawY与getX、getY的区别<br>在编写android的自定义控件，或者判断用户手势操作时，往往需要使用MotionEvent中的getRawX()、getRawY()与getX()、getY()取得触摸点在X轴与Y轴上的距离，这四个方法都返回一个float类型的参数，单位为像素（Pixel）。getRawX()、getRawY()返回的是触摸点相对于屏幕的位置，而getX()、getY()返回的则是触摸点相对于View的位置。<br>以下两张图直观的表现了这几个方法的区别，在屏幕中央放置了一个Button，并为它注册了OnTouchListener，图中绿圆点为触摸点位置。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-436d27429779abc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="">    <img src="http://upload-images.jianshu.io/upload_images/4398977-ea980ca264ad742c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>2.View中的getScrollX、getScrollY<br>getScrollX()与getScrollY()的值由调用View的scrollTo(int x, int y)或者scrollBy(int x, int y)产生，其中scrollTo是将View中的内容移动到指定的坐标x、y处，此x、y是相对于<br>View的左上角，而不是屏幕的左上角。scrollBy(int x, int y)则是改变View中的相对位置，参数x、y为距离上一次的相对位置。<br>文字解释总是不好理解的，那么我们就直接上图吧，直观一些。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-66127203a89fb7c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://upload-images.jianshu.io/upload_images/4398977-205675aec563fdea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://upload-images.jianshu.io/upload_images/4398977-d6333d61fc2421dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>               （图1）                                                         （图2）                                                                （图3）<br>1.图1中，屏幕中心放置了一个button，而button的内容被放置在了它的左上角。<br>2.调用button的scrollTo(-100, -100)方法，结果如图2所示，button内的内容被移至相对button左上角(-100，-100)的位置<br>3.对图2的button调用scrollBy(-100,-100)方法，结果如图3所示，button内的内容被移至相对于图2的(-100,-100)位置<br>这时的getScrollX()与getScrollY()的值为：</p>
+<p>06-15 15:44:56.072 20471-20471/com.test.yangy.studiotest V/ScrollActivity﹕ btn scroll X=-20006-15 15:44:56.072 20471-20471/com.test.yangy.studiotest V/ScrollActivity﹕ btn scroll Y=-200</p>
+<p>值得注意的是，当View中的内容向右移动时，getScrollX()的值为负数，同理，向scrollTo与scrollBy的x中传入负数，view中的内容向右移动，反之向左。<br>当View中的内容向下移动时，getScrollY()的值为负数，同理，向scrollTo与scrollBy的y中传入负数，view中的内容向下移动，反之向上。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Android/">Android</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/安卓/">安卓</a>
+  </div>
+
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/" data-title="android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）" data-url="http://samychen.com/2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 12.5px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/安卓/" style="font-size: 17.5px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 15px;">安卓，Java</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">3</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2017 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
