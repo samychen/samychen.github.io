@@ -1,0 +1,351 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>单例模式（线程安全） | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="单例模式（线程安全）"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2014-10-02T06:32:57.000Z"><a href="/2014/10/02/单例模式（线程安全）/">2014-10-02</a></time>
+        
+  
+    <h1 class="title">单例模式（线程安全）</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-饿汉式单例"><span class="toc-text">1. 饿汉式单例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-懒汉式单例"><span class="toc-text">2. 懒汉式单例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-线程安全的懒汉式单例"><span class="toc-text">3. 线程安全的懒汉式单例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-使用静态内置类实现单例模式"><span class="toc-text">4.使用静态内置类实现单例模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-使用static代码块实现单例"><span class="toc-text">5.使用static代码块实现单例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-使用枚举数据类型实现单例模式"><span class="toc-text">7.使用枚举数据类型实现单例模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-完善使用enum枚举实现单例模式"><span class="toc-text">8.完善使用enum枚举实现单例模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-多线程安全单例模式实例一-不使用同步锁"><span class="toc-text">1.多线程安全单例模式实例一(不使用同步锁)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-多线程安全单例模式实例二-使用同步方法"><span class="toc-text">2.多线程安全单例模式实例二(使用同步方法)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-多线程安全单例模式实例三-使用双重同步锁"><span class="toc-text">3.多线程安全单例模式实例三(使用双重同步锁)</span></a></li></ol>
+    </div>
+
+        <p>&emsp;&emsp;单例模式就是说系统中对于某类的只能有一个对象，不可能出来第二个。<br>&emsp;&emsp;单例模式是为确保一个类只有一个实例，并为整个系统提供一个全局访问点的一种模式方法<br>（1）、在任何情况下，单例类永远只有一个实例存在<br>（2）、单例需要有能力为整个系统提供这一唯一实例<br><strong>各式各样的单例实现</strong><br><strong>温馨提示：</strong>本文叙述中涉及到的相关源码可以在这里进行下载源码，读者可免积分下载。</p>
+<h4 id="1-饿汉式单例"><a href="#1-饿汉式单例" class="headerlink" title="1. 饿汉式单例"></a>1. 饿汉式单例</h4><p>&emsp;&emsp;饿汉式单例是指在方法调用前，实例就已经创建好了。下面是实现代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s01;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    private static MySingleton instance = new MySingleton();  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">      </div><div class="line">    public static MySingleton getInstance() &#123;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>以上是单例的饿汉式实现，我们来看看饿汉式在多线程下的执行情况，给出一段多线程的执行代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s01;  </div><div class="line">  </div><div class="line">public class MyThread extends Thread&#123;  </div><div class="line">      </div><div class="line">    @Override  </div><div class="line">    public void run() &#123;   </div><div class="line">        System.out.println(MySingleton.getInstance().hashCode());  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    public static void main(String[] args) &#123;   </div><div class="line">          </div><div class="line">        MyThread[] mts = new MyThread[10];  </div><div class="line">        for(int i = 0 ; i &lt; mts.length ; i++)&#123;  </div><div class="line">            mts[i] = new MyThread();  </div><div class="line">        &#125;  </div><div class="line">          </div><div class="line">        for (int j = 0; j &lt; mts.length; j++) &#123;  </div><div class="line">            mts[j].start();  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上代码运行结果：<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>1718900954<br>从运行结果可以看出实例变量额hashCode值一致，这说明对象是同一个，饿汉式单例实现了。</p>
+<h4 id="2-懒汉式单例"><a href="#2-懒汉式单例" class="headerlink" title="2. 懒汉式单例"></a>2. 懒汉式单例</h4><p>懒汉式单例是指在方法调用获取实例时才创建实例，因为相对饿汉式显得“不急迫”，所以被叫做“懒汉模式”。下面是实现代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s02;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    private static MySingleton instance = null;  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">      </div><div class="line">    public static MySingleton getInstance() &#123;  </div><div class="line">        if(instance == null)&#123;//懒汉式  </div><div class="line">            instance = new MySingleton();  </div><div class="line">        &#125;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里实现了懒汉式的单例，但是熟悉多线程并发编程的朋友应该可以看出，在多线程并发下这样的实现是无法保证实例实例唯一的，甚至可以说这样的失效是完全错误的，下面我们就来看一下多线程并发下的执行情况，这里为了看到效果，我们对上面的代码做一小点修改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s02;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    private static MySingleton instance = null;  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">      </div><div class="line">    public static MySingleton getInstance() &#123;  </div><div class="line">        try &#123;   </div><div class="line">            if(instance != null)&#123;//懒汉式   </div><div class="line">                  </div><div class="line">            &#125;else&#123;  </div><div class="line">                //创建实例之前可能会有一些准备性的耗时工作   </div><div class="line">                Thread.sleep(300);  </div><div class="line">                instance = new MySingleton();  </div><div class="line">            &#125;  </div><div class="line">        &#125; catch (InterruptedException e) &#123;   </div><div class="line">            e.printStackTrace();  </div><div class="line">        &#125;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里假设在创建实例前有一些准备性的耗时工作要处理，多线程调用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class MyThread extends Thread&#123;  </div><div class="line">      </div><div class="line">    @Override  </div><div class="line">    public void run() &#123;   </div><div class="line">        System.out.println(MySingleton.getInstance().hashCode());  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    public static void main(String[] args) &#123;   </div><div class="line">          </div><div class="line">        MyThread[] mts = new MyThread[10];  </div><div class="line">        for(int i = 0 ; i &lt; mts.length ; i++)&#123;  </div><div class="line">            mts[i] = new MyThread();  </div><div class="line">        &#125;  </div><div class="line">          </div><div class="line">        for (int j = 0; j &lt; mts.length; j++) &#123;  </div><div class="line">            mts[j].start();  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>执行结果如下：<br>[plain] view plain copy print?在CODE上查看代码片派生到我的代码片<br>1210420568<br>1210420568<br>1935123450<br>1718900954<br>1481297610<br>1863264879<br>369539795<br>1210420568<br>1210420568<br>602269801<br>从这里执行结果可以看出，单例的线程安全性并没有得到保证，那要怎么解决呢？</p>
+<h4 id="3-线程安全的懒汉式单例"><a href="#3-线程安全的懒汉式单例" class="headerlink" title="3. 线程安全的懒汉式单例"></a>3. 线程安全的懒汉式单例</h4><p>&emsp;&emsp;要保证线程安全，我们就得需要使用同步锁机制，下面就来看看我们如何一步步的解决 存在线程安全问题的懒汉式单例（错误的单例）。<br>（1）、 方法中声明synchronized关键字<br>出现非线程安全问题，是由于多个线程可以同时进入getInstance()方法，那么只需要对该方法进行synchronized的锁同步即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s03;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    private static MySingleton instance = null;  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">      </div><div class="line">    public synchronized static MySingleton getInstance() &#123;  </div><div class="line">        try &#123;   </div><div class="line">            if(instance != null)&#123;//懒汉式   </div><div class="line">                  </div><div class="line">            &#125;else&#123;  </div><div class="line">                //创建实例之前可能会有一些准备性的耗时工作   </div><div class="line">                Thread.sleep(300);  </div><div class="line">                instance = new MySingleton();  </div><div class="line">            &#125;  </div><div class="line">        &#125; catch (InterruptedException e) &#123;   </div><div class="line">            e.printStackTrace();  </div><div class="line">        &#125;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>此时任然使用前面验证多线程下执行情况的MyThread类来进行验证，将其放入到org.mlinge.s03包下运行，执行结果如下：<br>1689058373<br>1689058373<br>1689058373<br>1689058373<br>1689058373<br>1689058373<br>1689058373<br>1689058373<br>1689058373<br>1689058373  </p>
+<p>从执行结果上来看，问题已经解决了，但是这种实现方式的运行效率会很低。同步方法效率低，那我们考虑使用同步代码块来实现：<br>（2）、 同步代码块实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    private static MySingleton instance = null;  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">      </div><div class="line">    //public synchronized static MySingleton getInstance() &#123;  </div><div class="line">    public static MySingleton getInstance() &#123;  </div><div class="line">        try &#123;   </div><div class="line">            synchronized (MySingleton.class) &#123;  </div><div class="line">                if(instance != null)&#123;//懒汉式   </div><div class="line">                      </div><div class="line">                &#125;else&#123;  </div><div class="line">                    //创建实例之前可能会有一些准备性的耗时工作   </div><div class="line">                    Thread.sleep(300);  </div><div class="line">                    instance = new MySingleton();  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125; catch (InterruptedException e) &#123;   </div><div class="line">            e.printStackTrace();  </div><div class="line">        &#125;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里的实现能够保证多线程并发下的线程安全性，但是这样的实现将全部的代码都被锁上了，同样的效率很低下。<br>3）、 针对某些重要的代码来进行单独的同步（可能非线程安全）<br>针对某些重要的代码进行单独的同步，而不是全部进行同步，可以极大的提高执行效率，我们来看一下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s04;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    private static MySingleton instance = null;  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">       </div><div class="line">    public static MySingleton getInstance() &#123;  </div><div class="line">        try &#123;    </div><div class="line">            if(instance != null)&#123;//懒汉式   </div><div class="line">                  </div><div class="line">            &#125;else&#123;  </div><div class="line">                //创建实例之前可能会有一些准备性的耗时工作   </div><div class="line">                Thread.sleep(300);  </div><div class="line">                synchronized (MySingleton.class) &#123;  </div><div class="line">                    instance = new MySingleton();  </div><div class="line">                &#125;  </div><div class="line">            &#125;   </div><div class="line">        &#125; catch (InterruptedException e) &#123;   </div><div class="line">            e.printStackTrace();  </div><div class="line">        &#125;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>此时同样使用前面验证多线程下执行情况的MyThread类来进行验证，将其放入到org.mlinge.s04包下运行，执行结果如下：</p>
+<p>1481297610<br>397630378<br>1863264879<br>1210420568<br>1935123450<br>369539795<br>590202901<br>1718900954<br>1689058373<br>602269801  </p>
+<p>从运行结果来看，这样的方法进行代码块同步，代码的运行效率是能够得到提升，但是却没能保住线程的安全性。看来还得进一步考虑如何解决此问题<br>（4）、 Double Check Locking 双检查锁机制（推荐）<br>为了达到线程安全，又能提高代码执行效率，我们这里可以采用DCL的双检查锁机制来完成，代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s05;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    //使用volatile关键字保其可见性  </div><div class="line">    volatile private static MySingleton instance = null;  </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">       </div><div class="line">    public static MySingleton getInstance() &#123;  </div><div class="line">        try &#123;    </div><div class="line">            if(instance != null)&#123;//懒汉式   </div><div class="line">                  </div><div class="line">            &#125;else&#123;  </div><div class="line">                //创建实例之前可能会有一些准备性的耗时工作   </div><div class="line">                Thread.sleep(300);  </div><div class="line">                synchronized (MySingleton.class) &#123;  </div><div class="line">                    if(instance == null)&#123;//二次检查  </div><div class="line">                        instance = new MySingleton();  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">            &#125;   </div><div class="line">        &#125; catch (InterruptedException e) &#123;   </div><div class="line">            e.printStackTrace();  </div><div class="line">        &#125;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>将前面验证多线程下执行情况的MyThread类放入到org.mlinge.s05包下运行，执行结果如下：</p>
+<p>369539795<br>369539795<br>369539795<br>369539795<br>369539795<br>369539795<br>369539795<br>369539795<br>369539795<br>369539795<br>从运行结果来看，该中方法保证了多线程并发下的线程安全性。<br>这里在声明变量时使用了volatile关键字来保证其线程间的可见性；在同步代码块中使用二次检查，以保证其不被重复实例化。集合其二者，这种实现方式既保证了其高效性，也保证了其线程安全性。</p>
+<h4 id="4-使用静态内置类实现单例模式"><a href="#4-使用静态内置类实现单例模式" class="headerlink" title="4.使用静态内置类实现单例模式"></a>4.使用静态内置类实现单例模式</h4><p>DCL解决了多线程并发下的线程安全问题，其实使用其他方式也可以达到同样的效果，代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s06;  </div><div class="line">  </div><div class="line">public class MySingleton &#123;  </div><div class="line">      </div><div class="line">    //内部类  </div><div class="line">    private static class MySingletonHandler&#123;  </div><div class="line">        private static MySingleton instance = new MySingleton();  </div><div class="line">    &#125;   </div><div class="line">      </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">       </div><div class="line">    public static MySingleton getInstance() &#123;   </div><div class="line">        return MySingletonHandler.instance;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>以上代码就是使用静态内置类实现了单例模式，静态内部类实现的单例在多线程并发下单个实例得到了保证。</p>
+<h4 id="5-使用static代码块实现单例"><a href="#5-使用static代码块实现单例" class="headerlink" title="5.使用static代码块实现单例"></a>5.使用static代码块实现单例</h4><p>静态代码块中的代码在使用类的时候就已经执行了，所以可以应用静态代码块的这个特性的实现单例设计模式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s08;  </div><div class="line">  </div><div class="line">public class MySingleton&#123;  </div><div class="line">       </div><div class="line">    private static MySingleton instance = null;  </div><div class="line">       </div><div class="line">    private MySingleton()&#123;&#125;  </div><div class="line">  </div><div class="line">    static&#123;  </div><div class="line">        instance = new MySingleton();  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    public static MySingleton getInstance() &#123;   </div><div class="line">        return instance;  </div><div class="line">    &#125;   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>测试代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s08;  </div><div class="line">  </div><div class="line">public class MyThread extends Thread&#123;  </div><div class="line">      </div><div class="line">    @Override  </div><div class="line">    public void run() &#123;   </div><div class="line">        for (int i = 0; i &lt; 5; i++) &#123;  </div><div class="line">            System.out.println(MySingleton.getInstance().hashCode());  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    public static void main(String[] args) &#123;   </div><div class="line">          </div><div class="line">        MyThread[] mts = new MyThread[3];  </div><div class="line">        for(int i = 0 ; i &lt; mts.length ; i++)&#123;  </div><div class="line">            mts[i] = new MyThread();  </div><div class="line">        &#125;  </div><div class="line">          </div><div class="line">        for (int j = 0; j &lt; mts.length; j++) &#123;  </div><div class="line">            mts[j].start();  </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="7-使用枚举数据类型实现单例模式"><a href="#7-使用枚举数据类型实现单例模式" class="headerlink" title="7.使用枚举数据类型实现单例模式"></a>7.使用枚举数据类型实现单例模式</h4><p>枚举enum和静态代码块的特性相似，在使用枚举时，构造方法会被自动调用，利用这一特性也可以实现单例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s09;  </div><div class="line">  </div><div class="line">public enum EnumFactory&#123;   </div><div class="line">      </div><div class="line">    singletonFactory;  </div><div class="line">      </div><div class="line">    private MySingleton instance;  </div><div class="line">      </div><div class="line">    private EnumFactory()&#123;//枚举类的构造方法在类加载是被实例化  </div><div class="line">        instance = new MySingleton();  </div><div class="line">    &#125;  </div><div class="line">          </div><div class="line">    public MySingleton getInstance()&#123;  </div><div class="line">        return instance;  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">&#125;  </div><div class="line">  </div><div class="line">class MySingleton&#123;//需要获实现单例的类，比如数据库连接Connection  </div><div class="line">    public MySingleton()&#123;&#125;   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>但是这样写枚举类被完全暴露了，据说违反了“职责单一原则”，那我们来看看怎么进行改造呢。</p>
+<h4 id="8-完善使用enum枚举实现单例模式"><a href="#8-完善使用enum枚举实现单例模式" class="headerlink" title="8.完善使用enum枚举实现单例模式"></a>8.完善使用enum枚举实现单例模式</h4><p>不暴露枚举类实现细节的封装代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">package org.mlinge.s10;  </div><div class="line">  </div><div class="line">public class ClassFactory&#123;   </div><div class="line">      </div><div class="line">    private enum MyEnumSingleton&#123;  </div><div class="line">        singletonFactory;  </div><div class="line">          </div><div class="line">        private MySingleton instance;  </div><div class="line">          </div><div class="line">        private MyEnumSingleton()&#123;//枚举类的构造方法在类加载是被实例化  </div><div class="line">            instance = new MySingleton();  </div><div class="line">        &#125;  </div><div class="line">   </div><div class="line">        public MySingleton getInstance()&#123;  </div><div class="line">            return instance;  </div><div class="line">        &#125;  </div><div class="line">    &#125;   </div><div class="line">   </div><div class="line">    public static MySingleton getInstance()&#123;  </div><div class="line">        return MyEnumSingleton.singletonFactory.getInstance();  </div><div class="line">    &#125;  </div><div class="line">&#125;  </div><div class="line">  </div><div class="line">class MySingleton&#123;//需要获实现单例的类，比如数据库连接Connection  </div><div class="line">    public MySingleton()&#123;&#125;   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="1-多线程安全单例模式实例一-不使用同步锁"><a href="#1-多线程安全单例模式实例一-不使用同步锁" class="headerlink" title="1.多线程安全单例模式实例一(不使用同步锁)"></a>1.多线程安全单例模式实例一(不使用同步锁)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public class Singleton &#123;</div><div class="line">    private static Singleton sin=new Singleton();    ///直接初始化一个实例对象</div><div class="line">    private Singleton()&#123;    ///private类型的构造函数，保证其他类对象不能直接new一个该对象的实例</div><div class="line">	&#125;</div><div class="line">    public static Singleton getSin()&#123;    ///该类唯一的一个public方法   </div><div class="line">	return sin;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码中的一个缺点是该类加载的时候就会直接new 一个静态对象出来，当系统中这样的类较多时，会使得启动速度变慢 。现在流行的设计都是讲“延迟加载”，我们可以在第一次使用的时候才初始化第一个该类对象。所以这种适合在小系统。 </p>
+<h4 id="2-多线程安全单例模式实例二-使用同步方法"><a href="#2-多线程安全单例模式实例二-使用同步方法" class="headerlink" title="2.多线程安全单例模式实例二(使用同步方法)"></a>2.多线程安全单例模式实例二(使用同步方法)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class Singleton &#123;  </div><div class="line">      private static Singleton instance;  </div><div class="line">      private Singleton ()&#123;</div><div class="line">       &#125;   </div><div class="line">     public static synchronized Singleton getInstance()&#123;    //对获取实例的方法进行同步</div><div class="line">	 if (instance == null)     </div><div class="line">        instance = new Singleton(); </div><div class="line">        return instance;</div><div class="line">		&#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>上述代码中的一次锁住了一个方法， 这个粒度有点大 ，改进就是只锁住其中的new语句就OK。就是所谓的“双重锁”机制。</p>
+<h4 id="3-多线程安全单例模式实例三-使用双重同步锁"><a href="#3-多线程安全单例模式实例三-使用双重同步锁" class="headerlink" title="3.多线程安全单例模式实例三(使用双重同步锁)"></a>3.多线程安全单例模式实例三(使用双重同步锁)</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public class Singleton &#123;  </div><div class="line">      private static Singleton instance;  </div><div class="line">      private Singleton ()&#123;</div><div class="line">      &#125;   </div><div class="line">      public static Singleton getInstance()&#123;    //对获取实例的方法进行同步 </div><div class="line">      if (instance == null)&#123;</div><div class="line">            synchronized(Singleton.class)&#123;</div><div class="line">                if (instance == null)</div><div class="line">                   instance = new Singleton(); </div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return instance;</div><div class="line">      &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/设计模式/">设计模式</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/单例模式/">单例模式</a>
+  </div>
+
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2014/10/02/单例模式（线程安全）/" data-title="单例模式（线程安全）" data-url="http://samychen.com/2014/10/02/单例模式（线程安全）/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 12px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 12px;">生产者消费者模式</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2017 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
