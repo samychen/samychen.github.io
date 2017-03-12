@@ -1,0 +1,451 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java8新特性之lambda表达式入门 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Java8新特性之lambda表达式入门"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-05-02T05:41:42.000Z"><a href="/2016/05/02/Java8新特性之lambda表达式入门/">2016-05-02</a></time>
+        
+  
+    <h1 class="title">Java8新特性之lambda表达式入门</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>功能接口</p>
+<p>只包含一个方法的接口被称为功能接口，Lambda 表达式用用于任何功能接口适用的地方，java.awt.event.ActionListener 就是一个功能接口，因为它只有一个方法：</p>
+<p>void actionPerformed(ActionEvent)</p>
+<p>一、lambda引入原因</p>
+<p>1、更加紧凑的代码</p>
+<p>比如Java中现有的匿名内部类以及监听器(listeners)和事件处理器(handlers）都显得很冗长</p>
+<p>2、修改方法的能力</p>
+<p>比如Collection接口的contains方法，当且仅当传入的元素真正包含在集合中，才返回true。而假如我们想对一个字符串集合，传入一个字符串，只要这个字符串出现在集合中（忽略大小写）就返回true。</p>
+<p>简单地说，我们想要的是传入“一些我们自己的代码”到已有的方法中，已有的方法将会执行我们传入的代码。Lambda表达式能很好地支持这点</p>
+<p>3、更好地支持多核处理</p>
+<p>例如，通过Java 8新增的Lambda表达式，我们可以很方便地并行操作大集合，充分发挥多核CPU的潜能。</p>
+<p>并行处理函数如filter、map和reduce。</p>
+<p>实例1 FileFilter</p>
+<p>File dir =newFile(“/an/dir/“);</p>
+<p>FileFilter directoryFilter=newFileFilter() {public boolean accept(File file) {</p>
+<p>returnfile.isDirectory();</p>
+<p>}</p>
+<p>};<br>通过Lambda表达式这段代码可以简化为如下：</p>
+<p>File dir =newFile(“/an/dir/“);</p>
+<p>FileFilter directoryFilter= (File f) -&gt;f.isDirectory();</p>
+<p>File[] dirs= dir.listFiles(directoryFilter);<br>进一步简化：</p>
+<p>File dir =newFile(“/an/dir/“)；</p>
+<p>File[] dirs= dir.listFiles((File f) -&gt; f.isDirectory());<br>Lambda表达式利用了类型推断（type inference）技术：</p>
+<p>编译器知道FileFilter只有一个方法accept()，所以accept()方法肯定对应(File f) -&gt; f.isDirectory()，就是利用了类型推断，而且accept()方法只有一个File类型的参数，所以(File f) -&gt;f.isDirectory()中的File f就是这个参数了，.NET把类型推断做得更绝，如果上面用.NET Lambda表达式写法的话是这样的：File[] dirs= dir.ListFiles(f =&gt;f.isDirectory());即压根就不需要出现File类型指示。</p>
+<p>实例2 Event Handler</p>
+<p>Button bt =newButton();</p>
+<p>bt.addActionListener(newActionListener() {public void actionPerformed(ActionEvent e) {</p>
+<p>ui.showSomething();</p>
+<p>}</p>
+<p>});<br>使用Lambda表达式后：</p>
+<p>Button bt =newButton();</p>
+<p>ActionListener listener= event -&gt;{ ui.showSomething(); };</p>
+<p>bt.addActionListener(listener);<br>进一步简化：</p>
+<p>Button bt =newButton();</p>
+<p>bt.addActionListener(event-&gt; { ui.showSomething(); });<br>newActionListener的内部类只有actionPerformed方法，event就是参数</p>
+<p>actionPerformed()方法的返回类型是void，所以需要特殊处理，即在ui.showSomething();左右加上花括号。（想象下不加会怎么样？如果不加的话，若showSomething()方法返回值是整数类型，那么就意味着actionPerformed()返回整数类型，显然不是，所以必须加花括号用来标记）。</p>
+<p>如果Lambda表达式主体部分包含多条语句，也必须用花括号，并且return语句不能省。</p>
+<p>比如下面这个：</p>
+<p>File dir =newFile(“/an/dir/“);</p>
+<p>File[] dirs= dir.listFiles((File f) -&gt;{</p>
+<p>System.out.println(“Log:…”);</p>
+<p>return f.isDirectory();</p>
+<p>}</p>
+<p>);<br>函数集合</p>
+<p>Java 8 的类库包含一个新的包 java.util.functions ，这个包中有很多新的功能接口，这些接口可与集合 API 一起使用。</p>
+<p>外循环、内循环和Map、Reduce、Filter</p>
+<p>一直到现在，处理Java集合的标准做法是采用外循环。比如：</p>
+<p>List list =newArrayList();</p>
+<p>list.add(“hello”);</p>
+<p>list.add(“world”);for(intitem: list) {//处理item}<br>还有迭代器循环，它们都是外循环，并且都是顺序处理（sequential handling）。顺序特性也常常引发ConcurrentModificationException，只要我们尝试着并发修改集合。</p>
+<p>Lambda表达式提供了内循环机制。</p>
+<p>我们工作中可能经常面临下面的需求：</p>
+<blockquote>
+<p>过滤掉一个集合中不符合条件的元素得到一个新集合</p>
+<p>对集合中的每个元素进行某种转换，并且对转换后的集合进行处理</p>
+<p>统计整个集合的某个属性，比如统计集合元素值的总和或平均值</p>
+</blockquote>
+<p>这些任务即filter、map和reduce，他们的共同特点是：</p>
+<p>需要对集合中的每个元素运行一小段相同的代码。</p>
+<p>传统的实现这些任务的代码让人感到很乏味，幸运的是Java 8提供了完成这些任务的更简洁的方案，当然还是利用Lambda表达式，但也引入了一个新的类库java.util.functions，包含Predicate、Mapper和Block。</p>
+<p>Java 8中，一个Predicate（谓词）是这样一个方法：它根据变量的值进行评估(evaluate），返回true或false。java.util.functions.Predicate</p>
+<p>比如下面：</p>
+<p>List list =getMyStrings();</p>
+<p>for(String myString: list) {if(myString.contains(possible)) {</p>
+<p>System.out.println(myString+ “ contains “ +possible);</p>
+<p>}</p>
+<p>}<br>使用Predicate和Filter后得到下面代码：</p>
+<p>List list =getMyStrings();</p>
+<p>Predicate matched = s -&gt;s.equalsIgnoreCase(possible);</p>
+<p>list.filter(matched);<br>进一步简化：</p>
+<p>List list =getMyStrings();</p>
+<p>list.filter(s-&gt; s.equalsIgnoreCase(possible));<br>使用谓词 (Predicate) 来筛选集合：</p>
+<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
+<p>List filteredNames = names.filter(e -&gt; e.length() &gt;=4).into(new ArrayList());</p>
+<p>for(String name : filteredNames) {</p>
+<p>System.out.println(name);</p>
+<p>}<br>这里我们有两个新方法：</p>
+<p>Iterable filter(Predicate) 用于获取元素满足某个谓词返回 true 的结果</p>
+<p><a extends="" fillableinto<?="" super="" t="">&gt;A into(A) 将用返回的结果填充 ArrayList </a></p>
+<p>java.util.functions.Block</p>
+<p>我们可使用一个新的迭代器方法来替换 for 循环 void forEach(Block&lt;? super T&gt;):</p>
+<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
+<p>names.filter(e -&gt; e.length() &gt;=4).forEach(e -&gt; { System.out.println(e); });<br>forEach() 方法是 internal iteration 的一个实例：迭代过程在 Iterable 和 Block 内部进行，每次可访问一个元素。</p>
+<p>最后的结果就是用更少的代码来处理集合：</p>
+<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
+<p>names</p>
+<p>.mapped(e -&gt; {return e.length(); })</p>
+<p>.asIterable()// returns an Iterable of BiValue elements</p>
+<p>// an element’s key is the person’s name, its value is the string length</p>
+<p>.filter(e -&gt; e.getValue() &gt;=4)</p>
+<p>.sorted((a, b) -&gt; a.getValue() - b.getValue())</p>
+<p>.forEach(e -&gt; { System.out.println(e.getKey() +’\t’+ e.getValue()); });<br>方法引用</p>
+<p>我们可通过 :: 语法来引用某个方法。方法引用被认为是跟 Lambda 表达式一样的，可用于功能接口所适用的地方。</p>
+<p>我们可以引用一个静态方法：</p>
+<p>executorService.submit(MethodReference::sayHello);</p>
+<p>privatestaticvoidsayHello() {</p>
+<p>System.out.println(“hello”);</p>
+<p>}<br>或者是一个实例的方法：</p>
+<p>Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”).forEach(System.out::println);<br>我们也可以创建工程方法并将构造器引用赋值给 java.util.functions.Factory:</p>
+<p>Factory biscuitFactory = Biscuit::new;</p>
+<p>Biscuit biscuit = biscuitFactory.make();<br>最后，我们创建一个引用到随意实例的例子：</p>
+<p>interface Accessor<bean, property=""> {</bean,></p>
+<p>PROPERTY access(BEAN bean);</p>
+<p>}<br>publicstaticvoidmain(String[] args) {</p>
+<p>Address address =newAddress(“29 Acacia Road”,”Tunbridge Wells”);</p>
+<p>Accessor accessor = Address::getCity;</p>
+<p>System.out.println(accessor.access(address));</p>
+<p>}<br>这里我们无需绑定方法引用到某个实例，我们直接将实例做为功能接口的参数进行传递。</p>
+<p>默认方法</p>
+<p>直到今天的 Java ，都不可能为一个接口添加方法而不会影响到已有的实现类。而 Java 8 允许你为接口自身指定一个默认的实现：</p>
+<p>interface Queue {</p>
+<p>Message read();</p>
+<p>void delete(Message message);</p>
+<p>void deleteAll()  default{</p>
+<p>Message message;</p>
+<p>while((message = read()) !=null) {</p>
+<p>delete(message);</p>
+<p>}</p>
+<p>}</p>
+<p>}<br>子接口可以覆盖默认的方法：</p>
+<p>interface BatchQueue extends Queue {</p>
+<p>void setBatchSize(int batchSize);</p>
+<p>void deleteAll()  default{</p>
+<p>setBatchSize(100);</p>
+<p>Queue.super.deleteAll();</p>
+<p>}</p>
+<p>}<br>或者子接口也可以通过重新声明一个没有方法体的方法来删除默认的方法：</p>
+<p>interface FastQueue extends Queue {</p>
+<p>void deleteAll();</p>
+<p>}</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Java/">Java</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/Java/">Java</a>
+  </div>
+
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2016/05/02/Java8新特性之lambda表达式入门/" data-title="Java8新特性之lambda表达式入门" data-url="http://samychen.com/2016/05/02/Java8新特性之lambda表达式入门/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">10</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 15px;">安卓，Java</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">3</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2017 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>

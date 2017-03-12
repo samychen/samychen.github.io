@@ -138,6 +138,290 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2016-07-30T05:44:18.000Z"><a href="/2016/07/30/Java8新特性之lambda表达式入门（二）/">2016-07-30</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/07/30/Java8新特性之lambda表达式入门（二）/">Java8新特性之lambda表达式入门（二）</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>Lambda表达式是Java SE 8中一个重要的新特性。   lambda表达式允许你通过表达式来代替功能接口。 lambda表达式就和方法一样,它提供了一个正常的参数列表和一个使用这些参数的主体(body,可以是一个表达式或一个代码块)。</p>
+<p>   Lambda表达式还增强了集合库。 Java SE 8添加了2个对集合数据进行批量操作的包: java.util.function 包以及 java.util.stream 包。 流(stream)就如同迭代器(iterator),但附加了许多额外的功能。 总的来说,lambda表达式和 stream 是自Java语言添加泛型(Generics)和注解(annotation)以来最大的变化。</p>
+<p>###Lambda表达式的语法</p>
+<p>####基本语法:<br>(parameters) -&gt; expression<br>或<br>(parameters) -&gt;{ statements; }<br>下面是Java lambda表达式的简单例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">// 1. 不需要参数,返回值为 5</div><div class="line">() -&gt; 5</div><div class="line"></div><div class="line">// 2. 接收一个参数(数字类型),返回其2倍的值</div><div class="line">x -&gt; 2 * x</div><div class="line"></div><div class="line">// 3. 接受2个参数(数字),并返回他们的差值</div><div class="line">(x, y) -&gt; x – y</div><div class="line"></div><div class="line">// 4. 接收2个int型整数,返回他们的和</div><div class="line">(int x, int y) -&gt; x + y</div><div class="line"></div><div class="line">// 5. 接受一个 string 对象,并在控制台打印,不返回任何值(看起来像是返回void)</div><div class="line">(String s) -&gt; System.out.print(s)</div></pre></td></tr></table></figure></p>
+<p>####基本的Lambda例子<br>现在,我们已经知道什么是lambda表达式,让我们先从一些基本的例子开始。 在本节中,我们将看到lambda表达式如何影响我们编码的方式。 假设有一个玩家List ,程序员可以使用 for 语句 (“for 循环”)来遍历,在Java SE 8中可以转换为另一种形式:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">String[] atp = &#123;&quot;Rafael Nadal&quot;, &quot;Novak Djokovic&quot;,</div><div class="line">       &quot;Stanislas Wawrinka&quot;,</div><div class="line">       &quot;David Ferrer&quot;,&quot;Roger Federer&quot;,</div><div class="line">       &quot;Andy Murray&quot;,&quot;Tomas Berdych&quot;,</div><div class="line">       &quot;Juan Martin Del Potro&quot;&#125;;</div><div class="line">List&lt;String&gt; players =  Arrays.asList(atp);</div><div class="line"></div><div class="line">// 以前的循环方式</div><div class="line">for (String player : players) &#123;</div><div class="line">     System.out.print(player + &quot;; &quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 使用 lambda 表达式以及函数操作(functional operation)</div><div class="line">players.forEach((player) -&gt; System.out.print(player + &quot;; &quot;));</div><div class="line"> </div><div class="line">// 在 Java 8 中使用双冒号操作符(double colon operator)</div><div class="line">players.forEach(System.out::println);</div></pre></td></tr></table></figure></p>
+<p>正如您看到的,lambda表达式可以将我们的代码缩减到一行。 另一个例子是在图形用户界面程序中,匿名类可以使用lambda表达式来代替。 同样,在实现Runnable接口时也可以这样使用:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">// 使用匿名内部类</div><div class="line">btn.setOnAction(new EventHandler&lt;ActionEvent&gt;() &#123;</div><div class="line">          @Override</div><div class="line">          public void handle(ActionEvent event) &#123;</div><div class="line">              System.out.println(&quot;Hello World!&quot;); </div><div class="line">          &#125;</div><div class="line">    &#125;);</div><div class="line"> </div><div class="line">// 或者使用 lambda expression</div><div class="line">btn.setOnAction(event -&gt; System.out.println(&quot;Hello World!&quot;));</div></pre></td></tr></table></figure></p>
+<p>下面是使用lambdas 来实现 Runnable接口 的示例:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">// 1.1使用匿名内部类</div><div class="line">new Thread(new Runnable() &#123;</div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        System.out.println(&quot;Hello world !&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;).start();</div><div class="line"></div><div class="line">// 1.2使用 lambda expression</div><div class="line">new Thread(() -&gt; System.out.println(&quot;Hello world !&quot;)).start();</div><div class="line"></div><div class="line">// 2.1使用匿名内部类</div><div class="line">Runnable race1 = new Runnable() &#123;</div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        System.out.println(&quot;Hello world !&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">// 2.2使用 lambda expression</div><div class="line">Runnable race2 = () -&gt; System.out.println(&quot;Hello world !&quot;);</div><div class="line"> </div><div class="line">// 直接调用 run 方法(没开新线程哦!)</div><div class="line">race1.run();</div><div class="line">race2.run();</div></pre></td></tr></table></figure></p>
+<p>Runnable 的 lambda表达式,使用块格式,将五行代码转换成单行语句。 接下来,在下一节中我们将使用lambdas对集合进行排序。</p>
+<p>####使用Lambdas排序集合<br>在Java中,Comparator 类被用来排序集合。 在下面的例子中,我们将根据球员的 name, surname, name 长度 以及最后一个字母。 和前面的示例一样,先使用匿名内部类来排序,然后再使用lambda表达式精简我们的代码。<br>在第一个例子中,我们将根据name来排序list。 使用旧的方式,代码如下所示:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">String[] players = &#123;&quot;Rafael Nadal&quot;, &quot;Novak Djokovic&quot;, </div><div class="line">    &quot;Stanislas Wawrinka&quot;, &quot;David Ferrer&quot;,</div><div class="line">    &quot;Roger Federer&quot;, &quot;Andy Murray&quot;,</div><div class="line">    &quot;Tomas Berdych&quot;, &quot;Juan Martin Del Potro&quot;,</div><div class="line">    &quot;Richard Gasquet&quot;, &quot;John Isner&quot;&#125;;</div><div class="line"> </div><div class="line">// 1.1 使用匿名内部类根据 name 排序 players</div><div class="line">Arrays.sort(players, new Comparator&lt;String&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public int compare(String s1, String s2) &#123;</div><div class="line">        return (s1.compareTo(s2));</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>使用lambdas,可以通过下面的代码实现同样的功能:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// 1.2 使用 lambda expression 排序 players</div><div class="line">Comparator&lt;String&gt; sortByName = (String s1, String s2) -&gt; (s1.compareTo(s2));</div><div class="line">Arrays.sort(players, sortByName);</div><div class="line"></div><div class="line">// 1.3 也可以采用如下形式:</div><div class="line">Arrays.sort(players, (String s1, String s2) -&gt; (s1.compareTo(s2)));</div></pre></td></tr></table></figure></p>
+<p>其他的排序如下所示。 和上面的示例一样,代码分别通过匿名内部类和一些lambda表达式来实现Comparator<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">// 1.1 使用匿名内部类根据 surname 排序 players</div><div class="line">Arrays.sort(players, new Comparator&lt;String&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public int compare(String s1, String s2) &#123;</div><div class="line">        return (s1.substring(s1.indexOf(&quot; &quot;)).compareTo(s2.substring(s2.indexOf(&quot; &quot;))));</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// 1.2 使用 lambda expression 排序,根据 surname</div><div class="line">Comparator&lt;String&gt; sortBySurname = (String s1, String s2) -&gt; </div><div class="line">    ( s1.substring(s1.indexOf(&quot; &quot;)).compareTo( s2.substring(s2.indexOf(&quot; &quot;)) ) );</div><div class="line">Arrays.sort(players, sortBySurname);</div><div class="line"></div><div class="line">// 1.3 或者这样,怀疑原作者是不是想错了,括号好多...</div><div class="line">Arrays.sort(players, (String s1, String s2) -&gt; </div><div class="line">      ( s1.substring(s1.indexOf(&quot; &quot;)).compareTo( s2.substring(s2.indexOf(&quot; &quot;)) ) ) </div><div class="line">    );</div><div class="line"></div><div class="line">// 2.1 使用匿名内部类根据 name lenght 排序 players</div><div class="line">Arrays.sort(players, new Comparator&lt;String&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public int compare(String s1, String s2) &#123;</div><div class="line">        return (s1.length() - s2.length());</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// 2.2 使用 lambda expression 排序,根据 name lenght</div><div class="line">Comparator&lt;String&gt; sortByNameLenght = (String s1, String s2) -&gt; (s1.length() - s2.length());</div><div class="line">Arrays.sort(players, sortByNameLenght);</div><div class="line"></div><div class="line">// 2.3 or this</div><div class="line">Arrays.sort(players, (String s1, String s2) -&gt; (s1.length() - s2.length()));</div><div class="line"></div><div class="line">// 3.1 使用匿名内部类排序 players, 根据最后一个字母</div><div class="line">Arrays.sort(players, new Comparator&lt;String&gt;() &#123;</div><div class="line">    @Override</div><div class="line">    public int compare(String s1, String s2) &#123;</div><div class="line">        return (s1.charAt(s1.length() - 1) - s2.charAt(s2.length() - 1));</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// 3.2 使用 lambda expression 排序,根据最后一个字母</div><div class="line">Comparator&lt;String&gt; sortByLastLetter = </div><div class="line">    (String s1, String s2) -&gt; </div><div class="line">        (s1.charAt(s1.length() - 1) - s2.charAt(s2.length() - 1));</div><div class="line">Arrays.sort(players, sortByLastLetter);</div><div class="line"></div><div class="line">// 3.3 or this</div><div class="line">Arrays.sort(players, (String s1, String s2) -&gt; (s1.charAt(s1.length() - 1) - s2.charAt(s2.length() - 1)));</div></pre></td></tr></table></figure></p>
+<p>就是这样,简洁又直观。 在下一节中我们将探索更多lambdas的能力,并将其与 stream 结合起来使用。</p>
+<p>####使用Lambdas和Streams<br>Stream是对集合的包装,通常和lambda一起使用。 使用lambdas可以支持许多操作,如 map, filter, limit, sorted, count, min, max, sum, collect 等等。 同样,Stream使用懒运算,他们并不会真正地读取所有数据,遇到像getFirst() 这样的方法就会结束链式语法。 在接下来的例子中,我们将探索lambdas和streams 能做什么。 我们创建了一个Person类并使用这个类来添加一些数据到list中,将用于进一步流操作。 Person 只是一个简单的POJO类:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class Person &#123;</div><div class="line"></div><div class="line">private String firstName, lastName, job, gender;</div><div class="line">private int salary, age;</div><div class="line"></div><div class="line">public Person(String firstName, String lastName, String job,</div><div class="line">                String gender, int age, int salary)       &#123;</div><div class="line">          this.firstName = firstName;</div><div class="line">          this.lastName = lastName;</div><div class="line">          this.gender = gender;</div><div class="line">          this.age = age;</div><div class="line">          this.job = job;</div><div class="line">          this.salary = salary;</div><div class="line">&#125;</div><div class="line">// Getter and Setter </div><div class="line">// . . . . .</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>接下来,我们将创建两个list,都用来存放Person对象:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">List&lt;Person&gt; javaProgrammers = new ArrayList&lt;Person&gt;() &#123;</div><div class="line">  &#123;</div><div class="line">    add(new Person(&quot;Elsdon&quot;, &quot;Jaycob&quot;, &quot;Java programmer&quot;, &quot;male&quot;, 43, 2000));</div><div class="line">    add(new Person(&quot;Tamsen&quot;, &quot;Brittany&quot;, &quot;Java programmer&quot;, &quot;female&quot;, 23, 1500));</div><div class="line">    add(new Person(&quot;Floyd&quot;, &quot;Donny&quot;, &quot;Java programmer&quot;, &quot;male&quot;, 33, 1800));</div><div class="line">    add(new Person(&quot;Sindy&quot;, &quot;Jonie&quot;, &quot;Java programmer&quot;, &quot;female&quot;, 32, 1600));</div><div class="line">    add(new Person(&quot;Vere&quot;, &quot;Hervey&quot;, &quot;Java programmer&quot;, &quot;male&quot;, 22, 1200));</div><div class="line">    add(new Person(&quot;Maude&quot;, &quot;Jaimie&quot;, &quot;Java programmer&quot;, &quot;female&quot;, 27, 1900));</div><div class="line">    add(new Person(&quot;Shawn&quot;, &quot;Randall&quot;, &quot;Java programmer&quot;, &quot;male&quot;, 30, 2300));</div><div class="line">    add(new Person(&quot;Jayden&quot;, &quot;Corrina&quot;, &quot;Java programmer&quot;, &quot;female&quot;, 35, 1700));</div><div class="line">    add(new Person(&quot;Palmer&quot;, &quot;Dene&quot;, &quot;Java programmer&quot;, &quot;male&quot;, 33, 2000));</div><div class="line">    add(new Person(&quot;Addison&quot;, &quot;Pam&quot;, &quot;Java programmer&quot;, &quot;female&quot;, 34, 1300));</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">List&lt;Person&gt; phpProgrammers = new ArrayList&lt;Person&gt;() &#123;</div><div class="line">  &#123;</div><div class="line">    add(new Person(&quot;Jarrod&quot;, &quot;Pace&quot;, &quot;PHP programmer&quot;, &quot;male&quot;, 34, 1550));</div><div class="line">    add(new Person(&quot;Clarette&quot;, &quot;Cicely&quot;, &quot;PHP programmer&quot;, &quot;female&quot;, 23, 1200));</div><div class="line">    add(new Person(&quot;Victor&quot;, &quot;Channing&quot;, &quot;PHP programmer&quot;, &quot;male&quot;, 32, 1600));</div><div class="line">    add(new Person(&quot;Tori&quot;, &quot;Sheryl&quot;, &quot;PHP programmer&quot;, &quot;female&quot;, 21, 1000));</div><div class="line">    add(new Person(&quot;Osborne&quot;, &quot;Shad&quot;, &quot;PHP programmer&quot;, &quot;male&quot;, 32, 1100));</div><div class="line">    add(new Person(&quot;Rosalind&quot;, &quot;Layla&quot;, &quot;PHP programmer&quot;, &quot;female&quot;, 25, 1300));</div><div class="line">    add(new Person(&quot;Fraser&quot;, &quot;Hewie&quot;, &quot;PHP programmer&quot;, &quot;male&quot;, 36, 1100));</div><div class="line">    add(new Person(&quot;Quinn&quot;, &quot;Tamara&quot;, &quot;PHP programmer&quot;, &quot;female&quot;, 21, 1000));</div><div class="line">    add(new Person(&quot;Alvin&quot;, &quot;Lance&quot;, &quot;PHP programmer&quot;, &quot;male&quot;, 38, 1600));</div><div class="line">    add(new Person(&quot;Evonne&quot;, &quot;Shari&quot;, &quot;PHP programmer&quot;, &quot;female&quot;, 40, 1800));</div><div class="line">  &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>现在我们使用forEach方法来迭代输出上述列表:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;所有程序员的姓名:&quot;);</div><div class="line">javaProgrammers.forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div><div class="line">phpProgrammers.forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div></pre></td></tr></table></figure></p>
+<p>我们同样使用forEach方法,增加程序员的工资5%:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;给程序员加薪 5% :&quot;);</div><div class="line">Consumer&lt;Person&gt; giveRaise = e -&gt; e.setSalary(e.getSalary() / 100 * 5 + e.getSalary());</div><div class="line"></div><div class="line">javaProgrammers.forEach(giveRaise);</div><div class="line">phpProgrammers.forEach(giveRaise);</div></pre></td></tr></table></figure></p>
+<p>另一个有用的方法是过滤器filter() ,让我们显示月薪超过1400美元的PHP程序员:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;下面是月薪超过 $1,400 的PHP程序员:&quot;)</div><div class="line">phpProgrammers.stream()</div><div class="line">          .filter((p) -&gt; (p.getSalary() &gt; 1400))</div><div class="line">          .forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div></pre></td></tr></table></figure></p>
+<p>我们也可以定义过滤器,然后重用它们来执行其他操作:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">// 定义 filters</div><div class="line">Predicate&lt;Person&gt; ageFilter = (p) -&gt; (p.getAge() &gt; 25);</div><div class="line">Predicate&lt;Person&gt; salaryFilter = (p) -&gt; (p.getSalary() &gt; 1400);</div><div class="line">Predicate&lt;Person&gt; genderFilter = (p) -&gt; (&quot;female&quot;.equals(p.getGender()));</div><div class="line"></div><div class="line">System.out.println(&quot;下面是年龄大于 24岁且月薪在$1,400以上的女PHP程序员:&quot;);</div><div class="line">phpProgrammers.stream()</div><div class="line">          .filter(ageFilter)</div><div class="line">          .filter(salaryFilter)</div><div class="line">          .filter(genderFilter)</div><div class="line">          .forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div><div class="line"></div><div class="line">// 重用filters</div><div class="line">System.out.println(&quot;年龄大于 24岁的女性 Java programmers:&quot;);</div><div class="line">javaProgrammers.stream()</div><div class="line">          .filter(ageFilter)</div><div class="line">          .filter(genderFilter)</div><div class="line">          .forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div></pre></td></tr></table></figure></p>
+<p>使用limit方法,可以限制结果集的个数:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;最前面的3个 Java programmers:&quot;);</div><div class="line">javaProgrammers.stream()</div><div class="line">          .limit(3)</div><div class="line">          .forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div><div class="line"></div><div class="line"></div><div class="line">System.out.println(&quot;最前面的3个女性 Java programmers:&quot;);</div><div class="line">javaProgrammers.stream()</div><div class="line">          .filter(genderFilter)</div><div class="line">          .limit(3)</div><div class="line">          .forEach((p) -&gt; System.out.printf(&quot;%s %s; &quot;, p.getFirstName(), p.getLastName()));</div></pre></td></tr></table></figure></p>
+<p>排序呢? 我们在stream中能处理吗? 答案是肯定的。 在下面的例子中,我们将根据名字和薪水排序Java程序员,放到一个list中,然后显示列表:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;根据 name 排序,并显示前5个 Java programmers:&quot;);</div><div class="line">List&lt;Person&gt; sortedJavaProgrammers = javaProgrammers</div><div class="line">          .stream()</div><div class="line">          .sorted((p, p2) -&gt; (p.getFirstName().compareTo(p2.getFirstName())))</div><div class="line">          .limit(5)</div><div class="line">          .collect(toList());</div><div class="line"></div><div class="line">sortedJavaProgrammers.forEach((p) -&gt; System.out.printf(&quot;%s %s; %n&quot;, p.getFirstName(), p.getLastName()));</div><div class="line"> </div><div class="line">System.out.println(&quot;根据 salary 排序 Java programmers:&quot;);</div><div class="line">sortedJavaProgrammers = javaProgrammers</div><div class="line">          .stream()</div><div class="line">          .sorted( (p, p2) -&gt; (p.getSalary() - p2.getSalary()) )</div><div class="line">          .collect( toList() );</div><div class="line"></div><div class="line">sortedJavaProgrammers.forEach((p) -&gt; System.out.printf(&quot;%s %s; %n&quot;, p.getFirstName(), p.getLastName()));</div></pre></td></tr></table></figure></p>
+<p>如果我们只对最低和最高的薪水感兴趣,比排序后选择第一个/最后一个 更快的是min和max方法:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;工资最低的 Java programmer:&quot;);</div><div class="line">Person pers = javaProgrammers</div><div class="line">          .stream()</div><div class="line">          .min((p1, p2) -&gt; (p1.getSalary() - p2.getSalary()))</div><div class="line">          .get()</div><div class="line"></div><div class="line">System.out.printf(&quot;Name: %s %s; Salary: $%,d.&quot;, pers.getFirstName(), pers.getLastName(), pers.getSalary())</div><div class="line"></div><div class="line">System.out.println(&quot;工资最高的 Java programmer:&quot;);</div><div class="line">Person person = javaProgrammers</div><div class="line">          .stream()</div><div class="line">          .max((p, p2) -&gt; (p.getSalary() - p2.getSalary()))</div><div class="line">          .get()</div><div class="line"></div><div class="line">System.out.printf(&quot;Name: %s %s; Salary: $%,d.&quot;, person.getFirstName(), person.getLastName(), person.getSalary())</div></pre></td></tr></table></figure></p>
+<p>上面的例子中我们已经看到 collect 方法是如何工作的。 结合 map 方法,我们可以使用 collect 方法来将我们的结果集放到一个字符串,一个 Set 或一个TreeSet中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;将 PHP programmers 的 first name 拼接成字符串:&quot;);</div><div class="line">String phpDevelopers = phpProgrammers</div><div class="line">          .stream()</div><div class="line">          .map(Person::getFirstName)</div><div class="line">          .collect(joining(&quot; ; &quot;)); // 在进一步的操作中可以作为标记(token)   </div><div class="line"></div><div class="line">System.out.println(&quot;将 Java programmers 的 first name 存放到 Set:&quot;);</div><div class="line">Set&lt;String&gt; javaDevFirstName = javaProgrammers</div><div class="line">          .stream()</div><div class="line">          .map(Person::getFirstName)</div><div class="line">          .collect(toSet());</div><div class="line"></div><div class="line">System.out.println(&quot;将 Java programmers 的 first name 存放到 TreeSet:&quot;);</div><div class="line">TreeSet&lt;String&gt; javaDevLastName = javaProgrammers</div><div class="line">          .stream()</div><div class="line">          .map(Person::getLastName)</div><div class="line">          .collect(toCollection(TreeSet::new));</div></pre></td></tr></table></figure></p>
+<p>Streams 还可以是并行的(parallel)。 示例如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">System.out.println(&quot;计算付给 Java programmers 的所有money:&quot;);</div><div class="line">int totalSalary = javaProgrammers</div><div class="line">          .parallelStream()</div><div class="line">          .mapToInt(p -&gt; p.getSalary())</div><div class="line">          .sum();</div></pre></td></tr></table></figure></p>
+<p>我们可以使用summaryStatistics方法获得stream 中元素的各种汇总数据。 接下来,我们可以访问这些方法,比如getMax, getMin, getSum或getAverage:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//计算 count, min, max, sum, and average for numbers</div><div class="line">List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);</div><div class="line">IntSummaryStatistics stats = numbers</div><div class="line">          .stream()</div><div class="line">          .mapToInt((x) -&gt; x)</div><div class="line">          .summaryStatistics();</div><div class="line"></div><div class="line">System.out.println(&quot;List中最大的数字 : &quot; + stats.getMax());</div><div class="line">System.out.println(&quot;List中最小的数字 : &quot; + stats.getMin());</div><div class="line">System.out.println(&quot;所有数字的总和   : &quot; + stats.getSum());</div><div class="line">System.out.println(&quot;所有数字的平均值 : &quot; + stats.getAverage());</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/07/30/Java8新特性之lambda表达式入门（二）/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-05-02T05:41:42.000Z"><a href="/2016/05/02/Java8新特性之lambda表达式入门/">2016-05-02</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/05/02/Java8新特性之lambda表达式入门/">Java8新特性之lambda表达式入门</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>功能接口</p>
+<p>只包含一个方法的接口被称为功能接口，Lambda 表达式用用于任何功能接口适用的地方，java.awt.event.ActionListener 就是一个功能接口，因为它只有一个方法：</p>
+<p>void actionPerformed(ActionEvent)</p>
+<p>一、lambda引入原因</p>
+<p>1、更加紧凑的代码</p>
+<p>比如Java中现有的匿名内部类以及监听器(listeners)和事件处理器(handlers）都显得很冗长</p>
+<p>2、修改方法的能力</p>
+<p>比如Collection接口的contains方法，当且仅当传入的元素真正包含在集合中，才返回true。而假如我们想对一个字符串集合，传入一个字符串，只要这个字符串出现在集合中（忽略大小写）就返回true。</p>
+<p>简单地说，我们想要的是传入“一些我们自己的代码”到已有的方法中，已有的方法将会执行我们传入的代码。Lambda表达式能很好地支持这点</p>
+<p>3、更好地支持多核处理</p>
+<p>例如，通过Java 8新增的Lambda表达式，我们可以很方便地并行操作大集合，充分发挥多核CPU的潜能。</p>
+<p>并行处理函数如filter、map和reduce。</p>
+<p>实例1 FileFilter</p>
+<p>File dir =newFile(“/an/dir/“);</p>
+<p>FileFilter directoryFilter=newFileFilter() {public boolean accept(File file) {</p>
+<p>returnfile.isDirectory();</p>
+<p>}</p>
+<p>};<br>通过Lambda表达式这段代码可以简化为如下：</p>
+<p>File dir =newFile(“/an/dir/“);</p>
+<p>FileFilter directoryFilter= (File f) -&gt;f.isDirectory();</p>
+<p>File[] dirs= dir.listFiles(directoryFilter);<br>进一步简化：</p>
+<p>File dir =newFile(“/an/dir/“)；</p>
+<p>File[] dirs= dir.listFiles((File f) -&gt; f.isDirectory());<br>Lambda表达式利用了类型推断（type inference）技术：</p>
+<p>编译器知道FileFilter只有一个方法accept()，所以accept()方法肯定对应(File f) -&gt; f.isDirectory()，就是利用了类型推断，而且accept()方法只有一个File类型的参数，所以(File f) -&gt;f.isDirectory()中的File f就是这个参数了，.NET把类型推断做得更绝，如果上面用.NET Lambda表达式写法的话是这样的：File[] dirs= dir.ListFiles(f =&gt;f.isDirectory());即压根就不需要出现File类型指示。</p>
+<p>实例2 Event Handler</p>
+<p>Button bt =newButton();</p>
+<p>bt.addActionListener(newActionListener() {public void actionPerformed(ActionEvent e) {</p>
+<p>ui.showSomething();</p>
+<p>}</p>
+<p>});<br>使用Lambda表达式后：</p>
+<p>Button bt =newButton();</p>
+<p>ActionListener listener= event -&gt;{ ui.showSomething(); };</p>
+<p>bt.addActionListener(listener);<br>进一步简化：</p>
+<p>Button bt =newButton();</p>
+<p>bt.addActionListener(event-&gt; { ui.showSomething(); });<br>newActionListener的内部类只有actionPerformed方法，event就是参数</p>
+<p>actionPerformed()方法的返回类型是void，所以需要特殊处理，即在ui.showSomething();左右加上花括号。（想象下不加会怎么样？如果不加的话，若showSomething()方法返回值是整数类型，那么就意味着actionPerformed()返回整数类型，显然不是，所以必须加花括号用来标记）。</p>
+<p>如果Lambda表达式主体部分包含多条语句，也必须用花括号，并且return语句不能省。</p>
+<p>比如下面这个：</p>
+<p>File dir =newFile(“/an/dir/“);</p>
+<p>File[] dirs= dir.listFiles((File f) -&gt;{</p>
+<p>System.out.println(“Log:…”);</p>
+<p>return f.isDirectory();</p>
+<p>}</p>
+<p>);<br>函数集合</p>
+<p>Java 8 的类库包含一个新的包 java.util.functions ，这个包中有很多新的功能接口，这些接口可与集合 API 一起使用。</p>
+<p>外循环、内循环和Map、Reduce、Filter</p>
+<p>一直到现在，处理Java集合的标准做法是采用外循环。比如：</p>
+<p>List list =newArrayList();</p>
+<p>list.add(“hello”);</p>
+<p>list.add(“world”);for(intitem: list) {//处理item}<br>还有迭代器循环，它们都是外循环，并且都是顺序处理（sequential handling）。顺序特性也常常引发ConcurrentModificationException，只要我们尝试着并发修改集合。</p>
+<p>Lambda表达式提供了内循环机制。</p>
+<p>我们工作中可能经常面临下面的需求：</p>
+<blockquote>
+<p>过滤掉一个集合中不符合条件的元素得到一个新集合</p>
+<p>对集合中的每个元素进行某种转换，并且对转换后的集合进行处理</p>
+<p>统计整个集合的某个属性，比如统计集合元素值的总和或平均值</p>
+</blockquote>
+<p>这些任务即filter、map和reduce，他们的共同特点是：</p>
+<p>需要对集合中的每个元素运行一小段相同的代码。</p>
+<p>传统的实现这些任务的代码让人感到很乏味，幸运的是Java 8提供了完成这些任务的更简洁的方案，当然还是利用Lambda表达式，但也引入了一个新的类库java.util.functions，包含Predicate、Mapper和Block。</p>
+<p>Java 8中，一个Predicate（谓词）是这样一个方法：它根据变量的值进行评估(evaluate），返回true或false。java.util.functions.Predicate</p>
+<p>比如下面：</p>
+<p>List list =getMyStrings();</p>
+<p>for(String myString: list) {if(myString.contains(possible)) {</p>
+<p>System.out.println(myString+ “ contains “ +possible);</p>
+<p>}</p>
+<p>}<br>使用Predicate和Filter后得到下面代码：</p>
+<p>List list =getMyStrings();</p>
+<p>Predicate matched = s -&gt;s.equalsIgnoreCase(possible);</p>
+<p>list.filter(matched);<br>进一步简化：</p>
+<p>List list =getMyStrings();</p>
+<p>list.filter(s-&gt; s.equalsIgnoreCase(possible));<br>使用谓词 (Predicate) 来筛选集合：</p>
+<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
+<p>List filteredNames = names.filter(e -&gt; e.length() &gt;=4).into(new ArrayList());</p>
+<p>for(String name : filteredNames) {</p>
+<p>System.out.println(name);</p>
+<p>}<br>这里我们有两个新方法：</p>
+<p>Iterable filter(Predicate) 用于获取元素满足某个谓词返回 true 的结果</p>
+<p><a extends="" fillableinto<?="" super="" t="">&gt;A into(A) 将用返回的结果填充 ArrayList </a></p>
+<p>java.util.functions.Block</p>
+<p>我们可使用一个新的迭代器方法来替换 for 循环 void forEach(Block&lt;? super T&gt;):</p>
+<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
+<p>names.filter(e -&gt; e.length() &gt;=4).forEach(e -&gt; { System.out.println(e); });<br>forEach() 方法是 internal iteration 的一个实例：迭代过程在 Iterable 和 Block 内部进行，每次可访问一个元素。</p>
+<p>最后的结果就是用更少的代码来处理集合：</p>
+<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
+<p>names</p>
+<p>.mapped(e -&gt; {return e.length(); })</p>
+<p>.asIterable()// returns an Iterable of BiValue elements</p>
+<p>// an element’s key is the person’s name, its value is the string length</p>
+<p>.filter(e -&gt; e.getValue() &gt;=4)</p>
+<p>.sorted((a, b) -&gt; a.getValue() - b.getValue())</p>
+<p>.forEach(e -&gt; { System.out.println(e.getKey() +’\t’+ e.getValue()); });<br>方法引用</p>
+<p>我们可通过 :: 语法来引用某个方法。方法引用被认为是跟 Lambda 表达式一样的，可用于功能接口所适用的地方。</p>
+<p>我们可以引用一个静态方法：</p>
+<p>executorService.submit(MethodReference::sayHello);</p>
+<p>privatestaticvoidsayHello() {</p>
+<p>System.out.println(“hello”);</p>
+<p>}<br>或者是一个实例的方法：</p>
+<p>Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”).forEach(System.out::println);<br>我们也可以创建工程方法并将构造器引用赋值给 java.util.functions.Factory:</p>
+<p>Factory biscuitFactory = Biscuit::new;</p>
+<p>Biscuit biscuit = biscuitFactory.make();<br>最后，我们创建一个引用到随意实例的例子：</p>
+<p>interface Accessor<bean, property=""> {</bean,></p>
+<p>PROPERTY access(BEAN bean);</p>
+<p>}<br>publicstaticvoidmain(String[] args) {</p>
+<p>Address address =newAddress(“29 Acacia Road”,”Tunbridge Wells”);</p>
+<p>Accessor accessor = Address::getCity;</p>
+<p>System.out.println(accessor.access(address));</p>
+<p>}<br>这里我们无需绑定方法引用到某个实例，我们直接将实例做为功能接口的参数进行传递。</p>
+<p>默认方法</p>
+<p>直到今天的 Java ，都不可能为一个接口添加方法而不会影响到已有的实现类。而 Java 8 允许你为接口自身指定一个默认的实现：</p>
+<p>interface Queue {</p>
+<p>Message read();</p>
+<p>void delete(Message message);</p>
+<p>void deleteAll()  default{</p>
+<p>Message message;</p>
+<p>while((message = read()) !=null) {</p>
+<p>delete(message);</p>
+<p>}</p>
+<p>}</p>
+<p>}<br>子接口可以覆盖默认的方法：</p>
+<p>interface BatchQueue extends Queue {</p>
+<p>void setBatchSize(int batchSize);</p>
+<p>void deleteAll()  default{</p>
+<p>setBatchSize(100);</p>
+<p>Queue.super.deleteAll();</p>
+<p>}</p>
+<p>}<br>或者子接口也可以通过重新声明一个没有方法体的方法来删除默认的方法：</p>
+<p>interface FastQueue extends Queue {</p>
+<p>void deleteAll();</p>
+<p>}</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/05/02/Java8新特性之lambda表达式入门/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-03-12T05:38:32.000Z"><a href="/2016/03/12/Java-SSL-Socket通讯实例二/">2016-03-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/03/12/Java-SSL-Socket通讯实例二/">Java SSL Socket通讯实例二</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>对于SSL/TLS协议，如果要每个开发者都自己去实现显然会带来不必要的麻烦，正是为了解决这个问题<a href="http://www.2cto.com/kf/ware/Java/" target="_blank" rel="external">Java</a>为广大开发者提供了Java安全套接字扩展——JSSE，它包含了实现Internet安全通信的一系列包的集合，是SSL和TLS的纯Java实现，同时它是一个开放的标准，每个公司都可以自己实现JSSE，通过它可以透明地提供数据<a href="http://www.2cto.com/Article/jiami/" target="_blank" rel="external">加密</a>、服务器认证、信息完整性等功能，就像使用普通的套接字一样使用安全套接字，大大减轻了开发者的负担，使开发者可以很轻松将SSL协议整合到程序中，并且JSSE能将安全隐患降到了最低点。<br>在利用SSL/TLS进行安全通信时，客户端跟服务器端都必须要支持SSL/TLS协议，不然将无法进行通信。而且客户端和服务器端都可能要设置用于证实自己身份的安全证书，并且还要设置信任对方的哪些安全证书。<br>关于身份认证方面有个名词叫客户端模式，一般情况客户端要对服务器端的身份进行验证，但是无需向服务器证实自己的身份，这样不用向对方证实自己身份的通信端我们就说它处于客户模式，否则成它处于服务器模式。SSLSocket的setUseClientMode(Boolean mode)方法可以设置客户端模式或服务器模式。<br>下面看具体实现的过程<br>① 解决证书问题。<br>一般而言作为服务器端必须要有证书以证明这个服务器的身份，并且证书应该描述此服务器所有者的一些基本信息，例如公司名称、联系人名等。证书由所有人以密码形式签名，基本不可伪造，证书获取的途径有两个：一是从权威机构购买证书，权威机构担保它发出的证书的真实性，而且这个权威机构被大家所信任，进而你可以相信这个证书的有效性；另外一个是自己用JDK提供的工具keytool创建一个自我签名的证书，这种情况下一般是我只想要保证数据的安全性与完整性，避免数据在传送的过程中被窃听或篡改，此时身份的认证已不重要，重点已经在端与端传输的秘密性上，证书的作用只体现在加解密签名。<br>SSL协议通信涉及密钥储存的文件格式比较多，很容易搞混，例如xxx.cer、xxx.pfx、xxx.jks、xxx.keystore、xxx.truststore等格式文件。如图3-1-7-3，搞清楚他们有助于理解后面的程序，.cer格式文件俗称证书，但这个证书中没有私钥，只包含了公钥；.pfx格式文件也称为证书，它一般供<a href="http://www.2cto.com/os/liulanqi/" target="_blank" rel="external">浏览器</a>使用，而且它不仅包含了公钥，还包含了私钥，当然这个私钥是加密的，不输入密码是解不了密的；.jks格式文件表示java密钥存储器（java key store），它可以同时容纳N个公钥跟私钥，是一个密钥库；.keystore格式文件其实跟.jks基本是一样的，只是不同公司叫法不太一样，默认生成的证书存储库格式；.truststore格式文件表示信任证书存储库，它仅仅包含了通信对方的公钥，当然你可以直接把通信对方的jks作为信任库（就算如此你也只能知道通信对方的公钥，要知道密钥都是加密的，你无从获取，只要算法不被<a href="http://www.2cto.com/Article/jiami/" target="_blank" rel="external">破解</a>）。有些时候我们需要把pfx或cert转化为jks以便于用java进行ssl通信，例如一个银行只提供了pfx证书，而我们想用java进行ssl通信时就要将pfx转化为jks格式。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-4282e92c21880f9a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>图3-1-7-3 密钥存储文件格式</p>
+<p>按照理论上，我们一共需要准备四个文件，两个keystore文件和两个truststore文件，通信双方分别拥有一个keystore和一个truststore，keystore用于存放自己的密钥和公钥，truststore用于存放所有需要信任方的公钥。这里为了方便直接使用jks即keystore替代truststore（免去证书导来导去），因为对方的keystore包含了自己需要的信任公钥。<br>下面使用jdk自带的工具分别生成服务器端证书，通过如下命令并输入姓名、组织单位名称、组织名称、城市、省份、国家信息即可生成证书密码为tomcat的证书，此证书存放在密码也为tomcat的tomcat.jks证书存储库中。如果你继续创建证书将继续往tomcat.jks证书存储库中添加证书。如果你仅仅输入keytool -genkey -alias tomcat -keyalg RSA -keypass tomcat -storepass tomcat，不指定证书存储库的文件名及路径，则工具会在用户的home directory目录下生产一个“.keystore”文件作为证书存储库。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-b9350297f1636989.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>类似的，客户端证书也用此方式进行生成。如下<br><img src="http://upload-images.jianshu.io/upload_images/4398977-d60598093e5c7d93.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>② 服务端TomcatSSLServer.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line">public class TomcatSSLServer &#123;</div><div class="line"> private static final String SSL_TYPE = &quot;SSL&quot;;</div><div class="line"> private static final String KS_TYPE = &quot;JKS&quot;;</div><div class="line"> private static final String X509 = &quot;SunX509&quot;;</div><div class="line"> private final static int PORT = 443;</div><div class="line"> private static TomcatSSLServer sslServer;</div><div class="line"> private SSLServerSocket svrSocket;</div><div class="line">   </div><div class="line"> public static TomcatSSLServer getInstance() throws Exception &#123;</div><div class="line">   if (sslServer == null) &#123;</div><div class="line">    sslServer = new TomcatSSLServer();</div><div class="line">   &#125;</div><div class="line">   return sslServer;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private TomcatSSLServer() throws Exception&#123;</div><div class="line">  SSLContext sslContext = createSSLContext();</div><div class="line">  SSLServerSocketFactory serverFactory = sslContext.getServerSocketFactory();</div><div class="line">  svrSocket =(SSLServerSocket) serverFactory.createServerSocket(PORT);</div><div class="line">  svrSocket.setNeedClientAuth(true); </div><div class="line">  String[] supported = svrSocket.getEnabledCipherSuites();</div><div class="line">  svrSocket.setEnabledCipherSuites(supported);</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private SSLContext createSSLContext() throws Exception&#123;</div><div class="line">  KeyManagerFactory kmf = KeyManagerFactory.getInstance(X509);</div><div class="line">  TrustManagerFactory tmf = TrustManagerFactory.getInstance(X509);</div><div class="line">  String serverKeyStoreFile = &quot;c:\\tomcat.jks&quot;; </div><div class="line">  String svrPassphrase = &quot;tomcat&quot;;               </div><div class="line">  char[] svrPassword = svrPassphrase.toCharArray();</div><div class="line">  KeyStore serverKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  serverKeyStore.load(new FileInputStream(serverKeyStoreFile), svrPassword);</div><div class="line">  kmf.init(serverKeyStore, svrPassword);</div><div class="line">  String clientKeyStoreFile = &quot;c:\\client.jks&quot;; </div><div class="line">  String cntPassphrase = &quot;client&quot;;              </div><div class="line">  char[] cntPassword = cntPassphrase.toCharArray();</div><div class="line">  KeyStore clientKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  clientKeyStore.load(new FileInputStream(clientKeyStoreFile),cntPassword);</div><div class="line">  tmf.init(clientKeyStore);</div><div class="line">  SSLContext sslContext  = SSLContext.getInstance(SSL_TYPE);</div><div class="line">  sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);</div><div class="line">  return sslContext;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public void startService() &#123;</div><div class="line">  SSLSocket cntSocket = null;</div><div class="line">  BufferedReader ioReader = null;</div><div class="line">  PrintWriter ioWriter = null;</div><div class="line">  String tmpMsg = null;</div><div class="line">  while( true ) &#123;</div><div class="line">   try &#123;</div><div class="line">    cntSocket =(SSLSocket) svrSocket.accept();</div><div class="line">    ioReader = new BufferedReader(new InputStreamReader(cntSocket.getInputStream()));</div><div class="line">    ioWriter = new PrintWriter(cntSocket.getOutputStream());</div><div class="line">    while ( (tmpMsg = ioReader.readLine()) != null) &#123;</div><div class="line">     System.out.println(&quot;客户端通过SSL协议发送信息:&quot;+tmpMsg);</div><div class="line">     tmpMsg=&quot;欢迎通过SSL协议连接&quot;;</div><div class="line">     ioWriter.println(tmpMsg);</div><div class="line">     ioWriter.flush();</div><div class="line">    &#125;</div><div class="line">   &#125; catch(IOException e) &#123;</div><div class="line">    e.printStackTrace();</div><div class="line">   &#125; finally &#123;</div><div class="line">    try &#123;</div><div class="line">     if(cntSocket != null) cntSocket.close();</div><div class="line">    &#125; catch(Exception ex) &#123;ex.printStackTrace();&#125;</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public static void main(String[] args) throws Exception &#123;</div><div class="line">  TomcatSSLServer.getInstance().startService();</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>基本顺序是先得到一个SSLContext实例，再对SSLContext实例进行初始化，密钥管理器及信任管理器作为参数传入，证书管理器及信任管理器按照指定的密钥存储器路径和密码进行加载。接着设置支持的加密套件，最后让SSLServerSocket开始监听客户端发送过来的消息。</p>
+<p>③ 客户端TomcatSSLClient.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">public class TomcatSSLClient &#123;</div><div class="line"> private static final String SSL_TYPE = &quot;SSL&quot;;</div><div class="line"> private static final String X509 = &quot;SunX509&quot;;</div><div class="line"> private static final String KS_TYPE = &quot;JKS&quot;;</div><div class="line"> private SSLSocket sslSocket;</div><div class="line">   </div><div class="line"> public TomcatSSLClient(String targetHost,int port) throws Exception &#123;</div><div class="line">  SSLContext sslContext = createSSLContext(); </div><div class="line">  SSLSocketFactory sslcntFactory =(SSLSocketFactory) sslContext.getSocketFactory();</div><div class="line">  sslSocket = (SSLSocket) sslcntFactory.createSocket(targetHost, port);</div><div class="line">  String[] supported = sslSocket.getSupportedCipherSuites();</div><div class="line">  sslSocket.setEnabledCipherSuites(supported); </div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private SSLContext createSSLContext() throws Exception&#123;</div><div class="line">  KeyManagerFactory kmf = KeyManagerFactory.getInstance(X509);</div><div class="line">  TrustManagerFactory tmf = TrustManagerFactory.getInstance(X509);</div><div class="line">  String clientKeyStoreFile = &quot;c:\\client.jks&quot;;</div><div class="line">  String cntPassphrase = &quot;client&quot;;</div><div class="line">  char[] cntPassword = cntPassphrase.toCharArray();</div><div class="line">  KeyStore clientKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  clientKeyStore.load(new FileInputStream(clientKeyStoreFile),cntPassword);</div><div class="line">  String serverKeyStoreFile = &quot;c:\\tomcat.jks&quot;;</div><div class="line">  String svrPassphrase = &quot;tomcat&quot;;</div><div class="line">  char[] svrPassword = svrPassphrase.toCharArray();</div><div class="line">  KeyStore serverKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  serverKeyStore.load(new FileInputStream(serverKeyStoreFile), svrPassword);</div><div class="line">  kmf.init(clientKeyStore, cntPassword);</div><div class="line">  tmf.init(serverKeyStore);</div><div class="line">  SSLContext sslContext  = SSLContext.getInstance(SSL_TYPE);</div><div class="line">  sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);</div><div class="line">  return sslContext;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public String sayToSvr(String sayMsg) throws IOException&#123;</div><div class="line">  BufferedReader ioReader = new BufferedReader(new InputStreamReader(</div><div class="line">    sslSocket.getInputStream()));</div><div class="line">  PrintWriter ioWriter = new PrintWriter(sslSocket.getOutputStream());</div><div class="line">  ioWriter.println(sayMsg);</div><div class="line">  ioWriter.flush();</div><div class="line">  return ioReader.readLine();</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public static void main(String[] args) throws Exception &#123;</div><div class="line">  TomcatSSLClient sslSocket = new TomcatSSLClient(&quot;127.0.0.1&quot;,443);</div><div class="line">  BufferedReader ioReader = new BufferedReader(new InputStreamReader(System.in));</div><div class="line">  String sayMsg = &quot;&quot;;</div><div class="line">  String svrRespMsg= &quot;&quot;;</div><div class="line">  while( (sayMsg = ioReader.readLine())!= null ) &#123;</div><div class="line">   svrRespMsg = sslSocket.sayToSvr(sayMsg);</div><div class="line">   if(svrRespMsg != null &amp;&amp; !svrRespMsg.trim().equals(&quot;&quot;)) &#123;</div><div class="line">    System.out.println(&quot;服务器通过SSL协议响应:&quot;+svrRespMsg);</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>客户端的前面操作基本跟服务器端的一样，先创建一个SSLContext实例，再用密钥管理器及信任管理器对SSLContext进行初始化，当然这里密钥存储的路径是指向客户端的client.jks。接着设置加密套件，最后使用SSLSocket进行通信。</p>
+<p>注意服务器端有行代码svrSocket.setNeedClientAuth(true);它是非常重要的一个设置方法，用于设置是否验证客户端的身份。假如我们把它注释掉或设置为false，此时客户端将不再需要自己的密钥管理器，即服务器不需要通过client.jks对客户端的身份进行验证，把密钥管理器直接设置为null也可以跟服务器端进行通信。</p>
+<p>最后谈谈信任管理器，它的职责是决定是否信任远端的证书，那么它凭借什么去判断呢？如果不显式设置信任存储器的文件路径，将遵循如下规则：①如果<a href="http://www.2cto.com/os/" target="_blank" rel="external">系统</a>属性javax.net.ssl.truststore指定了truststore文件，那么信任管理器将去jre路径下的lib/security目录寻找这个文件作为信任存储器；②如果没设置①中的系统属性，则去寻找一个%java_home%/lib/security/jssecacerts文件作为信任存储器；③如果jssecacerts不存在而cacerts存在，则cacerts作为信任存储器。<br>至此，一个利用JSSE实现BIO模式的SSL协议通信的例子已完成。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/03/12/Java-SSL-Socket通讯实例二/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2016-03-11T07:17:50.000Z"><a href="/2016/03/11/安卓开发规范/">2016-03-11</a></time>
         
   
@@ -533,6 +817,123 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2016-02-22T05:39:47.000Z"><a href="/2016/02/22/Java-SSL-Socket通讯实例一/">2016-02-22</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/02/22/Java-SSL-Socket通讯实例一/">Java SSL Socket通讯实例一</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>从最简单来说，Java里面只需要配置几个系统属性，创建及调用几个SSL相关的对象即可。这四个属性分别是:<br>javax.net.ssl.keyStore本方的密码，证书等存放地点(KeyStore文件地址)。<br>javax.net.ssl.keyStorePasswordKeyStore的密码。没有密码可以不填。<br>javax.net.ssl.trustStore受信任证书的存放地点(TrustKeyStore文件地址)。<br>javax.net.ssl.trustStorePasswordTrustKeyStore的密码。没有密码可以不填。</p>
+<p>KeyStore类型默认是JKS类型的，不是的话，还需要设置 javax<a href="http://lib.csdn.net/base/dotnet" target="_blank" rel="external">.NET</a>.ssl.keyStoreType和javax<a href="http://lib.csdn.net/base/dotnet" target="_blank" rel="external">.Net</a>.ssl.trustStoreType。</p>
+<p>####Server端代码<br>每一次收新的连接，都新开一个线程接待。生产上请用线程池等技术。更推荐用Netty或Mina等框架处理。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">public class SslServer &#123;</div><div class="line">		public static void main(String[] args) throws Exception &#123;</div><div class="line">			System.setProperty(&quot;javax.net.debug&quot;, &quot;ssl,handshake&quot;);</div><div class="line"></div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStore&quot;, &quot;./cfg/server.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStorePassword&quot;, &quot;123456&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStore&quot;, &quot;./cfg/clienttrust.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStorePassword&quot;, &quot;123456&quot;);</div><div class="line"></div><div class="line">			SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory</div><div class="line">					.getDefault();</div><div class="line">			SSLServerSocket serverSocket = (SSLServerSocket) serverSocketFactory</div><div class="line">					.createServerSocket(9100);</div><div class="line">			// 要求客户端身份验证</div><div class="line">			serverSocket.setNeedClientAuth(true);</div><div class="line"></div><div class="line">			while (true) &#123;</div><div class="line">				SSLSocket socket = (SSLSocket) serverSocket.accept();</div><div class="line">				Accepter accepter = new Accepter(socket);</div><div class="line">				accepter.service();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		static class Accepter implements Runnable &#123;</div><div class="line">			private SSLSocket socket;</div><div class="line"></div><div class="line">			public Accepter(SSLSocket socket) &#123;</div><div class="line">				this.socket = socket;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			public void service() &#123;</div><div class="line">				Thread thread = new Thread(this);</div><div class="line">				thread.start();</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			@Override</div><div class="line">			public void run() &#123;</div><div class="line">				try &#123;</div><div class="line">					InputStream inputStream = socket.getInputStream();</div><div class="line"></div><div class="line">					InputStreamReader inputstreamreader = new InputStreamReader(</div><div class="line">							inputStream);</div><div class="line">					BufferedReader bufferedreader = new BufferedReader(</div><div class="line">							inputstreamreader);</div><div class="line"></div><div class="line">					String string = null;</div><div class="line">					while ((string = bufferedreader.readLine()) != null) &#123;</div><div class="line">						System.out.println(string);</div><div class="line">						System.out.flush();</div><div class="line">					&#125;</div><div class="line">				&#125; catch (Exception e) &#123;</div><div class="line">					// replace with other code</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>####Client代码<br>建立连接，并发一个消息给Server。很简单。记得换行符以及调用flush方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public class SslClient &#123;</div><div class="line">		public static void main(String[] args) throws Exception &#123;</div><div class="line">			System.setProperty(&quot;javax.net.debug&quot;, &quot;ssl,handshake&quot;);</div><div class="line"></div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStore&quot;, &quot;./cfg/client.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStorePassword&quot;, &quot;123456&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStore&quot;, &quot;./cfg/servertrust.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStorePassword&quot;, &quot;123456&quot;);</div><div class="line"></div><div class="line">			SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory</div><div class="line">					.getDefault();</div><div class="line">			SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(</div><div class="line">					&quot;127.0.0.1&quot;, 9100);</div><div class="line"></div><div class="line">			OutputStream outputStream = sslsocket.getOutputStream();</div><div class="line">			BufferedWriter bufferedWriter = new BufferedWriter(</div><div class="line">					new OutputStreamWriter(outputStream));</div><div class="line">			bufferedWriter.write(&quot;沉睡的雄狮\n&quot;);</div><div class="line">			bufferedWriter.flush();</div><div class="line"></div><div class="line">			TimeUnit.SECONDS.sleep(2000);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>结束语<br>JDK后来加了SSLEngine这个类，具有异步通讯的能力。不过看官方文档，给出的代码很长。还是那句话，有条件的推荐用Netty或者Mina来处理通讯的问题，应该会比自己写的性能好一些。<br><a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html" target="_blank" rel="external">Java官方SSL Socket文档</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/02/22/Java-SSL-Socket通讯实例一/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-02-12T05:36:47.000Z"><a href="/2016/02/12/失效的private修饰符/">2016-02-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/02/12/失效的private修饰符/">失效的private修饰符</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>在Java编程中，使用private关键字修饰了某个成员，只有这个成员所在的类和这个类的方法可以使用，其他的类都无法访问到这个private成员。</p>
+<p>上面描述了private修饰符的基本职能，今天来研究一下private功能失效的情况。</p>
+<p>Java内部类</p>
+<p>在Java中相信很多人都用过内部类，Java允许在一个类里面定义另一个类，类里面的类就是内部类，也叫做嵌套类。一个简单的内部类实现可以如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">class OuterClass &#123;</div><div class="line">    class InnerClass&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>今天的问题和Java内部类相关，只涉及到部分和本文研究相关的内部类知识，具体关于Java内部类后续的文章会介绍。</p>
+<p>第一次失效?</p>
+<p>一个我们在编程中经常用到的场景，就是在一个内部类里面访问外部类的private成员变量或者方法，这是可以的。如下面的代码实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class OuterClass &#123;</div><div class="line">  private String language = &quot;en&quot;;</div><div class="line">  private String region = &quot;US&quot;;</div><div class="line">  </div><div class="line">  </div><div class="line">  public class InnerClass &#123;</div><div class="line">      public void printOuterClassPrivateFields() &#123;</div><div class="line">          String fields = &quot;language=&quot; + language + &quot;;region=&quot; + region;</div><div class="line">          System.out.println(fields);</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">      OuterClass outer = new OuterClass();</div><div class="line">      OuterClass.InnerClass inner = outer.new InnerClass();</div><div class="line">      inner.printOuterClassPrivateFields();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这是为什么呢，不是private修饰的成员只能被成员所述的类才能访问么？难道private真的失效了么？</p>
+<p>编译器在捣鬼？</p>
+<p>我们使用javap命令查看一下生成的两个class文件</p>
+<p>OuterClass的反编译结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">15:30 $ javap -c  OuterClass</div><div class="line">Compiled from &quot;OuterClass.java&quot;</div><div class="line">public class OuterClass extends java.lang.Object&#123;</div><div class="line">public OuterClass();</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  invokespecial    #11; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   4:  aload_0</div><div class="line">   5:  ldc  #13; //String en</div><div class="line">   7:  putfield #15; //Field language:Ljava/lang/String;</div><div class="line">   10: aload_0</div><div class="line">   11: ldc  #17; //String US</div><div class="line">   13: putfield #19; //Field region:Ljava/lang/String;</div><div class="line">   16: return</div><div class="line"></div><div class="line">public static void main(java.lang.String[]);</div><div class="line">  Code:</div><div class="line">   0:  new  #1; //class OuterClass</div><div class="line">   3:  dup</div><div class="line">   4:  invokespecial    #27; //Method &quot;&lt;init&gt;&quot;:()V</div><div class="line">   7:  astore_1</div><div class="line">   8:  new  #28; //class OuterClass$InnerClass</div><div class="line">   11: dup</div><div class="line">   12: aload_1</div><div class="line">   13: dup</div><div class="line">   14: invokevirtual    #30; //Method java/lang/Object.getClass:()Ljava/lang/Class;</div><div class="line">   17: pop</div><div class="line">   18: invokespecial    #34; //Method OuterClass$InnerClass.&quot;&lt;init&gt;&quot;:(LOuterClass;)V</div><div class="line">   21: astore_2</div><div class="line">   22: aload_2</div><div class="line">   23: invokevirtual    #37; //Method OuterClass$InnerClass.printOuterClassPrivateFields:()V</div><div class="line">   26: return</div><div class="line"></div><div class="line">static java.lang.String access$0(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #15; //Field language:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">static java.lang.String access$1(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #19; //Field region:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>咦？不对，在OuterClass中我们并没有定义这两个方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">static java.lang.String access$0(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #15; //Field language:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">static java.lang.String access$1(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #19; //Field region:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从给出来的注释来看，access$0返回outerClass的language属性；access$1返回outerClass的region属性。并且这两个方法都接受OuterClass的实例作为参数。这两个方法为什么生成呢，有什么作用呢？我们看一下内部类的反编译结果就知道了。</p>
+<p>OuterClass$InnerClass的反编译结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">15:37 $ javap -c OuterClass\$InnerClass</div><div class="line">Compiled from &quot;OuterClass.java&quot;</div><div class="line">public class OuterClass$InnerClass extends java.lang.Object&#123;</div><div class="line">final OuterClass this$0;</div><div class="line"></div><div class="line">public OuterClass$InnerClass(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #10; //Field this$0:LOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #12; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  return</div><div class="line"></div><div class="line">public void printOuterClassPrivateFields();</div><div class="line">  Code:</div><div class="line">   0:  new  #20; //class java/lang/StringBuilder</div><div class="line">   3:  dup</div><div class="line">   4:  ldc  #22; //String language=</div><div class="line">   6:  invokespecial    #24; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</div><div class="line">   9:  aload_0</div><div class="line">   10: getfield #10; //Field this$0:LOuterClass;</div><div class="line">   13: invokestatic #27; //Method OuterClass.access$0:(LOuterClass;)Ljava/lang/String;</div><div class="line">   16: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   19: ldc  #37; //String ;region=</div><div class="line">   21: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   24: aload_0</div><div class="line">   25: getfield #10; //Field this$0:LOuterClass;</div><div class="line">   28: invokestatic #39; //Method OuterClass.access$1:(LOuterClass;)Ljava/lang/String;</div><div class="line">   31: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   34: invokevirtual    #42; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;</div><div class="line">   37: astore_1</div><div class="line">   38: getstatic    #46; //Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   41: aload_1</div><div class="line">   42: invokevirtual    #52; //Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   45: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面代码调用access$0的代码,其目的是得到OuterClass的language 私有属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">13:   invokestatic #27; //Method OuterClass.access$0:(LOuterClass;)Ljava/lang/String;</div></pre></td></tr></table></figure></p>
+<p>下面代码调用了access$1的代码，其目的是得到OutherClass的region 私有属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">28:   invokestatic #39; //Method OuterClass.access$1:(LOuterClass;)Ljava/lang/String;</div></pre></td></tr></table></figure></p>
+<p>注意：在内部类构造的时候，会将外部类的引用传递进来，并且作为内部类的一个属性，所以内部类会持有一个其外部类的引用。<br>this$0就是内部类持有的外部类引用，通过构造方法传递引用并赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final OuterClass this$0;</div><div class="line"></div><div class="line">public OuterClass$InnerClass(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #10; //Field this$0:LOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #12; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  return</div></pre></td></tr></table></figure>
+<p>小结</p>
+<p>这部分private看上去失效可，实际上并没有失效，因为当内部类调用外部类的私有属性时，其真正的执行是调用了编译器生成的属性的静态方法（即acess$0,access$1等）来获取这些属性值。这一切都是编译器的特殊处理。<br>这次也失效？</p>
+<p>如果说上面的写法很常用，那么这样的写法是不是很少接触，但是却可以运行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class AnotherOuterClass &#123;</div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">      InnerClass inner = new AnotherOuterClass().new InnerClass();</div><div class="line">      System.out.println(&quot;InnerClass Filed = &quot; + inner.x);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  class InnerClass &#123;</div><div class="line">      private int x = 10;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>和上面一样，使用javap反编译看一下。不过这次我们先看一下InnerClass的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">16:03 $ javap -c AnotherOuterClass\$InnerClass</div><div class="line">Compiled from &quot;AnotherOuterClass.java&quot;</div><div class="line">class AnotherOuterClass$InnerClass extends java.lang.Object&#123;</div><div class="line">final AnotherOuterClass this$0;</div><div class="line"></div><div class="line">AnotherOuterClass$InnerClass(AnotherOuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #12; //Field this$0:LAnotherOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #14; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  aload_0</div><div class="line">   10: bipush   10</div><div class="line">   12: putfield #17; //Field x:I</div><div class="line">   15: return</div><div class="line"></div><div class="line">static int access$0(AnotherOuterClass$InnerClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #17; //Field x:I</div><div class="line">   4:  ireturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>又出现了，编译器又自动生成了一个获取私有属性的后门方法access$0一次来获取x的值。</p>
+<p>AnotherOuterClass.class的反编译结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">16:08 $ javap -c AnotherOuterClass</div><div class="line">Compiled from &quot;AnotherOuterClass.java&quot;</div><div class="line">public class AnotherOuterClass extends java.lang.Object&#123;</div><div class="line">public AnotherOuterClass();</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  invokespecial    #8; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   4:  return</div><div class="line"></div><div class="line">public static void main(java.lang.String[]);</div><div class="line">  Code:</div><div class="line">   0:  new  #16; //class AnotherOuterClass$InnerClass</div><div class="line">   3:  dup</div><div class="line">   4:  new  #1; //class AnotherOuterClass</div><div class="line">   7:  dup</div><div class="line">   8:  invokespecial    #18; //Method &quot;&lt;init&gt;&quot;:()V</div><div class="line">   11: dup</div><div class="line">   12: invokevirtual    #19; //Method java/lang/Object.getClass:()Ljava/lang/Class;</div><div class="line">   15: pop</div><div class="line">   16: invokespecial    #23; //Method AnotherOuterClass$InnerClass.&quot;&lt;init&gt;&quot;:(LAnotherOuterClass;)V</div><div class="line">   19: astore_1</div><div class="line">   20: getstatic    #26; //Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   23: new  #32; //class java/lang/StringBuilder</div><div class="line">   26: dup</div><div class="line">   27: ldc  #34; //String InnerClass Filed =</div><div class="line">   29: invokespecial    #36; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</div><div class="line">   32: aload_1</div><div class="line">   33: invokestatic #39; //Method AnotherOuterClass$InnerClass.access$0:(LAnotherOuterClass$InnerClass;)I</div><div class="line">   36: invokevirtual    #43; //Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</div><div class="line">   39: invokevirtual    #47; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;</div><div class="line">   42: invokevirtual    #51; //Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   45: return</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中这句调用就是外部类通过内部类的实例获取私有属性x的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">33:   invokestatic #39; //Method AnotherOuterClass$InnerClass.access$0:(LAnotherOuterClass$InnerClass;)I</div></pre></td></tr></table></figure></p>
+<p>再来个总结<br>其中<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.6.1" target="_blank" rel="external">java官方文档</a> 有这样一句话<br>if the member or constructor is declared private, then access is permitted if and only if it occurs within the body of the top level class (§7.6) that encloses the declaration of the member or constructor.</p>
+<p>意思是 如果（内部类的）成员和构造方法设定成了私有修饰符，当且仅当其外部类访问时是允许的。<br>如何让内部类私有成员不被外部访问<br>相信看完上面两部分，你会觉得，内部类的私有成员想不被外部类访问都很困难吧，谁让编译器“爱管闲事”呢，其实也是可以做到的。那就是使用匿名内部类。<br>由于mRunnable对象的类型为Runnable，而不是匿名内部类的类型（我们无法正常拿到），而Runanble中没有x这个属性，所以mRunnable.x是不被允许的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class PrivateToOuter &#123;</div><div class="line">  Runnable mRunnable = new Runnable()&#123;</div><div class="line">      private int x=10;</div><div class="line">      @Override</div><div class="line">      public void run() &#123;</div><div class="line">          System.out.println(x);</div><div class="line">      &#125;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  public static void main(String[] args)&#123;</div><div class="line">      PrivateToOuter p = new PrivateToOuter();</div><div class="line">      //System.out.println(&quot;anonymous class private filed= &quot;+ p.mRunnable.x); //not allowed</div><div class="line">      p.mRunnable.run(); // allowed</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>最后总结<br>在本文中，private表面上看上去失效了，但实际上是没有的，而是在调用时通过间接的方法来获取私有的属性。<br>Java的内部类构造时持有对外部类的应用，C++不会，这一点和C++不一样。</p>
+<p>深入Java细节的书籍<br><a href="http://www.amazon.cn/gp/product/B0011F7WU4/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B0011F7WU4&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">Java编程思想</a><img src="http://upload-images.jianshu.io/upload_images/4398977-e1327cdd8167447c?imageMogr2/auto-orient/strip" alt=""><br><a href="http://www.amazon.cn/gp/product/B001PTGR52/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B001PTGR52&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">Sun 公司核心技术丛书:Effective Java中文版</a><img src="http://upload-images.jianshu.io/upload_images/4398977-bff8ef82187333df?imageMogr2/auto-orient/strip" alt=""><br><a href="http://www.amazon.cn/gp/product/B00D2ID4PK/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B00D2ID4PK&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">深入理解Java虚拟机:JVM高级特性与最佳实践</a><img src="http://upload-images.jianshu.io/upload_images/4398977-1881a22db7263d9d?imageMogr2/auto-orient/strip" alt=""></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/02/12/失效的private修饰符/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2015-12-12T15:27:49.000Z"><a href="/2015/12/12/Android-studio关于build-outputs-apk-中apk或arr或jar无法删除的解决方法/">2015-12-12</a></time>
         
   
@@ -693,283 +1094,11 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2015-03-22T05:22:46.000Z"><a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/">2015-03-22</a></time>
-        
-  
-    <h1 class="title"><a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/">Http协议与TCP协议易混淆点（一）</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>###Http协议与TCP协议<br>1.<strong>TCP协议对应于传输层，而HTTP协议对应于应用层，从本质上来说，二者没有可比性。</strong><br>2.<strong>Http协议是建立在TCP协议基础之上的，当浏览器需要从服务器获取网页数据的时候，会发出一次Http请求。Http会通过TCP建立起一个到服务器的连接通道，当本次请求需要的数据完毕后，Http会立即将TCP连接断开，这个过程是很短的。所以Http连接是一种短连接，是一种无状态的连接。</strong></p>
-<hr>
-<p>&emsp;&emsp;所谓的<strong>无状态</strong>，是指浏览器每次向服务器发起请求的时候，不是通过一个连接，而是<strong>每次都建立一个新的连接</strong>。如果是一个连接的话，服务器进程中就能保持住这个连接并且在内存中记住一些信息状态。而每次请求结束后，连接就关闭，相关的内容就释放了，所以<strong>记不住任何状态</strong>，成为无状态连接。</p>
-<p><strong>那么问题来了：每次创建新连接不耗费性能吗？</strong><br>&emsp;&emsp;从HTTP/1.1起，默认都开启了Keep-Alive，保持连接特性。也就是说，在打开一个网页之后，客户端与服务器之间的传输数据的TCP连接不马上关闭，客户端再次访问时会使用，但是Keep-Alive保持时间不是有限的，超时之后还是会断开，所以我们还把其看做是每次连接完成后就会关闭。后来，通过Session, Cookie等相关技术，也能保持一些用户的状态。但是还是每次都使用一个连接，依然是无状态连接。</p>
-<p><strong>为什么HTTP是无状态的短连接，而TCP是有状态的长连接？Http不是建立在TCP的基础上吗，为什么还能是短连接？</strong><br>&emsp;&emsp;Http就是在每次请求完成后就把TCP连接关了，所以是短连接。而我们直接通过Socket编程使用TCP协议的时候，因为<strong>我们自己可以通过代码区控制什么时候打开连接什么时候关闭连接</strong>，只要我们不通过代码把连接关闭，这个连接就会在客户端和服务端的进程中一直存在，<strong>相关状态数据会一直保存着</strong>。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2015-02-12T05:19:39.000Z"><a href="/2015/02/12/APP开发屏幕适配/">2015-02-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2015/02/12/APP开发屏幕适配/">APP开发屏幕适配</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p><strong>支持不同屏幕尺寸</strong><br>通过下列方法支持不同的屏幕尺寸：</p>
-<ul>
-<li>确保您的布局能够根据屏幕适当地调整大小</li>
-<li>根据屏幕配置提供合适的 UI 布局</li>
-<li>确保对正确的屏幕应用正确的布局</li>
-<li>提供可正常缩放的位图<br><strong>具体适配方案：</strong><br>1、使用“wrap_content”和“match_parent”<br>&emsp;&emsp;为确保您的布局能够灵活地适应不同的屏幕尺寸，您应该为某些视图组件的宽度和高度使用 “wrap_content” 和 “match_parent”，代替硬编码。<br>2、使用 RelativeLayout<br>&emsp;&emsp;RelativeLayout允许您根据组件之间的<strong>空间关系</strong>指定布局。<br>3、使用尺寸限定符<br>&emsp;&emsp; 上述两种方案无法为每一种屏幕尺寸提供最佳用户体验。 因此，您的应用不仅应实现灵活布局，还应针对不同的屏幕配置提供多种备选布局；可以利用<strong>配置限定符</strong>来实现此目的，它允许运行组件<strong>根据当前设备配置（如针对不同屏幕尺寸的不同布局设计）自动选择合适的资源。</strong><br>&emsp;&emsp; 例如，许多应用都针对大屏幕实现了“双窗格”模式（应用可以在一个窗格中显示项目列表，在另一个窗格中显示项目内容）。 平板电脑和 TV 足够大，可在一个屏幕上同时容纳两个窗格，但手机屏幕只能独立显示它们。 因此，如需实现这些布局，您可以建立以下文件：<br>res/layout/main.xml，单窗格（默认）布局：<figure class="highlight plain"><figcaption><span>xmlns:android="http://schemas.android.com/apk/res/android"</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>res/layout-large/main.xml，双窗格布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure></p>
-<p>注意第二个布局目录名称中的 large 限定符。在屏幕归类为大屏幕的设备（例如，7 英寸及更大尺寸的平板电脑）上，将选择此布局。 对于小型设备，将选择另一个布局（无限定符）。<br>4、使用最小宽度限定符<br>&emsp;&emsp;Android 在 Android 3.2 中引入了“最小宽度”限定符。允许您将目标锁定在具有特定最小宽度（单位：dp）的屏幕。<br>&emsp;&emsp; 例如，典型的 7 英寸平板电脑最小宽度为 600dp，因此，如果您希望您的 UI 在这些屏幕上显示两个窗格（但在较小屏幕上显示单个列表），您同样可以为单窗格布局和双窗格布局使用前文中的两种布局，但不使用 large 尺寸限定符，而是使用 sw600dp 为最小宽度是 600dp 的屏幕指定双窗格布局：</p>
-<ul>
-<li>res/layout/main.xml，单窗格（默认）布局：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-<ul>
-<li>res/layout-sw600dp/main.xml，双窗格布局：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>这意味着，最小宽度大于或等于 600dp 的设备将选择 layout-sw600dp/main.xml（双窗格）布局，而屏幕较小的设备将选择 layout/main.xml（单窗格）布局。</p>
-<p>不过，这种方法在低于 3.2 版本的设备上不太奏效，因为它们无法将 sw600dp 识别为尺寸限定符，所以您仍需使用 large 限定符。因此，您应该建立一个与 res/layout-sw600dp/main.xml 完全相同的、名为 res/layout-large/main.xml 的文件。下文介绍的技巧可让您避免因此而产生重复的布局文件<br>5、使用布局别名<br>&emsp;&emsp;最小宽度限定符仅在 Android 3.2 及更高版本上提供。因此，您仍应使用兼容早期版本的抽象尺寸容器（小、正常、大和超大）。 例如，如果您想让自己设计的 UI 在手机上显示单窗格 UI，但在 7 英寸平板电脑、TV 及其他大屏设备上显示多窗格 UI，则需要提供下列文件：</p>
-<ul>
-<li>res/layout/main.xml: 单窗格布局</li>
-<li>res/layout-large: 多窗格布局</li>
-<li>res/layout-sw600dp: 多窗格布局</li>
-</ul>
-<p>后两个文件完全相同，因为其中一个将由 Android 3.2 设备匹配，另一个是为了照顾使用早期版本 Android 的平板电脑和 TV 的需要。</p>
-<p>为避免为平板电脑和 TV 产生相同的重复文件（以及由此带来的维护难题），您可以使用别名文件。 例如，您可以定义下列布局:</p>
-<ul>
-<li>res/layout/main.xml，单窗格布局</li>
-<li>res/layout/main_twopanes.xml，双窗格布局</li>
-</ul>
-<p>并添加以下两个文件：</p>
-<ul>
-<li><p>res/values-large/layout.xml:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main&quot; type=&quot;layout&quot;&gt;@layout/main_twopanes&lt;/item&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/values-sw600dp/layout.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main&quot; type=&quot;layout&quot;&gt;@layout/main_twopanes&lt;/item&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>后两个文件内容完全相同，但它们实际上并未定义布局， 而只是<strong>将 main 设置为 main_twopanes 的别名</strong>。由于这些文件具有 large 和 sw600dp 选择器，因此它们适用于任何 Android 版本的平板电脑和电视（低于 3.2 版本的平板电脑和电视匹配 large，高于 3.2 版本者将匹配 sw600dp）<br>6、使用屏幕方向限定符<br>&emsp;&emsp;某些布局在横向和纵向屏幕方向下都表现不错，但其中大多数布局均可通过调整做进一步优化。 在 News Reader 示例应用中，以下是布局在各种屏幕尺寸和屏幕方向下的行为：</p>
-<p>小屏幕，纵向：单窗格，带徽标<br>小屏幕，横向：单窗格，带徽标<br>7 英寸平板电脑，纵向：单窗格，带操作栏<br>7 英寸平板电脑，横向：双窗格，宽，带操作栏<br>10 英寸平板电脑，纵向：双窗格，窄，带操作栏<br>10 英寸平板电脑，横向：双窗格，宽，带操作栏<br>TV，横向：双窗格，宽，带操作栏<br>&emsp;&emsp;因此，以上每一种布局都在 res/layout/ 目录下的某个 XML 文件中定义。如果之后需要将每一种布局分配给各种屏幕配置，应用会使用布局别名将它们与每一种配置进行匹配：</p>
-<ul>
-<li><p>res/layout/onepane.xml:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/layout/onepane_with_bar.xml:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line">    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; </div><div class="line">                  android:id=&quot;@+id/linearLayout1&quot;  </div><div class="line">                  android:gravity=&quot;center&quot;</div><div class="line">                  android:layout_height=&quot;50dp&quot;&gt;</div><div class="line">        &lt;ImageView android:id=&quot;@+id/imageView1&quot; </div><div class="line">                   android:layout_height=&quot;wrap_content&quot;</div><div class="line">                   android:layout_width=&quot;wrap_content&quot;</div><div class="line">                   android:src=&quot;@drawable/logo&quot;</div><div class="line">                   android:paddingRight=&quot;30dp&quot;</div><div class="line">                   android:layout_gravity=&quot;left&quot;</div><div class="line">                   android:layout_weight=&quot;0&quot; /&gt;</div><div class="line">        &lt;View android:layout_height=&quot;wrap_content&quot; </div><div class="line">              android:id=&quot;@+id/view1&quot;</div><div class="line">              android:layout_width=&quot;wrap_content&quot;</div><div class="line">              android:layout_weight=&quot;1&quot; /&gt;</div><div class="line">        &lt;Button android:id=&quot;@+id/categorybutton&quot;</div><div class="line">                android:background=&quot;@drawable/button_bg&quot;</div><div class="line">                android:layout_height=&quot;match_parent&quot;</div><div class="line">                android:layout_weight=&quot;0&quot;</div><div class="line">                android:layout_width=&quot;120dp&quot;</div><div class="line">                style=&quot;@style/CategoryButtonStyle&quot;/&gt;</div><div class="line">    &lt;/LinearLayout&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot; </div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/layout/twopanes.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/layout/twopanes_narrow.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;200dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>至此所有可能的布局均已定义，现在只需使用配置限定符将正确的布局映射到每一种配置。 现在您可以使用布局别名技巧来完成这项工作：</p>
-<ul>
-<li><p>res/values/layouts.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/onepane_with_bar&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;false&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/values-sw600dp-land/layouts.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/values-sw600dp-port/layouts.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/onepane&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;false&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/values-large-land/layouts.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>res/values-large-port/layouts.xml：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes_narrow&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>7、使用九宫格位图（.9.png）</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2015/02/12/APP开发屏幕适配/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-05-23T05:24:37.000Z"><a href="/2014/05/23/Java中的常用集合类/">2014-05-23</a></time>
-        
-  
-    <h1 class="title"><a href="/2014/05/23/Java中的常用集合类/">Java中的常用集合类</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>java中的常用集合类</p>
-<p>1、ArrayList：ArrayList 里面的数据都是有序的，并且可以重复<br>ArayList 缺点：删除慢，随机插入慢<br>举例：如何将数组中的元素变为集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String name[] = &#123;&quot;Tom&quot;,&quot;jack&quot;&#125;;</div><div class="line">List&lt;String &gt;list = Arrays.asList(name);</div></pre></td></tr></table></figure>
-<p>2、LinkedList<br>共性：有序 可以重复（里面的元素）<br>区别：数据的存储方式不同<br>        ArrayList本质：数组<br>        LinkedList本质：链表<br>优点：随机插入快，随机删除快<br>缺点：随机获取元素慢，逐个遍历每个元素，而ArrayList是通过下标获取元素</p>
-<p>3、HashSet<br>共性：持有对象，全部放到[ ]中<br>区别：1.存入的对象是无序的（相对无序）<br>                    HashSet 的排序规则是根据hashCode产生的<br>           2.存入HashSet容器的对象不能重复<br>                    HashSet先判断两个对象的hashCode是否相同，再判断                               两个对象的Equals是否相同<br>            注意：放入HashSe中的对象类型，必须覆盖hashCode()方法和Equals方法<br>                        放入Se中的对象类型，必须覆盖hashCode()方法和Equals方法，严格的还需要覆盖toString方法，Set无序，没有get方法</p>
-<p>4、HashMap<br>特点：Map以键值对（key：value）的形式存储数据，Map中的键可以是int，也可以是其他任意数据类型<br>键必须唯一，值可以相同<br>放入Map中的键必须要覆盖Object类hashCode和Equals，toString方法<br>HashMap常用方法：</p>
-<p>containsKey(Object key)<br>containsValue(Object value) </p>
-<p>map.values()返回Map中的所有值<br>map.keySet()返回Map中所有的键</p>
-<p>Map的迭代方法entrySet<br>使用：如何打印系统的所有环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Map&lt;String,String&gt;envMap = System.getenv();</div><div class="line">    for(Map.Entry&lt;String,String&gt;entry:envMap.entrySet())&#123;</div><div class="line">      String key = entry.getKey();</div><div class="line">      String value = entry.getValue();</div><div class="line">      System.out.println(&quot;key = &quot;+key,&quot;value = &quot;+vaule);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2014/05/23/Java中的常用集合类/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-05-12T05:24:37.000Z"><a href="/2014/05/12/比较器comparable和comparator的区别/">2014-05-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2014/05/12/比较器comparable和comparator的区别/">比较器comparable和comparator的区别</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>比较器comparable和comparator的区别</p>
-<p>Java提供了一个集合工具类，里面有排序方法，Collections使用它提供的方法来完成排序<br>注意：Collection不是Collections，Collections是在Collection上进行操作的集合的一个工具类，就如Arrays是数组的工具类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class ComparableTest &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		String names[] = &#123; &quot;Jack&quot;, &quot;Adam&quot;, &quot;Bob&quot; &#125;;</div><div class="line">		List&lt;String&gt; list = Arrays.asList(names);</div><div class="line">		System.out.println(list);</div><div class="line">		//排序的方式String已经替我们完成了</div><div class="line">		//String会调用compareTo（）方法实现排序的功能</div><div class="line">		Collections.sort(list);</div><div class="line">		System.out.println(list);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>String类实现Comparable接口，当调用sort规则时，String会调用compareTo方法实现排序功能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class StudentComparable &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Student stu[] = &#123;</div><div class="line">				new Student(&quot;005&quot;, &quot;Jackson&quot;, 3, 3, &quot;football&quot;),</div><div class="line">				new Student(&quot;001&quot;, &quot;Jerry&quot;, 1, 3, &quot;football&quot;),</div><div class="line">				new Student(&quot;002&quot;, &quot;Adam&quot;, 5, 2, &quot;Tennis&quot;)</div><div class="line">		&#125;;</div><div class="line">		//错误原因：1Student没有实现Comparable接口</div><div class="line">		//       2 没有指定排序规则（id、name、hobby）</div><div class="line">		List&lt;Student&gt; list = Arrays.asList(stu);</div><div class="line">		//如何比较排序？  Collections.sort方法进行排序，它会回调 容器中Student对象的 compareTo方法</div><div class="line">		Collections.sort(list);</div><div class="line">		for(Student student : list)&#123;</div><div class="line">			System.out.println(student);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line">public class Student implements Comparable&lt;Student&gt;&#123;</div><div class="line">	</div><div class="line">	public String getId() &#123;</div><div class="line">		return id;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setId(String id) &#123;</div><div class="line">		this.id = id;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getName() &#123;</div><div class="line">		return name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setName(String name) &#123;</div><div class="line">		this.name = name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public int getGrade() &#123;</div><div class="line">		return grade;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setGrade(int grade) &#123;</div><div class="line">		this.grade = grade;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public int getClassNo() &#123;</div><div class="line">		return classNo;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setClassNo(int classNo) &#123;</div><div class="line">		this.classNo = classNo;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getHobby() &#123;</div><div class="line">		return hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setHobby(String hobby) &#123;</div><div class="line">		this.hobby = hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public String toString() &#123;</div><div class="line">		return &quot;Student [id=&quot; + id + &quot;, name=&quot; + name + &quot;, grade=&quot; + grade + &quot;, classNo=&quot; + classNo + &quot;, hobby=&quot; + hobby</div><div class="line">				+ &quot;]&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public int hashCode() &#123;</div><div class="line">		final int prime = 31;</div><div class="line">		int result = 1;</div><div class="line">		result = prime * result + classNo;</div><div class="line">		result = prime * result + grade;</div><div class="line">		result = prime * result + ((hobby == null) ? 0 : hobby.hashCode());</div><div class="line">		result = prime * result + ((id == null) ? 0 : id.hashCode());</div><div class="line">		result = prime * result + ((name == null) ? 0 : name.hashCode());</div><div class="line">		return result;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public boolean equals(Object obj) &#123;</div><div class="line">		if (this == obj)</div><div class="line">			return true;</div><div class="line">		if (obj == null)</div><div class="line">			return false;</div><div class="line">		if (getClass() != obj.getClass())</div><div class="line">			return false;</div><div class="line">		Student other = (Student) obj;</div><div class="line">		if (classNo != other.classNo)</div><div class="line">			return false;</div><div class="line">		if (grade != other.grade)</div><div class="line">			return false;</div><div class="line">		if (hobby == null) &#123;</div><div class="line">			if (other.hobby != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!hobby.equals(other.hobby))</div><div class="line">			return false;</div><div class="line">		if (id == null) &#123;</div><div class="line">			if (other.id != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!id.equals(other.id))</div><div class="line">			return false;</div><div class="line">		if (name == null) &#123;</div><div class="line">			if (other.name != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!name.equals(other.name))</div><div class="line">			return false;</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public Student(String id,String name,int grade,int classNo,String hobby) &#123;</div><div class="line">		this.id =id;</div><div class="line">		this.name = name;</div><div class="line">		this.grade = grade;</div><div class="line">		this.classNo = classNo;</div><div class="line">		this.hobby = hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	private String id;</div><div class="line">	</div><div class="line">	private String name;</div><div class="line">	</div><div class="line">	private int grade;</div><div class="line">	</div><div class="line">	private int classNo;</div><div class="line">	</div><div class="line">	private String hobby;</div><div class="line"></div><div class="line">	/**</div><div class="line">	 * Comparable 的compareTo方法为我们提供了比较的功能，</div><div class="line">	 * 如何比较</div><div class="line">	 * 怎么做需要在Student类中实现</div><div class="line">	 * 我的规则：按照学生的ID进行排序</div><div class="line">	 */</div><div class="line">	@Override</div><div class="line">	public int compareTo(Student o) &#123;</div><div class="line">		//两个对象需要做比较  </div><div class="line">		//this的id 如果大于 o 的id  返回的是正数</div><div class="line">		//this的id 如果等于 o 的id  返回的是0</div><div class="line">		//this的id 如果小于 o 的id  返回的是负数</div><div class="line">//		int result = -(this.getId().compareTo(o.getId()));</div><div class="line">//		return result;</div><div class="line">		</div><div class="line">//		if(this.getId().compareTo(o.getId()) &gt;0)&#123;</div><div class="line">//			return 1;</div><div class="line">//		&#125;else if(this.getId().compareTo(o.getId())&lt;0)&#123;</div><div class="line">//			return -1;</div><div class="line">//		&#125;</div><div class="line">//		return 0;</div><div class="line">	   //按照年级进行排序</div><div class="line">		if(this.getGrade() &gt; o.getGrade())&#123;</div><div class="line">			return 1;</div><div class="line">		&#125;else if(this.getGrade() &lt; o.getGrade())&#123;</div><div class="line">			return -1;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	//制定一个策略：输入1  id   输入2   name   输入3   爱好排序</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果只比较一次 ，可以使用匿名内部类节约资源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">public class CheLueCompator &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Student stu[] = &#123;</div><div class="line">				new Student(&quot;005&quot;, &quot;Jackson&quot;, 3, 6, &quot;football&quot;),</div><div class="line">				new Student(&quot;001&quot;, &quot;Zero&quot;, 1, 3, &quot;basketball&quot;),</div><div class="line">				new Student(&quot;002&quot;, &quot;Adam&quot;, 5, 2, &quot;tennis&quot;)</div><div class="line">		&#125;;</div><div class="line">		List&lt;Student&gt; list = Arrays.asList(stu);</div><div class="line">		</div><div class="line">		sortList(list);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public static void sortList(List&lt;Student&gt; list) &#123;</div><div class="line">		Scanner input = new Scanner(System.in);</div><div class="line">		System.out.println(&quot;请输入排序编号 1按照学生名称  2按照爱好  3按照班级编号&quot;);</div><div class="line">		int num = input.nextInt();</div><div class="line">		switch (num) &#123;</div><div class="line">		case 1:</div><div class="line">			//两个参数 1需要排序的列表 2排序的策略   （按照名称排序）</div><div class="line">			//匿名内部类：接口回调（由谁回调谁？）sort方法回调匿名内部类</div><div class="line">			//好莱坞原则：sort理解为好莱坞 ，匿名内部类理解为演员</div><div class="line">			//你不要找我，如果有需要我来找你，前提（匿名内部类需要向好莱坞进行注册）</div><div class="line">			//如何注册（匿名内部类作为参数传入sort方法），sort方法需要的时候会回调匿名内部类的方法</div><div class="line">			Collections.sort(list, new Comparator&lt;Student&gt;() &#123;</div><div class="line">				@Override</div><div class="line">				public int compare(Student o1, Student o2) &#123;</div><div class="line">					//调用String的compareTo()方法 </div><div class="line">					return o1.getName().compareTo(o2.getName());</div><div class="line">				&#125;</div><div class="line">			&#125;);</div><div class="line">			break;</div><div class="line">		case 2:</div><div class="line">			Collections.sort(list,new StuHobbyCompator());</div><div class="line">			 break;</div><div class="line">		case 3:</div><div class="line">			Collections.sort(list,new StuClassNoCompator());</div><div class="line">			break;</div><div class="line">		default:</div><div class="line">			System.out.println(&quot;Error&quot;);</div><div class="line">			break;</div><div class="line">		&#125;</div><div class="line">		input.close();</div><div class="line">		iteratorStu(list);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public static void iteratorStu(List&lt;Student&gt; list) &#123;</div><div class="line">		for(Student student : list)&#123;</div><div class="line">			System.out.println(student);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Comparable和Comparator的区别</p>
-<p>1、Comparable:在java.lang包，通常由实体类(Student)来实现，用来定义默认的排序规则<br>StudentComparable.java回调容器中Student对象的 compareTo方法<br>Comparator:在java.util包，排序的工具类，是一种策略，通常一个实体类(Student)有一种默认的排序法，还有多种排序策略<br>Comparable 定义在 Person类的内部:</p>
-<p>public class Persion implements Comparable {..比较Person的大小..},<br>因为已经实现了比较器,那么我们的Person现在是一个可以比较大小的对象了,它的比较功能和String完全一样</p>
-<p>2、Comparator<br>Comparator 是定义在Person的外部的, 此时我们的Person类的结构不需要有任何变化,如</p>
-<p>public class Person{ String name; int age },</p>
-<p>然后我们另外定义一个比较器:</p>
-<p>public PersonComparator implements Comparator() {..比较Person的大小..},<br>用 Comparator 是策略模式（strategy design pattern），就是不改变对象自身，而用一个策略对象（strategy object）来改变它的行为。<br>在PersonComparator里面实现了怎么比较两个Person的大小. 所以,用这种方法,当我们要对一个 personList进行排序的时候, 我们除了了要传递personList过去, 还需要把PersonComparator传递过去,因为怎么比较Person的大小是在PersonComparator里面实现的, 如:</p>
-<p>Collections.sort( personList , new PersonComparator() ).<br><strong><em>一个是自已完成比较，一个是外部程序实现比较的差别而已。</em></strong><br>3、Comparator 和 Comparable 的实例<br>实现Comparable接口要覆盖compareTo方法, 在compareTo方法里面实现比较</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public class Person implements Comparable &#123;</div><div class="line">     String name;</div><div class="line">     int age</div><div class="line">     public int compareTo(Person another) &#123;</div><div class="line">          int i = 0;</div><div class="line">          i = name.compareTo(another.name); // 使用字符串的比较</div><div class="line">          if(i == 0) &#123; // 如果名字一样,比较年龄, 返回比较年龄结果</div><div class="line">               return age - another.age;</div><div class="line">          &#125; else &#123;</div><div class="line">               return i; // 名字不一样, 返回比较名字的结果.</div><div class="line">          &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这时我们可以直接用 Collections.sort( personList ) 对其排序了.</p>
-<p>实现Comparator需要覆盖 compare 方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class Person&#123;</div><div class="line">     String name;</div><div class="line">     int age</div><div class="line">&#125;</div><div class="line">class PersonComparator implements Comparator &#123; </div><div class="line">     public int compare(Person one, Person another) &#123;</div><div class="line">          int i = 0;</div><div class="line">          i = one.name.compareTo(another.name); // 使用字符串的比较，即调用String的比较丰富</div><div class="line">          if(i == 0) &#123; // 如果名字一样,比较年龄,返回比较年龄结果</div><div class="line">               return one.age - another.age;</div><div class="line">          &#125; else &#123;</div><div class="line">               return i; // 名字不一样, 返回比较名字的结果.</div><div class="line">          &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line">   Collections.sort( personList , new PersonComparator()) 可以对其排序</div></pre></td></tr></table></figure>
-<p>4、总结<br>        两种方法各有优劣, 用Comparable 简单, 只要实现Comparable 接口的对象直接就成为一个可以比较的对象,但是需要修改源代码, 用Comparator 的好处是不需要修改源代码, 而是另外实现一个比较器, 当某个自定义的对象需要作比较的时候,把比较器和对象一起传递过去就可以比大小了, 并且在Comparator 里面用户可以自己实现复杂的可以通用的逻辑,使其可以匹配一些比较简单的对象,那样就可以节省很多重复劳动了。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2014/05/12/比较器comparable和comparator的区别/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
+  
+    <a href="/page/2/" class="alignright next">下一页</a>
   
   <div class="clearfix"></div>
 </nav>
@@ -978,7 +1107,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">2</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">10</span></li></ul> 
 </div>
  
 
@@ -1026,7 +1155,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 20px;">安卓，Java</a>
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 15px;">安卓，Java</a>
   </div>
 </div>
 
@@ -1034,7 +1163,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">2</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">3</span></li></ul>
   </div>
 
 </aside>

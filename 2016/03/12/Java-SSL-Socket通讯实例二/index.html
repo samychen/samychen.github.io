@@ -1,0 +1,328 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java SSL Socket通讯实例二 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Java SSL Socket通讯实例二"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-03-12T05:38:32.000Z"><a href="/2016/03/12/Java-SSL-Socket通讯实例二/">2016-03-12</a></time>
+        
+  
+    <h1 class="title">Java SSL Socket通讯实例二</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>对于SSL/TLS协议，如果要每个开发者都自己去实现显然会带来不必要的麻烦，正是为了解决这个问题<a href="http://www.2cto.com/kf/ware/Java/" target="_blank" rel="external">Java</a>为广大开发者提供了Java安全套接字扩展——JSSE，它包含了实现Internet安全通信的一系列包的集合，是SSL和TLS的纯Java实现，同时它是一个开放的标准，每个公司都可以自己实现JSSE，通过它可以透明地提供数据<a href="http://www.2cto.com/Article/jiami/" target="_blank" rel="external">加密</a>、服务器认证、信息完整性等功能，就像使用普通的套接字一样使用安全套接字，大大减轻了开发者的负担，使开发者可以很轻松将SSL协议整合到程序中，并且JSSE能将安全隐患降到了最低点。<br>在利用SSL/TLS进行安全通信时，客户端跟服务器端都必须要支持SSL/TLS协议，不然将无法进行通信。而且客户端和服务器端都可能要设置用于证实自己身份的安全证书，并且还要设置信任对方的哪些安全证书。<br>关于身份认证方面有个名词叫客户端模式，一般情况客户端要对服务器端的身份进行验证，但是无需向服务器证实自己的身份，这样不用向对方证实自己身份的通信端我们就说它处于客户模式，否则成它处于服务器模式。SSLSocket的setUseClientMode(Boolean mode)方法可以设置客户端模式或服务器模式。<br>下面看具体实现的过程<br>① 解决证书问题。<br>一般而言作为服务器端必须要有证书以证明这个服务器的身份，并且证书应该描述此服务器所有者的一些基本信息，例如公司名称、联系人名等。证书由所有人以密码形式签名，基本不可伪造，证书获取的途径有两个：一是从权威机构购买证书，权威机构担保它发出的证书的真实性，而且这个权威机构被大家所信任，进而你可以相信这个证书的有效性；另外一个是自己用JDK提供的工具keytool创建一个自我签名的证书，这种情况下一般是我只想要保证数据的安全性与完整性，避免数据在传送的过程中被窃听或篡改，此时身份的认证已不重要，重点已经在端与端传输的秘密性上，证书的作用只体现在加解密签名。<br>SSL协议通信涉及密钥储存的文件格式比较多，很容易搞混，例如xxx.cer、xxx.pfx、xxx.jks、xxx.keystore、xxx.truststore等格式文件。如图3-1-7-3，搞清楚他们有助于理解后面的程序，.cer格式文件俗称证书，但这个证书中没有私钥，只包含了公钥；.pfx格式文件也称为证书，它一般供<a href="http://www.2cto.com/os/liulanqi/" target="_blank" rel="external">浏览器</a>使用，而且它不仅包含了公钥，还包含了私钥，当然这个私钥是加密的，不输入密码是解不了密的；.jks格式文件表示java密钥存储器（java key store），它可以同时容纳N个公钥跟私钥，是一个密钥库；.keystore格式文件其实跟.jks基本是一样的，只是不同公司叫法不太一样，默认生成的证书存储库格式；.truststore格式文件表示信任证书存储库，它仅仅包含了通信对方的公钥，当然你可以直接把通信对方的jks作为信任库（就算如此你也只能知道通信对方的公钥，要知道密钥都是加密的，你无从获取，只要算法不被<a href="http://www.2cto.com/Article/jiami/" target="_blank" rel="external">破解</a>）。有些时候我们需要把pfx或cert转化为jks以便于用java进行ssl通信，例如一个银行只提供了pfx证书，而我们想用java进行ssl通信时就要将pfx转化为jks格式。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-4282e92c21880f9a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>图3-1-7-3 密钥存储文件格式</p>
+<p>按照理论上，我们一共需要准备四个文件，两个keystore文件和两个truststore文件，通信双方分别拥有一个keystore和一个truststore，keystore用于存放自己的密钥和公钥，truststore用于存放所有需要信任方的公钥。这里为了方便直接使用jks即keystore替代truststore（免去证书导来导去），因为对方的keystore包含了自己需要的信任公钥。<br>下面使用jdk自带的工具分别生成服务器端证书，通过如下命令并输入姓名、组织单位名称、组织名称、城市、省份、国家信息即可生成证书密码为tomcat的证书，此证书存放在密码也为tomcat的tomcat.jks证书存储库中。如果你继续创建证书将继续往tomcat.jks证书存储库中添加证书。如果你仅仅输入keytool -genkey -alias tomcat -keyalg RSA -keypass tomcat -storepass tomcat，不指定证书存储库的文件名及路径，则工具会在用户的home directory目录下生产一个“.keystore”文件作为证书存储库。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-b9350297f1636989.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>类似的，客户端证书也用此方式进行生成。如下<br><img src="http://upload-images.jianshu.io/upload_images/4398977-d60598093e5c7d93.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>② 服务端TomcatSSLServer.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line">public class TomcatSSLServer &#123;</div><div class="line"> private static final String SSL_TYPE = &quot;SSL&quot;;</div><div class="line"> private static final String KS_TYPE = &quot;JKS&quot;;</div><div class="line"> private static final String X509 = &quot;SunX509&quot;;</div><div class="line"> private final static int PORT = 443;</div><div class="line"> private static TomcatSSLServer sslServer;</div><div class="line"> private SSLServerSocket svrSocket;</div><div class="line">   </div><div class="line"> public static TomcatSSLServer getInstance() throws Exception &#123;</div><div class="line">   if (sslServer == null) &#123;</div><div class="line">    sslServer = new TomcatSSLServer();</div><div class="line">   &#125;</div><div class="line">   return sslServer;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private TomcatSSLServer() throws Exception&#123;</div><div class="line">  SSLContext sslContext = createSSLContext();</div><div class="line">  SSLServerSocketFactory serverFactory = sslContext.getServerSocketFactory();</div><div class="line">  svrSocket =(SSLServerSocket) serverFactory.createServerSocket(PORT);</div><div class="line">  svrSocket.setNeedClientAuth(true); </div><div class="line">  String[] supported = svrSocket.getEnabledCipherSuites();</div><div class="line">  svrSocket.setEnabledCipherSuites(supported);</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private SSLContext createSSLContext() throws Exception&#123;</div><div class="line">  KeyManagerFactory kmf = KeyManagerFactory.getInstance(X509);</div><div class="line">  TrustManagerFactory tmf = TrustManagerFactory.getInstance(X509);</div><div class="line">  String serverKeyStoreFile = &quot;c:\\tomcat.jks&quot;; </div><div class="line">  String svrPassphrase = &quot;tomcat&quot;;               </div><div class="line">  char[] svrPassword = svrPassphrase.toCharArray();</div><div class="line">  KeyStore serverKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  serverKeyStore.load(new FileInputStream(serverKeyStoreFile), svrPassword);</div><div class="line">  kmf.init(serverKeyStore, svrPassword);</div><div class="line">  String clientKeyStoreFile = &quot;c:\\client.jks&quot;; </div><div class="line">  String cntPassphrase = &quot;client&quot;;              </div><div class="line">  char[] cntPassword = cntPassphrase.toCharArray();</div><div class="line">  KeyStore clientKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  clientKeyStore.load(new FileInputStream(clientKeyStoreFile),cntPassword);</div><div class="line">  tmf.init(clientKeyStore);</div><div class="line">  SSLContext sslContext  = SSLContext.getInstance(SSL_TYPE);</div><div class="line">  sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);</div><div class="line">  return sslContext;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public void startService() &#123;</div><div class="line">  SSLSocket cntSocket = null;</div><div class="line">  BufferedReader ioReader = null;</div><div class="line">  PrintWriter ioWriter = null;</div><div class="line">  String tmpMsg = null;</div><div class="line">  while( true ) &#123;</div><div class="line">   try &#123;</div><div class="line">    cntSocket =(SSLSocket) svrSocket.accept();</div><div class="line">    ioReader = new BufferedReader(new InputStreamReader(cntSocket.getInputStream()));</div><div class="line">    ioWriter = new PrintWriter(cntSocket.getOutputStream());</div><div class="line">    while ( (tmpMsg = ioReader.readLine()) != null) &#123;</div><div class="line">     System.out.println(&quot;客户端通过SSL协议发送信息:&quot;+tmpMsg);</div><div class="line">     tmpMsg=&quot;欢迎通过SSL协议连接&quot;;</div><div class="line">     ioWriter.println(tmpMsg);</div><div class="line">     ioWriter.flush();</div><div class="line">    &#125;</div><div class="line">   &#125; catch(IOException e) &#123;</div><div class="line">    e.printStackTrace();</div><div class="line">   &#125; finally &#123;</div><div class="line">    try &#123;</div><div class="line">     if(cntSocket != null) cntSocket.close();</div><div class="line">    &#125; catch(Exception ex) &#123;ex.printStackTrace();&#125;</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public static void main(String[] args) throws Exception &#123;</div><div class="line">  TomcatSSLServer.getInstance().startService();</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>基本顺序是先得到一个SSLContext实例，再对SSLContext实例进行初始化，密钥管理器及信任管理器作为参数传入，证书管理器及信任管理器按照指定的密钥存储器路径和密码进行加载。接着设置支持的加密套件，最后让SSLServerSocket开始监听客户端发送过来的消息。</p>
+<p>③ 客户端TomcatSSLClient.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">public class TomcatSSLClient &#123;</div><div class="line"> private static final String SSL_TYPE = &quot;SSL&quot;;</div><div class="line"> private static final String X509 = &quot;SunX509&quot;;</div><div class="line"> private static final String KS_TYPE = &quot;JKS&quot;;</div><div class="line"> private SSLSocket sslSocket;</div><div class="line">   </div><div class="line"> public TomcatSSLClient(String targetHost,int port) throws Exception &#123;</div><div class="line">  SSLContext sslContext = createSSLContext(); </div><div class="line">  SSLSocketFactory sslcntFactory =(SSLSocketFactory) sslContext.getSocketFactory();</div><div class="line">  sslSocket = (SSLSocket) sslcntFactory.createSocket(targetHost, port);</div><div class="line">  String[] supported = sslSocket.getSupportedCipherSuites();</div><div class="line">  sslSocket.setEnabledCipherSuites(supported); </div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private SSLContext createSSLContext() throws Exception&#123;</div><div class="line">  KeyManagerFactory kmf = KeyManagerFactory.getInstance(X509);</div><div class="line">  TrustManagerFactory tmf = TrustManagerFactory.getInstance(X509);</div><div class="line">  String clientKeyStoreFile = &quot;c:\\client.jks&quot;;</div><div class="line">  String cntPassphrase = &quot;client&quot;;</div><div class="line">  char[] cntPassword = cntPassphrase.toCharArray();</div><div class="line">  KeyStore clientKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  clientKeyStore.load(new FileInputStream(clientKeyStoreFile),cntPassword);</div><div class="line">  String serverKeyStoreFile = &quot;c:\\tomcat.jks&quot;;</div><div class="line">  String svrPassphrase = &quot;tomcat&quot;;</div><div class="line">  char[] svrPassword = svrPassphrase.toCharArray();</div><div class="line">  KeyStore serverKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  serverKeyStore.load(new FileInputStream(serverKeyStoreFile), svrPassword);</div><div class="line">  kmf.init(clientKeyStore, cntPassword);</div><div class="line">  tmf.init(serverKeyStore);</div><div class="line">  SSLContext sslContext  = SSLContext.getInstance(SSL_TYPE);</div><div class="line">  sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);</div><div class="line">  return sslContext;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public String sayToSvr(String sayMsg) throws IOException&#123;</div><div class="line">  BufferedReader ioReader = new BufferedReader(new InputStreamReader(</div><div class="line">    sslSocket.getInputStream()));</div><div class="line">  PrintWriter ioWriter = new PrintWriter(sslSocket.getOutputStream());</div><div class="line">  ioWriter.println(sayMsg);</div><div class="line">  ioWriter.flush();</div><div class="line">  return ioReader.readLine();</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public static void main(String[] args) throws Exception &#123;</div><div class="line">  TomcatSSLClient sslSocket = new TomcatSSLClient(&quot;127.0.0.1&quot;,443);</div><div class="line">  BufferedReader ioReader = new BufferedReader(new InputStreamReader(System.in));</div><div class="line">  String sayMsg = &quot;&quot;;</div><div class="line">  String svrRespMsg= &quot;&quot;;</div><div class="line">  while( (sayMsg = ioReader.readLine())!= null ) &#123;</div><div class="line">   svrRespMsg = sslSocket.sayToSvr(sayMsg);</div><div class="line">   if(svrRespMsg != null &amp;&amp; !svrRespMsg.trim().equals(&quot;&quot;)) &#123;</div><div class="line">    System.out.println(&quot;服务器通过SSL协议响应:&quot;+svrRespMsg);</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>客户端的前面操作基本跟服务器端的一样，先创建一个SSLContext实例，再用密钥管理器及信任管理器对SSLContext进行初始化，当然这里密钥存储的路径是指向客户端的client.jks。接着设置加密套件，最后使用SSLSocket进行通信。</p>
+<p>注意服务器端有行代码svrSocket.setNeedClientAuth(true);它是非常重要的一个设置方法，用于设置是否验证客户端的身份。假如我们把它注释掉或设置为false，此时客户端将不再需要自己的密钥管理器，即服务器不需要通过client.jks对客户端的身份进行验证，把密钥管理器直接设置为null也可以跟服务器端进行通信。</p>
+<p>最后谈谈信任管理器，它的职责是决定是否信任远端的证书，那么它凭借什么去判断呢？如果不显式设置信任存储器的文件路径，将遵循如下规则：①如果<a href="http://www.2cto.com/os/" target="_blank" rel="external">系统</a>属性javax.net.ssl.truststore指定了truststore文件，那么信任管理器将去jre路径下的lib/security目录寻找这个文件作为信任存储器；②如果没设置①中的系统属性，则去寻找一个%java_home%/lib/security/jssecacerts文件作为信任存储器；③如果jssecacerts不存在而cacerts存在，则cacerts作为信任存储器。<br>至此，一个利用JSSE实现BIO模式的SSL协议通信的例子已完成。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Java/">Java</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/Java/">Java</a>
+  </div>
+
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2016/03/12/Java-SSL-Socket通讯实例二/" data-title="Java SSL Socket通讯实例二" data-url="http://samychen.com/2016/03/12/Java-SSL-Socket通讯实例二/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">10</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 15px;">安卓，Java</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">3</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2017 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>

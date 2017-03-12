@@ -1,0 +1,351 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>失效的private修饰符 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="失效的private修饰符"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-02-12T05:36:47.000Z"><a href="/2016/02/12/失效的private修饰符/">2016-02-12</a></time>
+        
+  
+    <h1 class="title">失效的private修饰符</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>在Java编程中，使用private关键字修饰了某个成员，只有这个成员所在的类和这个类的方法可以使用，其他的类都无法访问到这个private成员。</p>
+<p>上面描述了private修饰符的基本职能，今天来研究一下private功能失效的情况。</p>
+<p>Java内部类</p>
+<p>在Java中相信很多人都用过内部类，Java允许在一个类里面定义另一个类，类里面的类就是内部类，也叫做嵌套类。一个简单的内部类实现可以如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">class OuterClass &#123;</div><div class="line">    class InnerClass&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>今天的问题和Java内部类相关，只涉及到部分和本文研究相关的内部类知识，具体关于Java内部类后续的文章会介绍。</p>
+<p>第一次失效?</p>
+<p>一个我们在编程中经常用到的场景，就是在一个内部类里面访问外部类的private成员变量或者方法，这是可以的。如下面的代码实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class OuterClass &#123;</div><div class="line">  private String language = &quot;en&quot;;</div><div class="line">  private String region = &quot;US&quot;;</div><div class="line">  </div><div class="line">  </div><div class="line">  public class InnerClass &#123;</div><div class="line">      public void printOuterClassPrivateFields() &#123;</div><div class="line">          String fields = &quot;language=&quot; + language + &quot;;region=&quot; + region;</div><div class="line">          System.out.println(fields);</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">      OuterClass outer = new OuterClass();</div><div class="line">      OuterClass.InnerClass inner = outer.new InnerClass();</div><div class="line">      inner.printOuterClassPrivateFields();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这是为什么呢，不是private修饰的成员只能被成员所述的类才能访问么？难道private真的失效了么？</p>
+<p>编译器在捣鬼？</p>
+<p>我们使用javap命令查看一下生成的两个class文件</p>
+<p>OuterClass的反编译结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">15:30 $ javap -c  OuterClass</div><div class="line">Compiled from &quot;OuterClass.java&quot;</div><div class="line">public class OuterClass extends java.lang.Object&#123;</div><div class="line">public OuterClass();</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  invokespecial    #11; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   4:  aload_0</div><div class="line">   5:  ldc  #13; //String en</div><div class="line">   7:  putfield #15; //Field language:Ljava/lang/String;</div><div class="line">   10: aload_0</div><div class="line">   11: ldc  #17; //String US</div><div class="line">   13: putfield #19; //Field region:Ljava/lang/String;</div><div class="line">   16: return</div><div class="line"></div><div class="line">public static void main(java.lang.String[]);</div><div class="line">  Code:</div><div class="line">   0:  new  #1; //class OuterClass</div><div class="line">   3:  dup</div><div class="line">   4:  invokespecial    #27; //Method &quot;&lt;init&gt;&quot;:()V</div><div class="line">   7:  astore_1</div><div class="line">   8:  new  #28; //class OuterClass$InnerClass</div><div class="line">   11: dup</div><div class="line">   12: aload_1</div><div class="line">   13: dup</div><div class="line">   14: invokevirtual    #30; //Method java/lang/Object.getClass:()Ljava/lang/Class;</div><div class="line">   17: pop</div><div class="line">   18: invokespecial    #34; //Method OuterClass$InnerClass.&quot;&lt;init&gt;&quot;:(LOuterClass;)V</div><div class="line">   21: astore_2</div><div class="line">   22: aload_2</div><div class="line">   23: invokevirtual    #37; //Method OuterClass$InnerClass.printOuterClassPrivateFields:()V</div><div class="line">   26: return</div><div class="line"></div><div class="line">static java.lang.String access$0(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #15; //Field language:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">static java.lang.String access$1(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #19; //Field region:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>咦？不对，在OuterClass中我们并没有定义这两个方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">static java.lang.String access$0(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #15; //Field language:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">static java.lang.String access$1(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #19; //Field region:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从给出来的注释来看，access$0返回outerClass的language属性；access$1返回outerClass的region属性。并且这两个方法都接受OuterClass的实例作为参数。这两个方法为什么生成呢，有什么作用呢？我们看一下内部类的反编译结果就知道了。</p>
+<p>OuterClass$InnerClass的反编译结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">15:37 $ javap -c OuterClass\$InnerClass</div><div class="line">Compiled from &quot;OuterClass.java&quot;</div><div class="line">public class OuterClass$InnerClass extends java.lang.Object&#123;</div><div class="line">final OuterClass this$0;</div><div class="line"></div><div class="line">public OuterClass$InnerClass(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #10; //Field this$0:LOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #12; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  return</div><div class="line"></div><div class="line">public void printOuterClassPrivateFields();</div><div class="line">  Code:</div><div class="line">   0:  new  #20; //class java/lang/StringBuilder</div><div class="line">   3:  dup</div><div class="line">   4:  ldc  #22; //String language=</div><div class="line">   6:  invokespecial    #24; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</div><div class="line">   9:  aload_0</div><div class="line">   10: getfield #10; //Field this$0:LOuterClass;</div><div class="line">   13: invokestatic #27; //Method OuterClass.access$0:(LOuterClass;)Ljava/lang/String;</div><div class="line">   16: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   19: ldc  #37; //String ;region=</div><div class="line">   21: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   24: aload_0</div><div class="line">   25: getfield #10; //Field this$0:LOuterClass;</div><div class="line">   28: invokestatic #39; //Method OuterClass.access$1:(LOuterClass;)Ljava/lang/String;</div><div class="line">   31: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   34: invokevirtual    #42; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;</div><div class="line">   37: astore_1</div><div class="line">   38: getstatic    #46; //Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   41: aload_1</div><div class="line">   42: invokevirtual    #52; //Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   45: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面代码调用access$0的代码,其目的是得到OuterClass的language 私有属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">13:   invokestatic #27; //Method OuterClass.access$0:(LOuterClass;)Ljava/lang/String;</div></pre></td></tr></table></figure></p>
+<p>下面代码调用了access$1的代码，其目的是得到OutherClass的region 私有属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">28:   invokestatic #39; //Method OuterClass.access$1:(LOuterClass;)Ljava/lang/String;</div></pre></td></tr></table></figure></p>
+<p>注意：在内部类构造的时候，会将外部类的引用传递进来，并且作为内部类的一个属性，所以内部类会持有一个其外部类的引用。<br>this$0就是内部类持有的外部类引用，通过构造方法传递引用并赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final OuterClass this$0;</div><div class="line"></div><div class="line">public OuterClass$InnerClass(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #10; //Field this$0:LOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #12; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  return</div></pre></td></tr></table></figure>
+<p>小结</p>
+<p>这部分private看上去失效可，实际上并没有失效，因为当内部类调用外部类的私有属性时，其真正的执行是调用了编译器生成的属性的静态方法（即acess$0,access$1等）来获取这些属性值。这一切都是编译器的特殊处理。<br>这次也失效？</p>
+<p>如果说上面的写法很常用，那么这样的写法是不是很少接触，但是却可以运行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class AnotherOuterClass &#123;</div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">      InnerClass inner = new AnotherOuterClass().new InnerClass();</div><div class="line">      System.out.println(&quot;InnerClass Filed = &quot; + inner.x);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  class InnerClass &#123;</div><div class="line">      private int x = 10;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>和上面一样，使用javap反编译看一下。不过这次我们先看一下InnerClass的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">16:03 $ javap -c AnotherOuterClass\$InnerClass</div><div class="line">Compiled from &quot;AnotherOuterClass.java&quot;</div><div class="line">class AnotherOuterClass$InnerClass extends java.lang.Object&#123;</div><div class="line">final AnotherOuterClass this$0;</div><div class="line"></div><div class="line">AnotherOuterClass$InnerClass(AnotherOuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #12; //Field this$0:LAnotherOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #14; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  aload_0</div><div class="line">   10: bipush   10</div><div class="line">   12: putfield #17; //Field x:I</div><div class="line">   15: return</div><div class="line"></div><div class="line">static int access$0(AnotherOuterClass$InnerClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #17; //Field x:I</div><div class="line">   4:  ireturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>又出现了，编译器又自动生成了一个获取私有属性的后门方法access$0一次来获取x的值。</p>
+<p>AnotherOuterClass.class的反编译结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">16:08 $ javap -c AnotherOuterClass</div><div class="line">Compiled from &quot;AnotherOuterClass.java&quot;</div><div class="line">public class AnotherOuterClass extends java.lang.Object&#123;</div><div class="line">public AnotherOuterClass();</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  invokespecial    #8; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   4:  return</div><div class="line"></div><div class="line">public static void main(java.lang.String[]);</div><div class="line">  Code:</div><div class="line">   0:  new  #16; //class AnotherOuterClass$InnerClass</div><div class="line">   3:  dup</div><div class="line">   4:  new  #1; //class AnotherOuterClass</div><div class="line">   7:  dup</div><div class="line">   8:  invokespecial    #18; //Method &quot;&lt;init&gt;&quot;:()V</div><div class="line">   11: dup</div><div class="line">   12: invokevirtual    #19; //Method java/lang/Object.getClass:()Ljava/lang/Class;</div><div class="line">   15: pop</div><div class="line">   16: invokespecial    #23; //Method AnotherOuterClass$InnerClass.&quot;&lt;init&gt;&quot;:(LAnotherOuterClass;)V</div><div class="line">   19: astore_1</div><div class="line">   20: getstatic    #26; //Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   23: new  #32; //class java/lang/StringBuilder</div><div class="line">   26: dup</div><div class="line">   27: ldc  #34; //String InnerClass Filed =</div><div class="line">   29: invokespecial    #36; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</div><div class="line">   32: aload_1</div><div class="line">   33: invokestatic #39; //Method AnotherOuterClass$InnerClass.access$0:(LAnotherOuterClass$InnerClass;)I</div><div class="line">   36: invokevirtual    #43; //Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</div><div class="line">   39: invokevirtual    #47; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;</div><div class="line">   42: invokevirtual    #51; //Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   45: return</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中这句调用就是外部类通过内部类的实例获取私有属性x的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">33:   invokestatic #39; //Method AnotherOuterClass$InnerClass.access$0:(LAnotherOuterClass$InnerClass;)I</div></pre></td></tr></table></figure></p>
+<p>再来个总结<br>其中<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.6.1" target="_blank" rel="external">java官方文档</a> 有这样一句话<br>if the member or constructor is declared private, then access is permitted if and only if it occurs within the body of the top level class (§7.6) that encloses the declaration of the member or constructor.</p>
+<p>意思是 如果（内部类的）成员和构造方法设定成了私有修饰符，当且仅当其外部类访问时是允许的。<br>如何让内部类私有成员不被外部访问<br>相信看完上面两部分，你会觉得，内部类的私有成员想不被外部类访问都很困难吧，谁让编译器“爱管闲事”呢，其实也是可以做到的。那就是使用匿名内部类。<br>由于mRunnable对象的类型为Runnable，而不是匿名内部类的类型（我们无法正常拿到），而Runanble中没有x这个属性，所以mRunnable.x是不被允许的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class PrivateToOuter &#123;</div><div class="line">  Runnable mRunnable = new Runnable()&#123;</div><div class="line">      private int x=10;</div><div class="line">      @Override</div><div class="line">      public void run() &#123;</div><div class="line">          System.out.println(x);</div><div class="line">      &#125;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  public static void main(String[] args)&#123;</div><div class="line">      PrivateToOuter p = new PrivateToOuter();</div><div class="line">      //System.out.println(&quot;anonymous class private filed= &quot;+ p.mRunnable.x); //not allowed</div><div class="line">      p.mRunnable.run(); // allowed</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>最后总结<br>在本文中，private表面上看上去失效了，但实际上是没有的，而是在调用时通过间接的方法来获取私有的属性。<br>Java的内部类构造时持有对外部类的应用，C++不会，这一点和C++不一样。</p>
+<p>深入Java细节的书籍<br><a href="http://www.amazon.cn/gp/product/B0011F7WU4/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B0011F7WU4&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">Java编程思想</a><img src="http://upload-images.jianshu.io/upload_images/4398977-e1327cdd8167447c?imageMogr2/auto-orient/strip" alt=""><br><a href="http://www.amazon.cn/gp/product/B001PTGR52/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B001PTGR52&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">Sun 公司核心技术丛书:Effective Java中文版</a><img src="http://upload-images.jianshu.io/upload_images/4398977-bff8ef82187333df?imageMogr2/auto-orient/strip" alt=""><br><a href="http://www.amazon.cn/gp/product/B00D2ID4PK/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B00D2ID4PK&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">深入理解Java虚拟机:JVM高级特性与最佳实践</a><img src="http://upload-images.jianshu.io/upload_images/4398977-1881a22db7263d9d?imageMogr2/auto-orient/strip" alt=""></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Java/">Java</a>
+  </div>
+
+        
+  <div class="tags">
+    <a href="/tags/Java/">Java</a>
+  </div>
+
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2016/02/12/失效的private修饰符/" data-title="失效的private修饰符" data-url="http://samychen.com/2016/02/12/失效的private修饰符/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">10</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/安卓/" style="font-size: 10px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 15px;">安卓，Java</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">3</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2017 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
