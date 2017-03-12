@@ -229,44 +229,23 @@
 <p>3、更好地支持多核处理</p>
 <p>例如，通过Java 8新增的Lambda表达式，我们可以很方便地并行操作大集合，充分发挥多核CPU的潜能。</p>
 <p>并行处理函数如filter、map和reduce。</p>
-<p>实例1 FileFilter</p>
-<p>File dir =newFile(“/an/dir/“);</p>
-<p>FileFilter directoryFilter=newFileFilter() {public boolean accept(File file) {</p>
-<p>returnfile.isDirectory();</p>
-<p>}</p>
-<p>};<br>通过Lambda表达式这段代码可以简化为如下：</p>
-<p>File dir =newFile(“/an/dir/“);</p>
-<p>FileFilter directoryFilter= (File f) -&gt;f.isDirectory();</p>
-<p>File[] dirs= dir.listFiles(directoryFilter);<br>进一步简化：</p>
-<p>File dir =newFile(“/an/dir/“)；</p>
-<p>File[] dirs= dir.listFiles((File f) -&gt; f.isDirectory());<br>Lambda表达式利用了类型推断（type inference）技术：</p>
+<p>实例1 FileFilter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;);</div><div class="line"></div><div class="line">FileFilter directoryFilter=newFileFilter() &#123;public boolean accept(File file) &#123;</div><div class="line"></div><div class="line">returnfile.isDirectory();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>通过Lambda表达式这段代码可以简化为如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;);</div><div class="line"></div><div class="line">FileFilter directoryFilter= (File f) -&gt;f.isDirectory();</div><div class="line"></div><div class="line">File[] dirs= dir.listFiles(directoryFilter);</div></pre></td></tr></table></figure></p>
+<p>进一步简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;)；</div><div class="line"></div><div class="line">File[] dirs= dir.listFiles((File f) -&gt; f.isDirectory());</div></pre></td></tr></table></figure></p>
+<p>Lambda表达式利用了类型推断（type inference）技术：</p>
 <p>编译器知道FileFilter只有一个方法accept()，所以accept()方法肯定对应(File f) -&gt; f.isDirectory()，就是利用了类型推断，而且accept()方法只有一个File类型的参数，所以(File f) -&gt;f.isDirectory()中的File f就是这个参数了，.NET把类型推断做得更绝，如果上面用.NET Lambda表达式写法的话是这样的：File[] dirs= dir.ListFiles(f =&gt;f.isDirectory());即压根就不需要出现File类型指示。</p>
-<p>实例2 Event Handler</p>
-<p>Button bt =newButton();</p>
-<p>bt.addActionListener(newActionListener() {public void actionPerformed(ActionEvent e) {</p>
-<p>ui.showSomething();</p>
-<p>}</p>
-<p>});<br>使用Lambda表达式后：</p>
-<p>Button bt =newButton();</p>
-<p>ActionListener listener= event -&gt;{ ui.showSomething(); };</p>
-<p>bt.addActionListener(listener);<br>进一步简化：</p>
-<p>Button bt =newButton();</p>
-<p>bt.addActionListener(event-&gt; { ui.showSomething(); });<br>newActionListener的内部类只有actionPerformed方法，event就是参数</p>
+<p>实例2 Event Handler<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Button bt =newButton();</div><div class="line"></div><div class="line">bt.addActionListener(newActionListener() &#123;public void actionPerformed(ActionEvent e) &#123;</div><div class="line"></div><div class="line">ui.showSomething();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<p>使用Lambda表达式后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Button bt =newButton();</div><div class="line"></div><div class="line">ActionListener listener= event -&gt;&#123; ui.showSomething(); &#125;;</div><div class="line"></div><div class="line">bt.addActionListener(listener);</div></pre></td></tr></table></figure></p>
+<p>进一步简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Button bt =newButton();</div><div class="line"></div><div class="line">bt.addActionListener(event-&gt; &#123; ui.showSomething(); &#125;);</div></pre></td></tr></table></figure></p>
+<p>newActionListener的内部类只有actionPerformed方法，event就是参数</p>
 <p>actionPerformed()方法的返回类型是void，所以需要特殊处理，即在ui.showSomething();左右加上花括号。（想象下不加会怎么样？如果不加的话，若showSomething()方法返回值是整数类型，那么就意味着actionPerformed()返回整数类型，显然不是，所以必须加花括号用来标记）。</p>
 <p>如果Lambda表达式主体部分包含多条语句，也必须用花括号，并且return语句不能省。</p>
-<p>比如下面这个：</p>
-<p>File dir =newFile(“/an/dir/“);</p>
-<p>File[] dirs= dir.listFiles((File f) -&gt;{</p>
-<p>System.out.println(“Log:…”);</p>
-<p>return f.isDirectory();</p>
-<p>}</p>
-<p>);<br>函数集合</p>
+<p>比如下面这个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;);</div><div class="line"></div><div class="line">File[] dirs= dir.listFiles((File f) -&gt;&#123;</div><div class="line"></div><div class="line">System.out.println(&quot;Log:...&quot;);</div><div class="line"></div><div class="line">return f.isDirectory();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">);</div></pre></td></tr></table></figure></p>
+<p>函数集合</p>
 <p>Java 8 的类库包含一个新的包 java.util.functions ，这个包中有很多新的功能接口，这些接口可与集合 API 一起使用。</p>
 <p>外循环、内循环和Map、Reduce、Filter</p>
-<p>一直到现在，处理Java集合的标准做法是采用外循环。比如：</p>
-<p>List list =newArrayList();</p>
-<p>list.add(“hello”);</p>
-<p>list.add(“world”);for(intitem: list) {//处理item}<br>还有迭代器循环，它们都是外循环，并且都是顺序处理（sequential handling）。顺序特性也常常引发ConcurrentModificationException，只要我们尝试着并发修改集合。</p>
+<p>一直到现在，处理Java集合的标准做法是采用外循环。比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =newArrayList();</div><div class="line"></div><div class="line">list.add(&quot;hello&quot;);</div><div class="line"></div><div class="line">list.add(&quot;world&quot;);for(intitem: list) &#123;//处理item&#125;</div></pre></td></tr></table></figure></p>
+<p>还有迭代器循环，它们都是外循环，并且都是顺序处理（sequential handling）。顺序特性也常常引发ConcurrentModificationException，只要我们尝试着并发修改集合。</p>
 <p>Lambda表达式提供了内循环机制。</p>
 <p>我们工作中可能经常面临下面的需求：</p>
 <blockquote>
@@ -278,75 +257,29 @@
 <p>需要对集合中的每个元素运行一小段相同的代码。</p>
 <p>传统的实现这些任务的代码让人感到很乏味，幸运的是Java 8提供了完成这些任务的更简洁的方案，当然还是利用Lambda表达式，但也引入了一个新的类库java.util.functions，包含Predicate、Mapper和Block。</p>
 <p>Java 8中，一个Predicate（谓词）是这样一个方法：它根据变量的值进行评估(evaluate），返回true或false。java.util.functions.Predicate</p>
-<p>比如下面：</p>
-<p>List list =getMyStrings();</p>
-<p>for(String myString: list) {if(myString.contains(possible)) {</p>
-<p>System.out.println(myString+ “ contains “ +possible);</p>
-<p>}</p>
-<p>}<br>使用Predicate和Filter后得到下面代码：</p>
-<p>List list =getMyStrings();</p>
-<p>Predicate matched = s -&gt;s.equalsIgnoreCase(possible);</p>
-<p>list.filter(matched);<br>进一步简化：</p>
-<p>List list =getMyStrings();</p>
-<p>list.filter(s-&gt; s.equalsIgnoreCase(possible));<br>使用谓词 (Predicate) 来筛选集合：</p>
-<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
-<p>List filteredNames = names.filter(e -&gt; e.length() &gt;=4).into(new ArrayList());</p>
-<p>for(String name : filteredNames) {</p>
-<p>System.out.println(name);</p>
-<p>}<br>这里我们有两个新方法：</p>
+<p>比如下面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =getMyStrings();</div><div class="line"></div><div class="line">for(String myString: list) &#123;if(myString.contains(possible)) &#123;</div><div class="line"></div><div class="line">System.out.println(myString+ &quot; contains &quot; +possible);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用Predicate和Filter后得到下面代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =getMyStrings();</div><div class="line"></div><div class="line">Predicate matched = s -&gt;s.equalsIgnoreCase(possible);</div><div class="line"></div><div class="line">list.filter(matched);</div></pre></td></tr></table></figure></p>
+<p>进一步简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =getMyStrings();</div><div class="line"></div><div class="line">list.filter(s-&gt; s.equalsIgnoreCase(possible));</div></pre></td></tr></table></figure></p>
+<p>使用谓词 (Predicate) 来筛选集合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List names = Arrays.asList(&quot;Alice&quot;,&quot;Bob&quot;,&quot;Charlie&quot;,&quot;Dave&quot;);</div><div class="line"></div><div class="line">List filteredNames = names.filter(e -&gt; e.length() &gt;=4).into(new ArrayList());</div><div class="line"></div><div class="line">for(String name : filteredNames) &#123;</div><div class="line"></div><div class="line">System.out.println(name);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里我们有两个新方法：</p>
 <p>Iterable filter(Predicate) 用于获取元素满足某个谓词返回 true 的结果</p>
 <p><a extends="" fillableinto<?="" super="" t="">&gt;A into(A) 将用返回的结果填充 ArrayList </a></p>
 <p>java.util.functions.Block</p>
 <p>我们可使用一个新的迭代器方法来替换 for 循环 void forEach(Block&lt;? super T&gt;):</p>
 <p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
 <p>names.filter(e -&gt; e.length() &gt;=4).forEach(e -&gt; { System.out.println(e); });<br>forEach() 方法是 internal iteration 的一个实例：迭代过程在 Iterable 和 Block 内部进行，每次可访问一个元素。</p>
-<p>最后的结果就是用更少的代码来处理集合：</p>
-<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
-<p>names</p>
-<p>.mapped(e -&gt; {return e.length(); })</p>
-<p>.asIterable()// returns an Iterable of BiValue elements</p>
-<p>// an element’s key is the person’s name, its value is the string length</p>
-<p>.filter(e -&gt; e.getValue() &gt;=4)</p>
-<p>.sorted((a, b) -&gt; a.getValue() - b.getValue())</p>
-<p>.forEach(e -&gt; { System.out.println(e.getKey() +’\t’+ e.getValue()); });<br>方法引用</p>
+<p>最后的结果就是用更少的代码来处理集合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List names = Arrays.asList(&quot;Alice&quot;,&quot;Bob&quot;,&quot;Charlie&quot;,&quot;Dave&quot;);</div><div class="line"></div><div class="line">names</div><div class="line"></div><div class="line">.mapped(e -&gt; &#123;return e.length(); &#125;)</div><div class="line"></div><div class="line">.asIterable()// returns an Iterable of BiValue elements</div><div class="line"></div><div class="line">// an element&apos;s key is the person&apos;s name, its value is the string length</div><div class="line"></div><div class="line">.filter(e -&gt; e.getValue() &gt;=4)</div><div class="line"></div><div class="line">.sorted((a, b) -&gt; a.getValue() - b.getValue())</div><div class="line"></div><div class="line">.forEach(e -&gt; &#123; System.out.println(e.getKey() +&apos;\t&apos;+ e.getValue()); &#125;);</div></pre></td></tr></table></figure></p>
+<p>方法引用</p>
 <p>我们可通过 :: 语法来引用某个方法。方法引用被认为是跟 Lambda 表达式一样的，可用于功能接口所适用的地方。</p>
-<p>我们可以引用一个静态方法：</p>
-<p>executorService.submit(MethodReference::sayHello);</p>
-<p>privatestaticvoidsayHello() {</p>
-<p>System.out.println(“hello”);</p>
-<p>}<br>或者是一个实例的方法：</p>
-<p>Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”).forEach(System.out::println);<br>我们也可以创建工程方法并将构造器引用赋值给 java.util.functions.Factory:</p>
-<p>Factory biscuitFactory = Biscuit::new;</p>
-<p>Biscuit biscuit = biscuitFactory.make();<br>最后，我们创建一个引用到随意实例的例子：</p>
-<p>interface Accessor<bean, property=""> {</bean,></p>
-<p>PROPERTY access(BEAN bean);</p>
-<p>}<br>publicstaticvoidmain(String[] args) {</p>
-<p>Address address =newAddress(“29 Acacia Road”,”Tunbridge Wells”);</p>
-<p>Accessor accessor = Address::getCity;</p>
-<p>System.out.println(accessor.access(address));</p>
-<p>}<br>这里我们无需绑定方法引用到某个实例，我们直接将实例做为功能接口的参数进行传递。</p>
+<p>我们可以引用一个静态方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">executorService.submit(MethodReference::sayHello);</div><div class="line"></div><div class="line">privatestaticvoidsayHello() &#123;</div><div class="line"></div><div class="line">System.out.println(&quot;hello&quot;);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>或者是一个实例的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Arrays.asList(&quot;Alice&quot;,&quot;Bob&quot;,&quot;Charlie&quot;,&quot;Dave&quot;).forEach(System.out::println);</div></pre></td></tr></table></figure></p>
+<p>我们也可以创建工程方法并将构造器引用赋值给 java.util.functions.Factory:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Factory biscuitFactory = Biscuit::new;</div><div class="line"></div><div class="line">Biscuit biscuit = biscuitFactory.make();</div></pre></td></tr></table></figure></p>
+<p>最后，我们创建一个引用到随意实例的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface Accessor&lt;BEAN, PROPERTY&gt; &#123;</div><div class="line"></div><div class="line">PROPERTY access(BEAN bean);</div><div class="line"></div><div class="line">&#125;</div><div class="line">publicstaticvoidmain(String[] args) &#123;</div><div class="line"></div><div class="line">Address address =newAddress(&quot;29 Acacia Road&quot;,&quot;Tunbridge Wells&quot;);</div><div class="line"></div><div class="line">Accessor accessor = Address::getCity;</div><div class="line"></div><div class="line">System.out.println(accessor.access(address));</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里我们无需绑定方法引用到某个实例，我们直接将实例做为功能接口的参数进行传递。</p>
 <p>默认方法</p>
-<p>直到今天的 Java ，都不可能为一个接口添加方法而不会影响到已有的实现类。而 Java 8 允许你为接口自身指定一个默认的实现：</p>
-<p>interface Queue {</p>
-<p>Message read();</p>
-<p>void delete(Message message);</p>
-<p>void deleteAll()  default{</p>
-<p>Message message;</p>
-<p>while((message = read()) !=null) {</p>
-<p>delete(message);</p>
-<p>}</p>
-<p>}</p>
-<p>}<br>子接口可以覆盖默认的方法：</p>
-<p>interface BatchQueue extends Queue {</p>
-<p>void setBatchSize(int batchSize);</p>
-<p>void deleteAll()  default{</p>
-<p>setBatchSize(100);</p>
-<p>Queue.super.deleteAll();</p>
-<p>}</p>
-<p>}<br>或者子接口也可以通过重新声明一个没有方法体的方法来删除默认的方法：</p>
-<p>interface FastQueue extends Queue {</p>
-<p>void deleteAll();</p>
-<p>}</p>
+<p>直到今天的 Java ，都不可能为一个接口添加方法而不会影响到已有的实现类。而 Java 8 允许你为接口自身指定一个默认的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface Queue &#123;</div><div class="line"></div><div class="line">Message read();</div><div class="line"></div><div class="line">void delete(Message message);</div><div class="line"></div><div class="line">void deleteAll()  default&#123;</div><div class="line"></div><div class="line">Message message;</div><div class="line"></div><div class="line">while((message = read()) !=null) &#123;</div><div class="line"></div><div class="line">delete(message);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>子接口可以覆盖默认的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface BatchQueue extends Queue &#123;</div><div class="line"></div><div class="line">void setBatchSize(int batchSize);</div><div class="line"></div><div class="line">void deleteAll()  default&#123;</div><div class="line"></div><div class="line">setBatchSize(100);</div><div class="line"></div><div class="line">Queue.super.deleteAll();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>或者子接口也可以通过重新声明一个没有方法体的方法来删除默认的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface FastQueue extends Queue &#123;</div><div class="line"></div><div class="line">void deleteAll();</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 
       
     </div>
