@@ -1,0 +1,331 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ListView源码分析(一) | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="ListView源码分析(一)"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2015-09-12T05:12:23.000Z"><a href="/2015/09/12/ListView源码分析（一）/">2015-09-12</a></time>
+        
+  
+    <h1 class="title">ListView源码分析(一)</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>&emsp;&emsp;这几天把ListView源码看了下，基本整理下思路并写了这篇博客，也是对学习源码的一个记录。</p>
+<p>首先看ListView的构造方法干了些什么<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">public ListView(Context context, AttributeSet attrs, int defStyle) &#123;</div><div class="line">        super(context, attrs, defStyle);//父类AbsListview中初始化一些属性，比如焦点setFocusableInTouchMode（true），绘制setWillNotDraw(false)等</div><div class="line"></div><div class="line">        TypedArray a = context.obtainStyledAttributes(attrs,</div><div class="line">                com.android.internal.R.styleable.ListView, defStyle, 0);</div><div class="line"></div><div class="line">        CharSequence[] entries = a.getTextArray(</div><div class="line">                com.android.internal.R.styleable.ListView_entries);</div><div class="line">        if (entries != null) &#123;</div><div class="line">            setAdapter(new ArrayAdapter&lt;CharSequence&gt;(context,</div><div class="line">                    com.android.internal.R.layout.simple_list_item_1, entries));</div><div class="line">        &#125;</div><div class="line">        //获取item分割线 drawable 可以自定义</div><div class="line">        final Drawable d = a.getDrawable(com.android.internal.R.styleable.ListView_divider);</div><div class="line">        if (d != null) &#123;</div><div class="line">            // If a divider is specified use its intrinsic height for divider height</div><div class="line">            setDivider(d);</div><div class="line">        &#125;</div><div class="line">        //头部样式</div><div class="line">        final Drawable osHeader = a.getDrawable(</div><div class="line">                com.android.internal.R.styleable.ListView_overScrollHeader);</div><div class="line">        if (osHeader != null) &#123;</div><div class="line">            setOverscrollHeader(osHeader);</div><div class="line">        &#125;</div><div class="line">        //尾部样式</div><div class="line">        final Drawable osFooter = a.getDrawable(</div><div class="line">                com.android.internal.R.styleable.ListView_overScrollFooter);</div><div class="line">        if (osFooter != null) &#123;</div><div class="line">            setOverscrollFooter(osFooter);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Use the height specified, zero being the default</div><div class="line">        final int dividerHeight = a.getDimensionPixelSize(</div><div class="line">                com.android.internal.R.styleable.ListView_dividerHeight, 0);</div><div class="line">        if (dividerHeight != 0) &#123;</div><div class="line">            setDividerHeight(dividerHeight);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mHeaderDividersEnabled = a.getBoolean(R.styleable.ListView_headerDividersEnabled, true);</div><div class="line">        mFooterDividersEnabled = a.getBoolean(R.styleable.ListView_footerDividersEnabled, true);</div><div class="line"></div><div class="line">        a.recycle();</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>上面构造方法做了一些初始化工作，并设置了默认样式</p>
+<p>####onMeasure()方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">        // Sets up mListPadding</div><div class="line">        super.onMeasure(widthMeasureSpec, heightMeasureSpec);</div><div class="line">		//格式化并取出MeasureSpec的模式和测量值大小</div><div class="line">        int widthMode = MeasureSpec.getMode(widthMeasureSpec);</div><div class="line">        int heightMode = MeasureSpec.getMode(heightMeasureSpec);</div><div class="line">        int widthSize = MeasureSpec.getSize(widthMeasureSpec);</div><div class="line">        int heightSize = MeasureSpec.getSize(heightMeasureSpec);</div><div class="line"></div><div class="line">        int childWidth = 0;</div><div class="line">        int childHeight = 0;</div><div class="line">        int childState = 0;</div><div class="line"></div><div class="line">        mItemCount = mAdapter == null ? 0 : mAdapter.getCount();</div><div class="line">        if (mItemCount &gt; 0 &amp;&amp; (widthMode == MeasureSpec.UNSPECIFIED ||heightMode == MeasureSpec.UNSPECIFIED)) &#123;</div><div class="line">            final View child = obtainView(0, mIsScrap);</div><div class="line">			//测量childview</div><div class="line">            measureScrapChild(child, 0, widthMeasureSpec);</div><div class="line"></div><div class="line">            childWidth = child.getMeasuredWidth();</div><div class="line">            childHeight = child.getMeasuredHeight();</div><div class="line">            childState = combineMeasuredStates(childState, child.getMeasuredState());</div><div class="line"></div><div class="line">            if (recycleOnMeasure() &amp;&amp; mRecycler.shouldRecycleViewType(</div><div class="line">                    ((LayoutParams) child.getLayoutParams()).viewType)) &#123;</div><div class="line">                mRecycler.addScrapView(child, -1);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (widthMode == MeasureSpec.UNSPECIFIED) &#123;</div><div class="line">            widthSize = mListPadding.left + mListPadding.right + childWidth +</div><div class="line">                    getVerticalScrollbarWidth();</div><div class="line">        &#125; else &#123;</div><div class="line">            widthSize |= (childState&amp;MEASURED_STATE_MASK);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (heightMode == MeasureSpec.UNSPECIFIED) &#123;</div><div class="line">            heightSize = mListPadding.top + mListPadding.bottom + childHeight +</div><div class="line">                    getVerticalFadingEdgeLength() * 2;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (heightMode == MeasureSpec.AT_MOST) &#123;</div><div class="line">            // TODO: after first layout we should maybe start at the first visible position, not 0</div><div class="line">            heightSize = measureHeightOfChildren(widthMeasureSpec, 0, NO_POSITION, heightSize, -1);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        setMeasuredDimension(widthSize , heightSize);</div><div class="line">        mWidthMeasureSpec = widthMeasureSpec;        </div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">private void measureScrapChild(View child, int position, int widthMeasureSpec) &#123;</div><div class="line">        LayoutParams p = (LayoutParams) child.getLayoutParams();</div><div class="line">        if (p == null) &#123;</div><div class="line">            p = (AbsListView.LayoutParams) generateDefaultLayoutParams();</div><div class="line">            child.setLayoutParams(p);</div><div class="line">        &#125;</div><div class="line">        p.viewType = mAdapter.getItemViewType(position);</div><div class="line">        p.forceAdd = true;</div><div class="line"></div><div class="line">        int childWidthSpec = ViewGroup.getChildMeasureSpec(widthMeasureSpec,</div><div class="line">                mListPadding.left + mListPadding.right, p.width);</div><div class="line">        int lpHeight = p.height;</div><div class="line">        int childHeightSpec;</div><div class="line">        if (lpHeight &gt; 0) &#123;</div><div class="line">            childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);</div><div class="line">        &#125; else &#123;</div><div class="line">            childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);</div><div class="line">        &#125;</div><div class="line">        child.measure(childWidthSpec, childHeightSpec);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p> 上述操作对ListView的测量并赋值给成员变量 ，注意ListView第一次创建的时候并没有mAdapter的存在,只有在setAdapter被我们调用过后才会执行这些方法,也就是说在setAdapter中一定会调用requestLayout方法重新走一遍流程。</p>
+<p>####onLayout方法</p>
+<p>&emsp;&emsp;ListView中并没有onLayout方法,那也就是说一定是在他的父类AbsListView中,我们可以看到它调用了layoutChildren(),从方法名看应该是对子view进行布局,这个layoutChildren是一个空实现方法,也就是说应该是通过AbsListView的子类ListVIew和GridView进行实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">protected void onLayout(boolean changed, int l, int t, int r, int b) &#123;</div><div class="line">        super.onLayout(changed, l, t, r, b);</div><div class="line"></div><div class="line">        mInLayout = true;</div><div class="line">        //拿到view 数量</div><div class="line">        final int childCount = getChildCount();</div><div class="line">        if (changed) &#123;</div><div class="line">            for (int i = 0; i &lt; childCount; i++) &#123;</div><div class="line">                getChildAt(i).forceLayout();</div><div class="line">            &#125;</div><div class="line">            mRecycler.markChildrenDirty();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 由子类ListView 和 GridView实现,是核心布局方法代码,也是listview与adapter交互数据的主要入口函数</div><div class="line">        layoutChildren();</div><div class="line">        mInLayout = false;</div><div class="line"></div><div class="line">        mOverscrollMax = (b - t) / OVERSCROLL_LIMIT_DIVISOR;</div><div class="line"></div><div class="line">        // TODO: Move somewhere sane. This doesn&apos;t belong in onLayout().</div><div class="line">        if (mFastScroll != null) &#123;</div><div class="line">            mFastScroll.onItemCountChanged(getChildCount(), mItemCount);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>这里注意两个对象：</p>
+<ol>
+<li>View[] mActiveViews:存放的是当前ListView可以使用的待激活的子item view</li>
+<li>ArrayList<view>[] mScrapViews:存放的是在ListView滑动过程中滑出屏幕来回收以便下次利用的子item view</view></li>
+</ol>
+<p><img src="http://img.blog.csdn.net/20150719213754421?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">    protected void layoutChildren() &#123;</div><div class="line">        ...</div><div class="line"></div><div class="line">        final int firstPosition = mFirstPosition;</div><div class="line">        final RecycleBin recycleBin = mRecycler;</div><div class="line">        // 只有在调用adapter.notifyDatasetChanged()方法一直到layout()布局结束,</div><div class="line">        //dataChanged为true,默认为false,这里如果调用notifyDatasetChanged,就会将Item添加到ReyclerBin当中,这个</div><div class="line">        //ReyclerBin封装了这两个集合用来存放对应的符合条件的item,用来实现复用机制</div><div class="line">        //1.View[] mActiveViews : 存放的是当前ListView可以使用的待激活的子item view</div><div class="line">        //2.ArrayList&lt;View&gt;[] mScrapViews : 存放的是在ListView滑动过程中滑出屏幕来回收以便下次利用的子item view</div><div class="line">        if (dataChanged) &#123;</div><div class="line">            // dataChanged为true,说明当前listview是有数据的了,把当前所有的item view</div><div class="line">            // 存放到RecycleBin对象的mScrapViews中保存</div><div class="line">            for (int i = 0; i &lt; childCount; i++) &#123;</div><div class="line">                recycleBin.addScrapView(getChildAt(i), firstPosition+i);</div><div class="line">            &#125;</div><div class="line">        &#125; else &#123;</div><div class="line">                // dataChanged默认为false,第一次执行此方法走这里</div><div class="line">                //将view添加到 activeViews[] 中</div><div class="line">            recycleBin.fillActiveViews(childCount, firstPosition);</div><div class="line">        &#125;   </div><div class="line"></div><div class="line">        ...</div><div class="line"></div><div class="line">        switch (mLayoutMode) &#123;</div><div class="line">            ...</div><div class="line">            default:</div><div class="line">                //一般情况下走这里</div><div class="line">                if (childCount == 0) &#123;</div><div class="line">                    // 第一次布局的时候,因为还没有setAdapter,没有走mAdpate.getCount方法,所以childCount必然为0</div><div class="line">                    if (!mStackFromBottom) &#123;</div><div class="line">                        final int position = lookForSelectablePosition(0, true);</div><div class="line">                        setSelectedPositionInt(position);</div><div class="line">                        // 从上到上布局listview能显示得下的子view,具体的填充view的方法,下面讲到</div><div class="line">                        sel = fillFromTop(childrenTop);</div><div class="line">                    &#125; else &#123;</div><div class="line">                        final int position = lookForSelectablePosition(mItemCount - 1, false);</div><div class="line">                        setSelectedPositionInt(position);</div><div class="line">                        sel = fillUp(mItemCount - 1, childrenBottom);</div><div class="line">                    &#125;</div><div class="line">                &#125; else &#123;</div><div class="line">                    // 非第一次layout,也就说执行了nitifyDatasetChanged方法之后</div><div class="line">                    if (mSelectedPosition &gt;= 0 &amp;&amp; mSelectedPosition &lt; mItemCount) &#123;</div><div class="line">                        sel = fillSpecific(mSelectedPosition,</div><div class="line">                                oldSel == null ? childrenTop : oldSel.getTop());</div><div class="line">                    &#125; else if (mFirstPosition &lt; mItemCount) &#123;</div><div class="line">                    // 通常情况走这里,fillSpecific()会调用fillUp()和fillDown()布局子view</div><div class="line">                        sel = fillSpecific(mFirstPosition,</div><div class="line">                                oldFirst == null ? childrenTop : oldFirst.getTop());</div><div class="line">                    &#125; else &#123;</div><div class="line">                        sel = fillSpecific(0, childrenTop);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        //到这里,ListView中的view就被填充完毕.</div><div class="line">        ...</div><div class="line">        //布局完成之后记录状态</div><div class="line">        mLayoutMode = LAYOUT_NORMAL;</div><div class="line">        mDataChanged = false;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p><strong>Item布局的填充</strong><br>在layoutChidren中有几个以fill开头的方法就是具体的Item的填充方法。fillSpecific()会根据mStackFromBottom参数判断填充方向,通过fillUp,fillDown进行填充<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">private View fillSpecific(int position, int top) &#123;</div><div class="line">    boolean tempIsSelected = position == mSelectedPosition;</div><div class="line">    View temp = makeAndAddView(position, top, true, mListPadding.left, tempIsSelected);</div><div class="line">    // Possibly changed again in fillUp if we add rows above this one.</div><div class="line">    mFirstPosition = position;</div><div class="line"></div><div class="line">    View above;</div><div class="line">    View below;</div><div class="line"></div><div class="line">    final int dividerHeight = mDividerHeight;</div><div class="line">    //根据填充方向,如果mStackFromBottom为false,表示从顶部向底部填充,true反之</div><div class="line">    //mStackFromBottom 可以通过 xml文件android:stackFromBottom=&quot;false&quot;设置,默认为false</div><div class="line">    if (!mStackFromBottom) &#123;</div><div class="line">        //具体填充方法</div><div class="line">        above = fillUp(position - 1, temp.getTop() - dividerHeight);</div><div class="line">        // This will correct for the top of the first view not touching the top of the list</div><div class="line">        adjustViewsUpOrDown();</div><div class="line">        //具体填充方法</div><div class="line">        below = fillDown(position + 1, temp.getBottom() + dividerHeight);</div><div class="line">        int childCount = getChildCount();</div><div class="line">        if (childCount &gt; 0) &#123;</div><div class="line">            correctTooHigh(childCount);</div><div class="line">        &#125;</div><div class="line">    &#125; else &#123;</div><div class="line">        below = fillDown(position + 1, temp.getBottom() + dividerHeight);</div><div class="line">        // This will correct for the bottom of the last view not touching the bottom of the list</div><div class="line">        adjustViewsUpOrDown();</div><div class="line">        above = fillUp(position - 1, temp.getTop() - dividerHeight);</div><div class="line">        int childCount = getChildCount();</div><div class="line">        if (childCount &gt; 0) &#123;</div><div class="line">             correctTooLow(childCount);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (tempIsSelected) &#123;</div><div class="line">        return temp;</div><div class="line">    &#125; else if (above != null) &#123;</div><div class="line">        return above;</div><div class="line">    &#125; else &#123;</div><div class="line">        return below;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>具体填充布局可以看我的另一篇博客<a href="http://blog.csdn.net/baidu_29601793/article/details/57403558" target="_blank" rel="external">ListView源码分析(二)</a></p>
+<p>####setAdapter<br>setAdapter中通过mAdapter.registerDataSetObserver(mDataSetObserver)注册一个AdapterDataSetObserver订阅者，每当调用notifyDataSetChange的时候,就会触发AdapterDataSetObserver的onChanged的方法,这个是观察者模式，这个方法最终调用requestLayout方法，也就是说我们每次setAdapter之后就会重新布局,这时候mAdapter不为空。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void setAdapter(ListAdapter adapter) &#123;</div><div class="line">    if (mAdapter != null &amp;&amp; mDataSetObserver != null) &#123;</div><div class="line">        mAdapter.unregisterDataSetObserver(mDataSetObserver);</div><div class="line"></div><div class="line">    //将一些成员变量还原设置为初始默认值 </div><div class="line">    //mLayoutMode = LAYOUT_NORMAL</div><div class="line">    resetList();</div><div class="line">    // mRecycler的mScrapViews清空并执行listview.removeDetachedView</div><div class="line">    //mScrapViews 存放边界之外的view</div><div class="line">    mRecycler.clear();</div><div class="line"></div><div class="line">    if (mHeaderViewInfos.size() &gt; 0|| mFooterViewInfos.size() &gt; 0) &#123;</div><div class="line">         // 如果listview有headerView或者FooterView则会生成包装adapter,生成一个含有HeaderView 和footerView的adapter</div><div class="line">        mAdapter = new HeaderViewListAdapter(mHeaderViewInfos, mFooterViewInfos, adapter);</div><div class="line">    &#125; else &#123;</div><div class="line">        mAdapter = adapter;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    mOldSelectedPosition = INVALID_POSITION;//-1</div><div class="line">    mOldSelectedRowId = INVALID_ROW_ID;//Long.MIN_VALUE</div><div class="line"></div><div class="line">    // AbsListView#setAdapter will update choice mode states.</div><div class="line">    //给父亲 adblistView 设置 adapter</div><div class="line">    super.setAdapter(adapter);</div><div class="line"></div><div class="line">    if (mAdapter != null) &#123;</div><div class="line">        mAreAllItemsSelectable = mAdapter.areAllItemsEnabled();</div><div class="line">        mOldItemCount = mItemCount;</div><div class="line">        //调用adapter的getCount 得到条目个数</div><div class="line">        mItemCount = mAdapter.getCount();</div><div class="line">        checkFocus();</div><div class="line">        //注册观察者,这个观察者每当调用notifyDataSetChange的时候就会触发</div><div class="line">        mDataSetObserver = new AdapterDataSetObserver();</div><div class="line">        mAdapter.registerDataSetObserver(mDataSetObserver);</div><div class="line">         // 设置listview的数据源类型,并在mRecycler中初始化对应个数的scrapViews list</div><div class="line">        mRecycler.setViewTypeCount(mAdapter.getViewTypeCount());</div><div class="line"></div><div class="line">        int position;</div><div class="line">        if (mStackFromBottom) &#123;</div><div class="line">            position = lookForSelectablePosition(mItemCount - 1, false);</div><div class="line">        &#125; else &#123;</div><div class="line">            position = lookForSelectablePosition(0, true);</div><div class="line">        &#125;</div><div class="line">        setSelectedPositionInt(position);</div><div class="line">        setNextSelectedPositionInt(position);</div><div class="line"></div><div class="line">        if (mItemCount == 0) &#123;</div><div class="line">            // Nothing selected</div><div class="line">            checkSelectionChanged();</div><div class="line">        &#125;</div><div class="line">    &#125; else &#123;</div><div class="line">        mAreAllItemsSelectable = true;</div><div class="line">        checkFocus();</div><div class="line">        // Nothing selected</div><div class="line">        checkSelectionChanged();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    // 会调用顶层viewRootImpl.performTraversals(),导致视图重绘,listview刷新</div><div class="line">    requestLayout();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>####notifyDataSetChanged<br>这个方法在BaseAdapter中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public void notifyDataSetChanged() &#123;</div><div class="line">    mDataSetObservable.notifyChanged();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这时候根据观察者模式,会调用订阅者AdapterDataSetObserver的onChanged方法,上面提到过,最终还是会调用requestLayout进行重新布局<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">public void onChanged() &#123;</div><div class="line">    mDataChanged = true;</div><div class="line">    mOldItemCount = mItemCount;</div><div class="line">    mItemCount = getAdapter().getCount();</div><div class="line"></div><div class="line">    // Detect the case where a cursor that was previously invalidated has</div><div class="line">    // been repopulated with new data.</div><div class="line">    if (AdapterView.this.getAdapter().hasStableIds() &amp;&amp; mInstanceState != null</div><div class="line">            &amp;&amp; mOldItemCount == 0 &amp;&amp; mItemCount &gt; 0) &#123;</div><div class="line">        AdapterView.this.onRestoreInstanceState(mInstanceState);</div><div class="line">        mInstanceState = null;</div><div class="line">    &#125; else &#123;</div><div class="line">        rememberSyncState();</div><div class="line">    &#125;</div><div class="line">    checkFocus();</div><div class="line">    // 同样,最终调用viewRootImpl.performTraversals(),导致视图重绘,执行listview的 </div><div class="line">    // measure layout 方法等</div><div class="line">    requestLayout();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2015/09/12/ListView源码分析（一）/" data-title="ListView源码分析(一)" data-url="http://samychen.com/2015/09/12/ListView源码分析（一）/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">1</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/安卓，Java/" style="font-size: 10px;">安卓，Java</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">2</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2017 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
