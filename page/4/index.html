@@ -88,6 +88,253 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2014-09-04T06:32:57.000Z"><a href="/2014/09/04/JAVA设计模式初探之装饰者模式/">2014-09-04</a></time>
+        
+  
+    <h1 class="title"><a href="/2014/09/04/JAVA设计模式初探之装饰者模式/">JAVA设计模式初探之装饰者模式</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>这个模式花费了挺长时间，开始有点难理解，其实就是<br>定义：动态给一个对象添加一些额外的职责,就象在墙上刷油漆.使用Decorator模式相比用生成子类方式达到功能的扩充显得更为灵活。<br>设计初衷:通常可以使用继承来实现功能的拓展,如果这些需要拓展的功能的种类很繁多,那么势必生成很多子类,增加系统的复杂性,同时,使用继承实现功能拓展,我们必须可预见这些拓展功能,这些功能是编译时就确定了,是静态的。</p>
+<p> 要点：装饰者与被装饰者拥有共同的超类，继承的目的是继承类型，而不是行为<br>在装饰模式中的各个角色有：<br>（1）抽象构件（Component）角色：给出一个抽象接口，以规范准备接收附加责任的对象。（Human）</p>
+<p>（2）具体构件（Concrete Component）角色：定义一个将要接收附加责任的类。（person）</p>
+<p>（3）装饰（Decorator）角色：持有一个构件（Component）对象的实例，并实现一个与抽象构件接口一致的接口（Human）。</p>
+<p>（4）具体装饰（Concrete Decorator）角色：负责给构件对象添加上附加的责任。</p>
+<p>设计原则</p>
+<ol>
+<li><p>多用组合，少用继承。<br>利用继承设计子类的行为，是在编译时静态决定的，而且所有的子类都会继承到相同的行为。然而，如果能够利用组合的做法扩展对象的行为，就可以在运行时动态地进行扩展。</p>
+</li>
+<li><p>类应设计的对扩展开放，对修改关闭。</p>
+</li>
+</ol>
+<p>模式简化</p>
+<ol>
+<li><p>如果只有一个Concrete Component类而没有抽象的Component接口时，可以让Decorator继承Concrete Component。</p>
+</li>
+<li><p>如果只有一个Concrete Decorator类时，可以将Decorator和Concrete Decorator合并。</p>
+</li>
+</ol>
+<p>适用性：</p>
+<p>以下情况使用Decorator模式</p>
+<ol>
+<li><p>需要扩展一个类的功能，或给一个类添加附加职责。</p>
+</li>
+<li><p>需要动态的给一个对象添加功能，这些功能可以再动态的撤销。</p>
+</li>
+<li><p>需要增加由一些基本功能的排列组合而产生的非常大量的功能，从而使继承关系变的不现实。</p>
+</li>
+<li><p>当不能采用生成子类的方法进行扩充时。一种情况是，可能有大量独立的扩展，为支持每一种组合将产生大量的子类，使得子类数目呈爆炸性增长。另一种情况可能是因为类定义被隐藏，或类定义不能用于生成子类。</p>
+</li>
+</ol>
+<p>优点：</p>
+<ol>
+<li><p>Decorator模式与继承关系的目的都是要扩展对象的功能，但是Decorator可以提供比继承更多的灵活性。</p>
+</li>
+<li><p>通过使用不同的具体装饰类以及这些装饰类的排列组合，设计师可以创造出很多不同行为的组合。</p>
+</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><p>这种比继承更加灵活机动的特性，也同时意味着更加多的复杂性。</p>
+</li>
+<li><p>装饰模式会导致设计中出现许多小类，如果过度使用，会使程序变得很复杂。</p>
+</li>
+<li><p>装饰模式是针对抽象组件（Component）类型编程。但是，如果你要针对具体组件编程时，就应该重新思考你的应用架构，以及装饰者是否合适。当然也可以改变Component接口，增加新的公开的行为，实现“半透明”的装饰者模式。在实际项目中要做出最佳选择。</p>
+</li>
+</ol>
+<p>装饰模式在Java I/O库中的应用： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div></pre></td><td class="code"><pre><div class="line">   实际上Java 的I/O API就是使用Decorator实现的。</div><div class="line">//定义被装饰者</div><div class="line">public interface Human &#123;</div><div class="line">	public void wearClothes();</div><div class="line">	public void walkToWhere();</div><div class="line">&#125;</div><div class="line">//定义装饰者</div><div class="line">public abstract class Decorator implements Human &#123;</div><div class="line">	private Human human;</div><div class="line">	public Decorator(Human human) &#123;</div><div class="line">		this.human = human;</div><div class="line">	&#125;</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		human.wearClothes();</div><div class="line">	&#125;</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		human.walkToWhere();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">//下面定义三种装饰，这是第一个，第二个第三个功能依次细化，即装饰者的功能越来越多</div><div class="line">public class Decorator_zero extends Decorator &#123;</div><div class="line">	public Decorator_zero(Human human) &#123;</div><div class="line">		super(human);</div><div class="line">	&#125;</div><div class="line">	public void goHome() &#123;</div><div class="line">		System.out.println(&quot;进房子。。&quot;);</div><div class="line">	&#125;</div><div class="line">	public void findMap() &#123;</div><div class="line">		System.out.println(&quot;书房找找Map。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.wearClothes();</div><div class="line">		goHome();</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.walkToWhere();</div><div class="line">		findMap();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">public class Decorator_first extends Decorator &#123;</div><div class="line">	public Decorator_first(Human human) &#123;</div><div class="line">		super(human);</div><div class="line">	&#125;</div><div class="line">	public void goClothespress() &#123;</div><div class="line">		System.out.println(&quot;去衣柜找找看。。&quot;);</div><div class="line">	&#125;</div><div class="line">	public void findPlaceOnMap() &#123;</div><div class="line">		System.out.println(&quot;在Map上找找。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.wearClothes();</div><div class="line">		goClothespress();</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.walkToWhere();</div><div class="line">		findPlaceOnMap();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">public class Decorator_two extends Decorator &#123;</div><div class="line">	public Decorator_two(Human human) &#123;</div><div class="line">		super(human);</div><div class="line">	&#125;</div><div class="line">	public void findClothes() &#123;</div><div class="line">		System.out.println(&quot;找到一件D&amp;G。。&quot;);</div><div class="line">	&#125;</div><div class="line">	public void findTheTarget() &#123;</div><div class="line">		System.out.println(&quot;在Map上找到神秘花园和城堡。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.wearClothes();</div><div class="line">		findClothes();</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.walkToWhere();</div><div class="line">		findTheTarget();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">//定义被装饰者，被装饰者初始状态有些自己的装饰</div><div class="line">public class Person implements Human &#123;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		System.out.println(&quot;穿什么呢。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		System.out.println(&quot;去哪里呢。。&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">//测试类，看一下你就会发现，跟java的I/O操作有多么相似</div><div class="line">public class Test &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Human person = new Person();</div><div class="line">		Decorator decorator = new Decorator_two(new Decorator_first(</div><div class="line">				new Decorator_zero(person)));</div><div class="line">		decorator.wearClothes();</div><div class="line">		decorator.walkToWhere();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实就是进房子找衣服，然后找地图这样一个过程，通过装饰者的三层装饰，把细节变得丰富。<br>关键点：<br>1、Decorator抽象类中，持有Human接口，方法全部委托给该接口调用，目的是交给该接口的实现类即子类进行调用。<br>2、Decorator抽象类的子类（具体装饰者），里面都有一个构造方法调用super(human),这一句就体现了抽象类依赖于子类实现即抽象依赖于实现的原则。因为构造里面参数都是Human接口，只要是该Human的实现类都可以传递进去，即表现出Decorator dt = new Decorator_second(new Decorator_first(new Decorator_zero(human)));这种结构的样子。所以当调用dt.wearClothes();dt.walkToWhere()的时候，又因为每个具体装饰者类中，都先调用super.wearClothes和super.walkToWhere()方法，而该super已经由构造传递并指向了具体的某一个装饰者类（这个可以根据需要调换顺序），那么调用的即为装饰类的方法，然后才调用自身的装饰方法，即表现出一种装饰、链式的类似于过滤的行为。<br>3、具体被装饰者类，可以定义初始的状态或者初始的自己的装饰，后面的装饰行为都在此基础上一步一步进行点缀、装饰。<br>4、装饰者模式的设计原则为：对扩展开放、对修改关闭，这句话体现在我如果想扩展被装饰者类的行为，无须修改装饰者抽象类，只需继承装饰者抽象类，实现额外的一些装饰或者叫行为即可对被装饰者进行包装。所以：扩展体现在继承、修改体现在子类中，而不是具体的抽象类，这充分体现了依赖倒置原则，这是自己理解的装饰者模式。</p>
+<p>说的不清楚，有些只可意会不可言传的感觉，多看几遍代码，然后自己敲出来运行一下，基本上就领悟了。</p>
+<p>下面这个例子也有助于理解 装饰的流程和作用<br>现在需要一个汉堡，主体是鸡腿堡，可以选择添加生菜、酱、辣椒等等许多其他的配料，这种情况下就可以使用装饰者模式。</p>
+<p>汉堡基类（被装饰者，相当于上面的Human）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">package decorator;  </div><div class="line">  </div><div class="line">public abstract class Humburger &#123;  </div><div class="line">      </div><div class="line">    protected  String name ;  </div><div class="line">      </div><div class="line">    public String getName()&#123;  </div><div class="line">        return name;  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    public abstract double getPrice();  </div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>鸡腿堡类（被装饰者的初始状态，有些自己的简单装饰，相当于上面的Person）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package decorator;  </div><div class="line">  </div><div class="line">public class ChickenBurger extends Humburger &#123;  </div><div class="line">      </div><div class="line">    public ChickenBurger()&#123;  </div><div class="line">        name = &quot;鸡腿堡&quot;;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    @Override  </div><div class="line">    public double getPrice() &#123;  </div><div class="line">        return 10;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">&#125; </div><div class="line">``` </div><div class="line">配料的基类（装饰者，用来对汉堡进行多层装饰，每层装饰增加一些配料，相当于上面Decorator）</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public abstract class Condiment extends Humburger {  </p>
+<pre><code>public abstract String getName();  
+</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">生菜（装饰者的第一层，相当于上面的decorator_zero）</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public class Lettuce extends Condiment {  </p>
+<pre><code>Humburger humburger;  
+
+public Lettuce(Humburger humburger){  
+    this.humburger = humburger;  
+}  
+
+@Override  
+public String getName() {  
+    return humburger.getName()+&quot; 加生菜&quot;;  
+}  
+
+@Override  
+public double getPrice() {  
+    return humburger.getPrice()+1.5;  
+}  
+</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">辣椒（装饰者的第二层，相当于上面的decorator_first）</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public class Chilli extends Condiment {  </p>
+<pre><code>Humburger humburger;  
+
+public Chilli(Humburger humburger){  
+    this.humburger = humburger;  
+
+}  
+
+@Override  
+public String getName() {  
+    return humburger.getName()+&quot; 加辣椒&quot;;  
+}  
+
+@Override  
+public double getPrice() {  
+    return humburger.getPrice();  //辣椒是免费的哦  
+}  
+</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">测试类</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public class Test {  </p>
+<pre><code>/** 
+ * @param args 
+ */  
+public static void main(String[] args) {  
+    Humburger humburger = new ChickenBurger();  
+    System.out.println(humburger.getName()+&quot;  价钱：&quot;+humburger.getPrice());  
+    Lettuce lettuce = new Lettuce(humburger);  
+    System.out.println(lettuce.getName()+&quot;  价钱：&quot;+lettuce.getPrice());  
+    Chilli chilli = new Chilli(humburger);  
+    System.out.println(chilli.getName()+&quot;  价钱：&quot;+chilli.getPrice());  
+    Chilli chilli2 = new Chilli(lettuce);  
+    System.out.println(chilli2.getName()+&quot;  价钱：&quot;+chilli2.getPrice());  
+}  
+</code></pre><p>}<br>```<br>输出<br>鸡腿堡  价钱：10.0<br>鸡腿堡 加生菜  价钱：11.5<br>鸡腿堡 加辣椒  价钱：10.0<br>鸡腿堡 加生菜 加辣椒  价钱：11.5  </p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2014/09/04/JAVA设计模式初探之装饰者模式/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2014-08-22T06:32:57.000Z"><a href="/2014/08/22/java之单例模式/">2014-08-22</a></time>
+        
+  
+    <h1 class="title"><a href="/2014/08/22/java之单例模式/">java之单例模式</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>Java中的五种单例模式实现方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">package singleton;</div><div class="line"> </div><div class="line">/**</div><div class="line"> * @author chensi</div><div class="line"> * 单例模式的五种写法：</div><div class="line"> * 1、懒汉</div><div class="line"> * 2、恶汉</div><div class="line"> * 3、静态内部类</div><div class="line"> * 4、枚举</div><div class="line"> * 5、双重校验锁</div><div class="line"> */</div><div class="line">/**</div><div class="line"> *五、 双重校验锁，在当前的内存模型中无效</div><div class="line"> */</div><div class="line">class LockSingleton&#123;</div><div class="line">    private volatile static LockSingleton singleton;</div><div class="line">    private LockSingleton()&#123;&#125;</div><div class="line">     </div><div class="line">    //详见：http://www.ibm.com/developerworks/cn/java/j-dcl.html</div><div class="line">    public static LockSingleton getInstance()&#123;</div><div class="line">        if(singleton==null)&#123;</div><div class="line">            synchronized(LockSingleton.class)&#123;</div><div class="line">                if(singleton==null)&#123;</div><div class="line">                    singleton=new LockSingleton();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return singleton;</div><div class="line">    &#125;</div><div class="line">     </div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 四、枚举，《Effective Java》作者推荐使用的方法，优点：不仅能避免多线程同步问题，而且还能防止反序列化重新创建新的对象</div><div class="line"> */</div><div class="line">enum EnumSingleton&#123;</div><div class="line">    INSTANCE;</div><div class="line">    public void doSomeThing()&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 三、静态内部类 优点：加载时不会初始化静态变量INSTANCE，因为没有主动使用，达到Lazy loading</div><div class="line"> */</div><div class="line">class InternalSingleton&#123;</div><div class="line">    private static class SingletonHolder&#123;</div><div class="line">        private final static  InternalSingleton INSTANCE=new InternalSingleton();</div><div class="line">    &#125;   </div><div class="line">    private InternalSingleton()&#123;&#125;</div><div class="line">    public static InternalSingleton getInstance()&#123;</div><div class="line">        return SingletonHolder.INSTANCE;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 二、恶汉,缺点：没有达到lazy loading的效果</div><div class="line"> */</div><div class="line">class HungrySingleton&#123;</div><div class="line">    private static HungrySingleton singleton=new HungrySingleton();</div><div class="line">    private HungrySingleton()&#123;&#125;</div><div class="line">    public static HungrySingleton getInstance()&#123;</div><div class="line">        return singleton;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 一、懒汉，常用的写法</div><div class="line"> */</div><div class="line">class LazySingleton&#123;</div><div class="line">    private static LazySingleton singleton;</div><div class="line">    private LazySingleton()&#123;</div><div class="line">    &#125;</div><div class="line">    public static LazySingleton getInstance()&#123;</div><div class="line">        if(singleton==null)&#123;</div><div class="line">            singleton=new LazySingleton();</div><div class="line">        &#125;</div><div class="line">        return singleton;</div><div class="line">    &#125;   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>1.饿汉式单例类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//饿汉式单例类.在类初始化时，已经自行实例化 </div><div class="line">public class Singleton1 &#123;</div><div class="line">    //私有的默认构造子</div><div class="line">    private Singleton1() &#123;&#125;</div><div class="line">    //已经自行实例化 </div><div class="line">    private static final Singleton1 single = new Singleton1();</div><div class="line">    //静态工厂方法 </div><div class="line">    public static Singleton1 getInstance() &#123;</div><div class="line">        return single;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>2.懒汉式单例类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//懒汉式单例类.在第一次调用的时候实例化 </div><div class="line">public class Singleton2 &#123;</div><div class="line">    //私有的默认构造子</div><div class="line">    private Singleton2() &#123;&#125;</div><div class="line">    //注意，这里没有final    </div><div class="line">    private static Singleton2 single=null;</div><div class="line">    //静态工厂方法 </div><div class="line">    public synchronized  static Singleton2 getInstance() &#123;</div><div class="line">         if (single == null) &#123;  </div><div class="line">             single = new Singleton2();</div><div class="line">         &#125;  </div><div class="line">        return single;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>3.登记式单例类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">import java.util.HashMap;</div><div class="line">import java.util.Map;</div><div class="line">//登记式单例类.</div><div class="line">//类似Spring里面的方法，将类名注册，下次从里面直接获取。</div><div class="line">public class Singleton3 &#123;</div><div class="line">    private static Map&lt;String,Singleton3&gt; map = new HashMap&lt;String,Singleton3&gt;();</div><div class="line">    static&#123;</div><div class="line">        Singleton3 single = new Singleton3();</div><div class="line">        map.put(single.getClass().getName(), single);</div><div class="line">    &#125;</div><div class="line">    //保护的默认构造子</div><div class="line">    protected Singleton3()&#123;&#125;</div><div class="line">    //静态工厂方法,返还此类惟一的实例</div><div class="line">    public static Singleton3 getInstance(String name) &#123;</div><div class="line">        if(name == null) &#123;</div><div class="line">            name = Singleton3.class.getName();</div><div class="line">            System.out.println(&quot;name == null&quot;+&quot;---&gt;name=&quot;+name);</div><div class="line">        &#125;</div><div class="line">        if(map.get(name) == null) &#123;</div><div class="line">            try &#123;</div><div class="line">                map.put(name, (Singleton3) Class.forName(name).newInstance());</div><div class="line">            &#125; catch (InstantiationException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; catch (IllegalAccessException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; catch (ClassNotFoundException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return map.get(name);</div><div class="line">    &#125;</div><div class="line">    //一个示意性的商业方法</div><div class="line">    public String about() &#123;    </div><div class="line">        return &quot;Hello, I am RegSingleton.&quot;;    </div><div class="line">    &#125;    </div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        Singleton3 single3 = Singleton3.getInstance(null);</div><div class="line">        System.out.println(single3.about());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2014/08/22/java之单例模式/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2014-05-23T05:24:37.000Z"><a href="/2014/05/23/Java中的常用集合类/">2014-05-23</a></time>
+        
+  
+    <h1 class="title"><a href="/2014/05/23/Java中的常用集合类/">Java中的常用集合类</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>java中的常用集合类</p>
+<p>1、ArrayList：ArrayList 里面的数据都是有序的，并且可以重复<br>ArayList 缺点：删除慢，随机插入慢<br>举例：如何将数组中的元素变为集合</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String name[] = &#123;&quot;Tom&quot;,&quot;jack&quot;&#125;;</div><div class="line">List&lt;String &gt;list = Arrays.asList(name);</div></pre></td></tr></table></figure>
+<p>2、LinkedList<br>共性：有序 可以重复（里面的元素）<br>区别：数据的存储方式不同<br>        ArrayList本质：数组<br>        LinkedList本质：链表<br>优点：随机插入快，随机删除快<br>缺点：随机获取元素慢，逐个遍历每个元素，而ArrayList是通过下标获取元素</p>
+<p>3、HashSet<br>共性：持有对象，全部放到[ ]中<br>区别：1.存入的对象是无序的（相对无序）<br>                    HashSet 的排序规则是根据hashCode产生的<br>           2.存入HashSet容器的对象不能重复<br>                    HashSet先判断两个对象的hashCode是否相同，再判断                               两个对象的Equals是否相同<br>            注意：放入HashSe中的对象类型，必须覆盖hashCode()方法和Equals方法<br>                        放入Se中的对象类型，必须覆盖hashCode()方法和Equals方法，严格的还需要覆盖toString方法，Set无序，没有get方法</p>
+<p>4、HashMap<br>特点：Map以键值对（key：value）的形式存储数据，Map中的键可以是int，也可以是其他任意数据类型<br>键必须唯一，值可以相同<br>放入Map中的键必须要覆盖Object类hashCode和Equals，toString方法<br>HashMap常用方法：</p>
+<p>containsKey(Object key)<br>containsValue(Object value) </p>
+<p>map.values()返回Map中的所有值<br>map.keySet()返回Map中所有的键</p>
+<p>Map的迭代方法entrySet<br>使用：如何打印系统的所有环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Map&lt;String,String&gt;envMap = System.getenv();</div><div class="line">    for(Map.Entry&lt;String,String&gt;entry:envMap.entrySet())&#123;</div><div class="line">      String key = entry.getKey();</div><div class="line">      String value = entry.getValue();</div><div class="line">      System.out.println(&quot;key = &quot;+key,&quot;value = &quot;+vaule);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2014/05/23/Java中的常用集合类/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2014-05-12T05:24:37.000Z"><a href="/2014/05/12/比较器comparable和comparator的区别/">2014-05-12</a></time>
         
   
@@ -198,7 +445,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">3</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">5</span></li></ul> 
 </div>
  
 
@@ -246,7 +493,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 10px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16px;">安卓，Java</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 10px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16px;">安卓，Java</a> <a href="/tags/生产者消费者模式/" style="font-size: 12px;">生产者消费者模式</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
   </div>
 </div>
 
@@ -254,7 +501,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">6</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">8</span></li></ul>
   </div>
 
 </aside>
