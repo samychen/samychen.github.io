@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>归档 | SamyChen</title>
+  <title>Http协议与TCP协议易混淆点（一） | SamyChen</title>
   <meta name="author" content="SamyChen">
   
   <meta name="description" content="学习总结 思考感悟">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="Http协议与TCP协议易混淆点（一）"/>
   <meta property="og:site_name" content="SamyChen"/>
 
   
@@ -81,184 +81,100 @@
 </header>
   
     <div id="content" class="inner">
-      <div id="main-col" class="alignleft"><div id="wrapper">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2015-03-22T05:22:46.000Z"><a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/">2015-03-22</a></time>
+        
+  
+    <h1 class="title">Http协议与TCP协议易混淆点（一）</h1>
+  
 
-<h2 class="archive-title fa-calendar">归档</h2>
-<div class="archive">
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2017-03-06T15:56:21.406Z"><a href="/2017/03/06/hello-world/">2017-03-06</a></time>
-          
-            <h1 class="title"><a href="/2017/03/06/hello-world/">Hello World</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2016-03-11T07:17:50.000Z"><a href="/2016/03/11/安卓开发规范/">2016-03-11</a></time>
-          
-            <h1 class="title"><a href="/2016/03/11/安卓开发规范/">安卓开发规范</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>###Http协议与TCP协议<br>1.<strong>TCP协议对应于传输层，而HTTP协议对应于应用层，从本质上来说，二者没有可比性。</strong><br>2.<strong>Http协议是建立在TCP协议基础之上的，当浏览器需要从服务器获取网页数据的时候，会发出一次Http请求。Http会通过TCP建立起一个到服务器的连接通道，当本次请求需要的数据完毕后，Http会立即将TCP连接断开，这个过程是很短的。所以Http连接是一种短连接，是一种无状态的连接。</strong></p>
+<hr>
+<p>&emsp;&emsp;所谓的<strong>无状态</strong>，是指浏览器每次向服务器发起请求的时候，不是通过一个连接，而是<strong>每次都建立一个新的连接</strong>。如果是一个连接的话，服务器进程中就能保持住这个连接并且在内存中记住一些信息状态。而每次请求结束后，连接就关闭，相关的内容就释放了，所以<strong>记不住任何状态</strong>，成为无状态连接。</p>
+<p><strong>那么问题来了：每次创建新连接不耗费性能吗？</strong><br>&emsp;&emsp;从HTTP/1.1起，默认都开启了Keep-Alive，保持连接特性。也就是说，在打开一个网页之后，客户端与服务器之间的传输数据的TCP连接不马上关闭，客户端再次访问时会使用，但是Keep-Alive保持时间不是有限的，超时之后还是会断开，所以我们还把其看做是每次连接完成后就会关闭。后来，通过Session, Cookie等相关技术，也能保持一些用户的状态。但是还是每次都使用一个连接，依然是无状态连接。</p>
+<p><strong>为什么HTTP是无状态的短连接，而TCP是有状态的长连接？Http不是建立在TCP的基础上吗，为什么还能是短连接？</strong><br>&emsp;&emsp;Http就是在每次请求完成后就把TCP连接关了，所以是短连接。而我们直接通过Socket编程使用TCP协议的时候，因为<strong>我们自己可以通过代码区控制什么时候打开连接什么时候关闭连接</strong>，只要我们不通过代码把连接关闭，这个连接就会在客户端和服务端的进程中一直存在，<strong>相关状态数据会一直保存着</strong>。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Android/">Android</a>
+  </div>
+
+        
   <div class="tags">
     <a href="/tags/安卓，Java/">安卓，Java</a>
   </div>
 
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2015-12-12T15:27:49.000Z"><a href="/2015/12/12/Android-studio关于build-outputs-apk-中apk或arr或jar无法删除的解决方法/">2015-12-12</a></time>
-          
-            <h1 class="title"><a href="/2015/12/12/Android-studio关于build-outputs-apk-中apk或arr或jar无法删除的解决方法/">Android studio关于build/outputs/apk/中apk或arr或jar无法删除的解决方法</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/安卓/">安卓</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2015-09-26T05:15:15.000Z"><a href="/2015/09/26/ListView源码分析（二）/">2015-09-26</a></time>
-          
-            <h1 class="title"><a href="/2015/09/26/ListView源码分析（二）/">ListView源码分析（二）</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/安卓，Java/">安卓，Java</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2015-09-12T05:12:23.000Z"><a href="/2015/09/12/ListView源码分析（一）/">2015-09-12</a></time>
-          
-            <h1 class="title"><a href="/2015/09/12/ListView源码分析（一）/">ListView源码分析(一)</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/安卓，Java/">安卓，Java</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2015-03-22T05:22:46.000Z"><a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/">2015-03-22</a></time>
-          
-            <h1 class="title"><a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/">Http协议与TCP协议易混淆点（一）</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/安卓，Java/">安卓，Java</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2015-02-12T05:19:39.000Z"><a href="/2015/02/12/APP开发屏幕适配/">2015-02-12</a></time>
-          
-            <h1 class="title"><a href="/2015/02/12/APP开发屏幕适配/">APP开发屏幕适配</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/安卓，Java/">安卓，Java</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2014-05-23T05:24:37.000Z"><a href="/2014/05/23/Java中的常用集合类/">2014-05-23</a></time>
-          
-            <h1 class="title"><a href="/2014/05/23/Java中的常用集合类/">Java中的常用集合类</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/Java/">Java</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2014-05-12T05:24:37.000Z"><a href="/2014/05/12/比较器comparable和comparator的区别/">2014-05-12</a></time>
-          
-            <h1 class="title"><a href="/2014/05/12/比较器comparable和comparator的区别/">比较器comparable和comparator的区别</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/Java/">Java</a>
-  </div>
-
-        </div>
-      </div>
-    </article>
-    
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
 </div>
-<nav id="pagination">
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
   
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
   
-  <div class="clearfix"></div>
-</nav></div></div>
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2015/03/22/Http协议与TCP协议易混淆点（一）/" data-title="Http协议与TCP协议易混淆点（一）" data-url="http://samychen.com/2015/03/22/Http协议与TCP协议易混淆点（一）/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
       <aside id="sidebar" class="alignright">
   
 <div class="widget tag">
