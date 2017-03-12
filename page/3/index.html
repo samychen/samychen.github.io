@@ -480,6 +480,252 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2014-09-16T06:32:57.000Z"><a href="/2014/09/16/java-IO流设计模式之装饰模式/">2014-09-16</a></time>
+        
+  
+    <h1 class="title"><a href="/2014/09/16/java-IO流设计模式之装饰模式/">java IO流设计模式之装饰模式</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>所以装饰模式是Java I/O库的基本模式。在这里我想再用&lt;<head first="" design="" pattern="">&gt;中讲到装饰模式时候的一个例子，看看装饰模式是怎么达到不仅类的数目大减少了，性能的重复也可以减至到最少： </head></p>
+<p>看到了上面的类图了吗，我们不禁会说这就是“类爆炸”。如果是按装饰模式的设计思路我们可以得出下面的设计类图： </p>
+<p>再回到Java I/O库，由于装饰模式的引用，造成了灵活性和复杂都大大增加了，我们在使用Java I/O库时，必须理解Java I/O库是由一些基本的原始流处理器和围绕它们的装饰流处理器所组成的，这样可以在学习和使用Java I/O库时达到事半功倍的效果。<br>首先是InputStream类型中的装饰模式： </p>
+<p>上图中所有的类都叫做流处理器，这个图就叫做（InputStream类型的）流处理器图。<br>　　书中提到根据输入流的源的类型，可以将这些流类分成两种，即原始流类（Original Stream）和链接流处理器（Wrapper Stream）。<br>　　原始流处理器<br>　　原始流处理器接收一个Byte数组对象，String对象，FileDiscriptor对象或者不同类型的流源对象，根据上面的图，原始流处理器包括以下四种：<br>　　ByteArrayInputStream：为多线程的通信提供缓冲区操作功能，接收一个Byte数组作为流的源。<br>　　FileInputStream:建立一个与文件有关的输入流。接收一个File对象作为流的源。<br>　　PipedInputStream：可以与PipedOutputStream配合使用，用于读入一个数据管道的数据，接收一个PipedOutputStream作为源。<br>　　StringBufferInputStream：将一个字符串缓冲区转换为一个输入流。接收一个String对象作为流的源。（ＪＤＫ帮助文档上说明：已过时。此类未能正确地将字符转换为字节。从ＪＤＫ1.1开始，从字符串创建流的首选方法是通过StringReader类进行创建。只有字符串中每个字符的低八位可以由此类使用。）<br>       链接流处理器<br>　　所谓链接流处理器，就是可以接收另一个流对象作为源，并对之进行功能扩展的类。InputStream类型的链接处理器包括以下几种，它们都接收另一个InputStream对象作为流源。<br>　　（１）FilterInputStream称为过滤输入流，它将另一个输入流作为流源。这个类的子类包括以下几种：<br>　　BufferedInputStream：用来从硬盘将数据读入到一个内存缓冲区中，并从缓冲区提供数据。<br>　　DataInputStream：提供基于多字节的读取方法，可以读取原始类型的数据。<br>　　LineNumberInputStream：提供带有行计数功能的过滤输入流。<br>　　PushbackInputStream：提供特殊的功能，可以将已经读取的字节“推回”到输入流中。<br>　　（２）ObjectInputStream可以将使用ObjectInputStream串行化的原始数据类型和对象重新并行化。<br>　　（３）SeqcueneInputStream可以将两个已有的输入流连接起来，形成一个输入流，从而将多个输入流排列构成一个输入流序列。<br>　抽象结构图<br>　　按照上面的这种原始流处理器和链接流处理器的划分，可以用下面的结构图来描述它们之间的关系。</p>
+<p>上面的流处理器图跟装饰模式的结构图有着显而易见的相同之处。实际上InputStream类型的流处理器结构确实符合装饰模式。　<br>　装饰模式结构图</p>
+<p>FilterInputStream继承了InputStream,也引用了InputStream,而它有四个子类,这就是所谓的Decorator模式<br>上面这个图向我们传达了这个信息：链接流链接流对象接收一个原始流对象或者另外一个链接流对象作为流源；另一方面他们对流源的内部工作方法做了相应的改变，这种改变是装饰模式所要达到的目的。比如：<br>　　BufferedInputStream“装饰”了InputStream的内部工作方式，使得流的读入操作使用了缓冲机制。在使用了缓冲机制后，不会对每一次的流读入操作都产生一个物理的读盘动作，从而提高了程序的效率，在汲及到物理流的读入时，都应当使用这个装饰流类。<br>　　LineNumberInputStream和PushbackInputStream也同样“装饰”了InputStream的内部工作方式，前者使得程序能够按照行号读入数据；后者能够使程序读入的过程中，退后一个字符。<br>　　DataInputStream子类读入各种不同的原始数据类型以及String类型的数据，这一点可以从它提供的各种read方法看出来，如：readByte(),readInt(),readFloat()等。</p>
+<p> Java语言的I/O库提供了四大等级结构:InputStream,OutputStream,Reader,Writer四个系列的类。InputStream和OutputStream处理8位字节流数据, Reader和Writer处理16位的字符流数据。InputStream和Reader处理输入, OutputStream和Writer处理输出，所以OutputStream,Reader,Writer这三类的装饰模式跟前面详细介绍的InputStream装饰模式大同小异，大家可以看书中其它部分对这三类的详细描述或者从网上也能找到有关资料。为了方便比较这几种类型，顺便附上Java语言的I/O层次结构图：<br>　下面的图表示:以InputStream和OutputStream形成的层次关系</p>
+<p>下面的图表示:以Reader和Writer形成的层次关系 </p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2014/09/16/java-IO流设计模式之装饰模式/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2014-09-04T06:32:57.000Z"><a href="/2014/09/04/JAVA设计模式初探之装饰者模式/">2014-09-04</a></time>
+        
+  
+    <h1 class="title"><a href="/2014/09/04/JAVA设计模式初探之装饰者模式/">JAVA设计模式初探之装饰者模式</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>这个模式花费了挺长时间，开始有点难理解，其实就是<br>定义：动态给一个对象添加一些额外的职责,就象在墙上刷油漆.使用Decorator模式相比用生成子类方式达到功能的扩充显得更为灵活。<br>设计初衷:通常可以使用继承来实现功能的拓展,如果这些需要拓展的功能的种类很繁多,那么势必生成很多子类,增加系统的复杂性,同时,使用继承实现功能拓展,我们必须可预见这些拓展功能,这些功能是编译时就确定了,是静态的。</p>
+<p> 要点：装饰者与被装饰者拥有共同的超类，继承的目的是继承类型，而不是行为<br>在装饰模式中的各个角色有：<br>（1）抽象构件（Component）角色：给出一个抽象接口，以规范准备接收附加责任的对象。（Human）</p>
+<p>（2）具体构件（Concrete Component）角色：定义一个将要接收附加责任的类。（person）</p>
+<p>（3）装饰（Decorator）角色：持有一个构件（Component）对象的实例，并实现一个与抽象构件接口一致的接口（Human）。</p>
+<p>（4）具体装饰（Concrete Decorator）角色：负责给构件对象添加上附加的责任。</p>
+<p>设计原则</p>
+<ol>
+<li><p>多用组合，少用继承。<br>利用继承设计子类的行为，是在编译时静态决定的，而且所有的子类都会继承到相同的行为。然而，如果能够利用组合的做法扩展对象的行为，就可以在运行时动态地进行扩展。</p>
+</li>
+<li><p>类应设计的对扩展开放，对修改关闭。</p>
+</li>
+</ol>
+<p>模式简化</p>
+<ol>
+<li><p>如果只有一个Concrete Component类而没有抽象的Component接口时，可以让Decorator继承Concrete Component。</p>
+</li>
+<li><p>如果只有一个Concrete Decorator类时，可以将Decorator和Concrete Decorator合并。</p>
+</li>
+</ol>
+<p>适用性：</p>
+<p>以下情况使用Decorator模式</p>
+<ol>
+<li><p>需要扩展一个类的功能，或给一个类添加附加职责。</p>
+</li>
+<li><p>需要动态的给一个对象添加功能，这些功能可以再动态的撤销。</p>
+</li>
+<li><p>需要增加由一些基本功能的排列组合而产生的非常大量的功能，从而使继承关系变的不现实。</p>
+</li>
+<li><p>当不能采用生成子类的方法进行扩充时。一种情况是，可能有大量独立的扩展，为支持每一种组合将产生大量的子类，使得子类数目呈爆炸性增长。另一种情况可能是因为类定义被隐藏，或类定义不能用于生成子类。</p>
+</li>
+</ol>
+<p>优点：</p>
+<ol>
+<li><p>Decorator模式与继承关系的目的都是要扩展对象的功能，但是Decorator可以提供比继承更多的灵活性。</p>
+</li>
+<li><p>通过使用不同的具体装饰类以及这些装饰类的排列组合，设计师可以创造出很多不同行为的组合。</p>
+</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li><p>这种比继承更加灵活机动的特性，也同时意味着更加多的复杂性。</p>
+</li>
+<li><p>装饰模式会导致设计中出现许多小类，如果过度使用，会使程序变得很复杂。</p>
+</li>
+<li><p>装饰模式是针对抽象组件（Component）类型编程。但是，如果你要针对具体组件编程时，就应该重新思考你的应用架构，以及装饰者是否合适。当然也可以改变Component接口，增加新的公开的行为，实现“半透明”的装饰者模式。在实际项目中要做出最佳选择。</p>
+</li>
+</ol>
+<p>装饰模式在Java I/O库中的应用： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div></pre></td><td class="code"><pre><div class="line">   实际上Java 的I/O API就是使用Decorator实现的。</div><div class="line">//定义被装饰者</div><div class="line">public interface Human &#123;</div><div class="line">	public void wearClothes();</div><div class="line">	public void walkToWhere();</div><div class="line">&#125;</div><div class="line">//定义装饰者</div><div class="line">public abstract class Decorator implements Human &#123;</div><div class="line">	private Human human;</div><div class="line">	public Decorator(Human human) &#123;</div><div class="line">		this.human = human;</div><div class="line">	&#125;</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		human.wearClothes();</div><div class="line">	&#125;</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		human.walkToWhere();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">//下面定义三种装饰，这是第一个，第二个第三个功能依次细化，即装饰者的功能越来越多</div><div class="line">public class Decorator_zero extends Decorator &#123;</div><div class="line">	public Decorator_zero(Human human) &#123;</div><div class="line">		super(human);</div><div class="line">	&#125;</div><div class="line">	public void goHome() &#123;</div><div class="line">		System.out.println(&quot;进房子。。&quot;);</div><div class="line">	&#125;</div><div class="line">	public void findMap() &#123;</div><div class="line">		System.out.println(&quot;书房找找Map。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.wearClothes();</div><div class="line">		goHome();</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.walkToWhere();</div><div class="line">		findMap();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">public class Decorator_first extends Decorator &#123;</div><div class="line">	public Decorator_first(Human human) &#123;</div><div class="line">		super(human);</div><div class="line">	&#125;</div><div class="line">	public void goClothespress() &#123;</div><div class="line">		System.out.println(&quot;去衣柜找找看。。&quot;);</div><div class="line">	&#125;</div><div class="line">	public void findPlaceOnMap() &#123;</div><div class="line">		System.out.println(&quot;在Map上找找。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.wearClothes();</div><div class="line">		goClothespress();</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.walkToWhere();</div><div class="line">		findPlaceOnMap();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">public class Decorator_two extends Decorator &#123;</div><div class="line">	public Decorator_two(Human human) &#123;</div><div class="line">		super(human);</div><div class="line">	&#125;</div><div class="line">	public void findClothes() &#123;</div><div class="line">		System.out.println(&quot;找到一件D&amp;G。。&quot;);</div><div class="line">	&#125;</div><div class="line">	public void findTheTarget() &#123;</div><div class="line">		System.out.println(&quot;在Map上找到神秘花园和城堡。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.wearClothes();</div><div class="line">		findClothes();</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		super.walkToWhere();</div><div class="line">		findTheTarget();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">//定义被装饰者，被装饰者初始状态有些自己的装饰</div><div class="line">public class Person implements Human &#123;</div><div class="line">	@Override</div><div class="line">	public void wearClothes() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		System.out.println(&quot;穿什么呢。。&quot;);</div><div class="line">	&#125;</div><div class="line">	@Override</div><div class="line">	public void walkToWhere() &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		System.out.println(&quot;去哪里呢。。&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line">//测试类，看一下你就会发现，跟java的I/O操作有多么相似</div><div class="line">public class Test &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Human person = new Person();</div><div class="line">		Decorator decorator = new Decorator_two(new Decorator_first(</div><div class="line">				new Decorator_zero(person)));</div><div class="line">		decorator.wearClothes();</div><div class="line">		decorator.walkToWhere();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实就是进房子找衣服，然后找地图这样一个过程，通过装饰者的三层装饰，把细节变得丰富。<br>关键点：<br>1、Decorator抽象类中，持有Human接口，方法全部委托给该接口调用，目的是交给该接口的实现类即子类进行调用。<br>2、Decorator抽象类的子类（具体装饰者），里面都有一个构造方法调用super(human),这一句就体现了抽象类依赖于子类实现即抽象依赖于实现的原则。因为构造里面参数都是Human接口，只要是该Human的实现类都可以传递进去，即表现出Decorator dt = new Decorator_second(new Decorator_first(new Decorator_zero(human)));这种结构的样子。所以当调用dt.wearClothes();dt.walkToWhere()的时候，又因为每个具体装饰者类中，都先调用super.wearClothes和super.walkToWhere()方法，而该super已经由构造传递并指向了具体的某一个装饰者类（这个可以根据需要调换顺序），那么调用的即为装饰类的方法，然后才调用自身的装饰方法，即表现出一种装饰、链式的类似于过滤的行为。<br>3、具体被装饰者类，可以定义初始的状态或者初始的自己的装饰，后面的装饰行为都在此基础上一步一步进行点缀、装饰。<br>4、装饰者模式的设计原则为：对扩展开放、对修改关闭，这句话体现在我如果想扩展被装饰者类的行为，无须修改装饰者抽象类，只需继承装饰者抽象类，实现额外的一些装饰或者叫行为即可对被装饰者进行包装。所以：扩展体现在继承、修改体现在子类中，而不是具体的抽象类，这充分体现了依赖倒置原则，这是自己理解的装饰者模式。</p>
+<p>说的不清楚，有些只可意会不可言传的感觉，多看几遍代码，然后自己敲出来运行一下，基本上就领悟了。</p>
+<p>下面这个例子也有助于理解 装饰的流程和作用<br>现在需要一个汉堡，主体是鸡腿堡，可以选择添加生菜、酱、辣椒等等许多其他的配料，这种情况下就可以使用装饰者模式。</p>
+<p>汉堡基类（被装饰者，相当于上面的Human）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">package decorator;  </div><div class="line">  </div><div class="line">public abstract class Humburger &#123;  </div><div class="line">      </div><div class="line">    protected  String name ;  </div><div class="line">      </div><div class="line">    public String getName()&#123;  </div><div class="line">        return name;  </div><div class="line">    &#125;  </div><div class="line">      </div><div class="line">    public abstract double getPrice();  </div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>鸡腿堡类（被装饰者的初始状态，有些自己的简单装饰，相当于上面的Person）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package decorator;  </div><div class="line">  </div><div class="line">public class ChickenBurger extends Humburger &#123;  </div><div class="line">      </div><div class="line">    public ChickenBurger()&#123;  </div><div class="line">        name = &quot;鸡腿堡&quot;;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    @Override  </div><div class="line">    public double getPrice() &#123;  </div><div class="line">        return 10;  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">&#125; </div><div class="line">``` </div><div class="line">配料的基类（装饰者，用来对汉堡进行多层装饰，每层装饰增加一些配料，相当于上面Decorator）</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public abstract class Condiment extends Humburger {  </p>
+<pre><code>public abstract String getName();  
+</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">生菜（装饰者的第一层，相当于上面的decorator_zero）</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public class Lettuce extends Condiment {  </p>
+<pre><code>Humburger humburger;  
+
+public Lettuce(Humburger humburger){  
+    this.humburger = humburger;  
+}  
+
+@Override  
+public String getName() {  
+    return humburger.getName()+&quot; 加生菜&quot;;  
+}  
+
+@Override  
+public double getPrice() {  
+    return humburger.getPrice()+1.5;  
+}  
+</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">辣椒（装饰者的第二层，相当于上面的decorator_first）</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public class Chilli extends Condiment {  </p>
+<pre><code>Humburger humburger;  
+
+public Chilli(Humburger humburger){  
+    this.humburger = humburger;  
+
+}  
+
+@Override  
+public String getName() {  
+    return humburger.getName()+&quot; 加辣椒&quot;;  
+}  
+
+@Override  
+public double getPrice() {  
+    return humburger.getPrice();  //辣椒是免费的哦  
+}  
+</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">测试类</div></pre></td></tr></table></figure></p>
+<p>package decorator;  </p>
+<p>public class Test {  </p>
+<pre><code>/** 
+ * @param args 
+ */  
+public static void main(String[] args) {  
+    Humburger humburger = new ChickenBurger();  
+    System.out.println(humburger.getName()+&quot;  价钱：&quot;+humburger.getPrice());  
+    Lettuce lettuce = new Lettuce(humburger);  
+    System.out.println(lettuce.getName()+&quot;  价钱：&quot;+lettuce.getPrice());  
+    Chilli chilli = new Chilli(humburger);  
+    System.out.println(chilli.getName()+&quot;  价钱：&quot;+chilli.getPrice());  
+    Chilli chilli2 = new Chilli(lettuce);  
+    System.out.println(chilli2.getName()+&quot;  价钱：&quot;+chilli2.getPrice());  
+}  
+</code></pre><p>}<br>```<br>输出<br>鸡腿堡  价钱：10.0<br>鸡腿堡 加生菜  价钱：11.5<br>鸡腿堡 加辣椒  价钱：10.0<br>鸡腿堡 加生菜 加辣椒  价钱：11.5  </p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2014/09/04/JAVA设计模式初探之装饰者模式/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2014-08-22T06:32:57.000Z"><a href="/2014/08/22/java之单例模式/">2014-08-22</a></time>
+        
+  
+    <h1 class="title"><a href="/2014/08/22/java之单例模式/">java之单例模式</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>Java中的五种单例模式实现方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">package singleton;</div><div class="line"> </div><div class="line">/**</div><div class="line"> * @author chensi</div><div class="line"> * 单例模式的五种写法：</div><div class="line"> * 1、懒汉</div><div class="line"> * 2、恶汉</div><div class="line"> * 3、静态内部类</div><div class="line"> * 4、枚举</div><div class="line"> * 5、双重校验锁</div><div class="line"> */</div><div class="line">/**</div><div class="line"> *五、 双重校验锁，在当前的内存模型中无效</div><div class="line"> */</div><div class="line">class LockSingleton&#123;</div><div class="line">    private volatile static LockSingleton singleton;</div><div class="line">    private LockSingleton()&#123;&#125;</div><div class="line">     </div><div class="line">    //详见：http://www.ibm.com/developerworks/cn/java/j-dcl.html</div><div class="line">    public static LockSingleton getInstance()&#123;</div><div class="line">        if(singleton==null)&#123;</div><div class="line">            synchronized(LockSingleton.class)&#123;</div><div class="line">                if(singleton==null)&#123;</div><div class="line">                    singleton=new LockSingleton();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return singleton;</div><div class="line">    &#125;</div><div class="line">     </div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 四、枚举，《Effective Java》作者推荐使用的方法，优点：不仅能避免多线程同步问题，而且还能防止反序列化重新创建新的对象</div><div class="line"> */</div><div class="line">enum EnumSingleton&#123;</div><div class="line">    INSTANCE;</div><div class="line">    public void doSomeThing()&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 三、静态内部类 优点：加载时不会初始化静态变量INSTANCE，因为没有主动使用，达到Lazy loading</div><div class="line"> */</div><div class="line">class InternalSingleton&#123;</div><div class="line">    private static class SingletonHolder&#123;</div><div class="line">        private final static  InternalSingleton INSTANCE=new InternalSingleton();</div><div class="line">    &#125;   </div><div class="line">    private InternalSingleton()&#123;&#125;</div><div class="line">    public static InternalSingleton getInstance()&#123;</div><div class="line">        return SingletonHolder.INSTANCE;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 二、恶汉,缺点：没有达到lazy loading的效果</div><div class="line"> */</div><div class="line">class HungrySingleton&#123;</div><div class="line">    private static HungrySingleton singleton=new HungrySingleton();</div><div class="line">    private HungrySingleton()&#123;&#125;</div><div class="line">    public static HungrySingleton getInstance()&#123;</div><div class="line">        return singleton;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 一、懒汉，常用的写法</div><div class="line"> */</div><div class="line">class LazySingleton&#123;</div><div class="line">    private static LazySingleton singleton;</div><div class="line">    private LazySingleton()&#123;</div><div class="line">    &#125;</div><div class="line">    public static LazySingleton getInstance()&#123;</div><div class="line">        if(singleton==null)&#123;</div><div class="line">            singleton=new LazySingleton();</div><div class="line">        &#125;</div><div class="line">        return singleton;</div><div class="line">    &#125;   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>1.饿汉式单例类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//饿汉式单例类.在类初始化时，已经自行实例化 </div><div class="line">public class Singleton1 &#123;</div><div class="line">    //私有的默认构造子</div><div class="line">    private Singleton1() &#123;&#125;</div><div class="line">    //已经自行实例化 </div><div class="line">    private static final Singleton1 single = new Singleton1();</div><div class="line">    //静态工厂方法 </div><div class="line">    public static Singleton1 getInstance() &#123;</div><div class="line">        return single;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>2.懒汉式单例类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//懒汉式单例类.在第一次调用的时候实例化 </div><div class="line">public class Singleton2 &#123;</div><div class="line">    //私有的默认构造子</div><div class="line">    private Singleton2() &#123;&#125;</div><div class="line">    //注意，这里没有final    </div><div class="line">    private static Singleton2 single=null;</div><div class="line">    //静态工厂方法 </div><div class="line">    public synchronized  static Singleton2 getInstance() &#123;</div><div class="line">         if (single == null) &#123;  </div><div class="line">             single = new Singleton2();</div><div class="line">         &#125;  </div><div class="line">        return single;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>3.登记式单例类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">import java.util.HashMap;</div><div class="line">import java.util.Map;</div><div class="line">//登记式单例类.</div><div class="line">//类似Spring里面的方法，将类名注册，下次从里面直接获取。</div><div class="line">public class Singleton3 &#123;</div><div class="line">    private static Map&lt;String,Singleton3&gt; map = new HashMap&lt;String,Singleton3&gt;();</div><div class="line">    static&#123;</div><div class="line">        Singleton3 single = new Singleton3();</div><div class="line">        map.put(single.getClass().getName(), single);</div><div class="line">    &#125;</div><div class="line">    //保护的默认构造子</div><div class="line">    protected Singleton3()&#123;&#125;</div><div class="line">    //静态工厂方法,返还此类惟一的实例</div><div class="line">    public static Singleton3 getInstance(String name) &#123;</div><div class="line">        if(name == null) &#123;</div><div class="line">            name = Singleton3.class.getName();</div><div class="line">            System.out.println(&quot;name == null&quot;+&quot;---&gt;name=&quot;+name);</div><div class="line">        &#125;</div><div class="line">        if(map.get(name) == null) &#123;</div><div class="line">            try &#123;</div><div class="line">                map.put(name, (Singleton3) Class.forName(name).newInstance());</div><div class="line">            &#125; catch (InstantiationException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; catch (IllegalAccessException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125; catch (ClassNotFoundException e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return map.get(name);</div><div class="line">    &#125;</div><div class="line">    //一个示意性的商业方法</div><div class="line">    public String about() &#123;    </div><div class="line">        return &quot;Hello, I am RegSingleton.&quot;;    </div><div class="line">    &#125;    </div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        Singleton3 single3 = Singleton3.getInstance(null);</div><div class="line">        System.out.println(single3.about());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2014/08/22/java之单例模式/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2014-05-23T05:24:37.000Z"><a href="/2014/05/23/Java中的常用集合类/">2014-05-23</a></time>
         
   
@@ -523,115 +769,13 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-05-12T05:24:37.000Z"><a href="/2014/05/12/比较器comparable和comparator的区别/">2014-05-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2014/05/12/比较器comparable和comparator的区别/">比较器comparable和comparator的区别</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>比较器comparable和comparator的区别</p>
-<p>Java提供了一个集合工具类，里面有排序方法，Collections使用它提供的方法来完成排序<br>注意：Collection不是Collections，Collections是在Collection上进行操作的集合的一个工具类，就如Arrays是数组的工具类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class ComparableTest &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		String names[] = &#123; &quot;Jack&quot;, &quot;Adam&quot;, &quot;Bob&quot; &#125;;</div><div class="line">		List&lt;String&gt; list = Arrays.asList(names);</div><div class="line">		System.out.println(list);</div><div class="line">		//排序的方式String已经替我们完成了</div><div class="line">		//String会调用compareTo（）方法实现排序的功能</div><div class="line">		Collections.sort(list);</div><div class="line">		System.out.println(list);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>String类实现Comparable接口，当调用sort规则时，String会调用compareTo方法实现排序功能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class StudentComparable &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Student stu[] = &#123;</div><div class="line">				new Student(&quot;005&quot;, &quot;Jackson&quot;, 3, 3, &quot;football&quot;),</div><div class="line">				new Student(&quot;001&quot;, &quot;Jerry&quot;, 1, 3, &quot;football&quot;),</div><div class="line">				new Student(&quot;002&quot;, &quot;Adam&quot;, 5, 2, &quot;Tennis&quot;)</div><div class="line">		&#125;;</div><div class="line">		//错误原因：1Student没有实现Comparable接口</div><div class="line">		//       2 没有指定排序规则（id、name、hobby）</div><div class="line">		List&lt;Student&gt; list = Arrays.asList(stu);</div><div class="line">		//如何比较排序？  Collections.sort方法进行排序，它会回调 容器中Student对象的 compareTo方法</div><div class="line">		Collections.sort(list);</div><div class="line">		for(Student student : list)&#123;</div><div class="line">			System.out.println(student);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line">public class Student implements Comparable&lt;Student&gt;&#123;</div><div class="line">	</div><div class="line">	public String getId() &#123;</div><div class="line">		return id;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setId(String id) &#123;</div><div class="line">		this.id = id;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getName() &#123;</div><div class="line">		return name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setName(String name) &#123;</div><div class="line">		this.name = name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public int getGrade() &#123;</div><div class="line">		return grade;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setGrade(int grade) &#123;</div><div class="line">		this.grade = grade;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public int getClassNo() &#123;</div><div class="line">		return classNo;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setClassNo(int classNo) &#123;</div><div class="line">		this.classNo = classNo;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getHobby() &#123;</div><div class="line">		return hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setHobby(String hobby) &#123;</div><div class="line">		this.hobby = hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public String toString() &#123;</div><div class="line">		return &quot;Student [id=&quot; + id + &quot;, name=&quot; + name + &quot;, grade=&quot; + grade + &quot;, classNo=&quot; + classNo + &quot;, hobby=&quot; + hobby</div><div class="line">				+ &quot;]&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public int hashCode() &#123;</div><div class="line">		final int prime = 31;</div><div class="line">		int result = 1;</div><div class="line">		result = prime * result + classNo;</div><div class="line">		result = prime * result + grade;</div><div class="line">		result = prime * result + ((hobby == null) ? 0 : hobby.hashCode());</div><div class="line">		result = prime * result + ((id == null) ? 0 : id.hashCode());</div><div class="line">		result = prime * result + ((name == null) ? 0 : name.hashCode());</div><div class="line">		return result;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public boolean equals(Object obj) &#123;</div><div class="line">		if (this == obj)</div><div class="line">			return true;</div><div class="line">		if (obj == null)</div><div class="line">			return false;</div><div class="line">		if (getClass() != obj.getClass())</div><div class="line">			return false;</div><div class="line">		Student other = (Student) obj;</div><div class="line">		if (classNo != other.classNo)</div><div class="line">			return false;</div><div class="line">		if (grade != other.grade)</div><div class="line">			return false;</div><div class="line">		if (hobby == null) &#123;</div><div class="line">			if (other.hobby != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!hobby.equals(other.hobby))</div><div class="line">			return false;</div><div class="line">		if (id == null) &#123;</div><div class="line">			if (other.id != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!id.equals(other.id))</div><div class="line">			return false;</div><div class="line">		if (name == null) &#123;</div><div class="line">			if (other.name != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!name.equals(other.name))</div><div class="line">			return false;</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public Student(String id,String name,int grade,int classNo,String hobby) &#123;</div><div class="line">		this.id =id;</div><div class="line">		this.name = name;</div><div class="line">		this.grade = grade;</div><div class="line">		this.classNo = classNo;</div><div class="line">		this.hobby = hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	private String id;</div><div class="line">	</div><div class="line">	private String name;</div><div class="line">	</div><div class="line">	private int grade;</div><div class="line">	</div><div class="line">	private int classNo;</div><div class="line">	</div><div class="line">	private String hobby;</div><div class="line"></div><div class="line">	/**</div><div class="line">	 * Comparable 的compareTo方法为我们提供了比较的功能，</div><div class="line">	 * 如何比较</div><div class="line">	 * 怎么做需要在Student类中实现</div><div class="line">	 * 我的规则：按照学生的ID进行排序</div><div class="line">	 */</div><div class="line">	@Override</div><div class="line">	public int compareTo(Student o) &#123;</div><div class="line">		//两个对象需要做比较  </div><div class="line">		//this的id 如果大于 o 的id  返回的是正数</div><div class="line">		//this的id 如果等于 o 的id  返回的是0</div><div class="line">		//this的id 如果小于 o 的id  返回的是负数</div><div class="line">//		int result = -(this.getId().compareTo(o.getId()));</div><div class="line">//		return result;</div><div class="line">		</div><div class="line">//		if(this.getId().compareTo(o.getId()) &gt;0)&#123;</div><div class="line">//			return 1;</div><div class="line">//		&#125;else if(this.getId().compareTo(o.getId())&lt;0)&#123;</div><div class="line">//			return -1;</div><div class="line">//		&#125;</div><div class="line">//		return 0;</div><div class="line">	   //按照年级进行排序</div><div class="line">		if(this.getGrade() &gt; o.getGrade())&#123;</div><div class="line">			return 1;</div><div class="line">		&#125;else if(this.getGrade() &lt; o.getGrade())&#123;</div><div class="line">			return -1;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	//制定一个策略：输入1  id   输入2   name   输入3   爱好排序</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果只比较一次 ，可以使用匿名内部类节约资源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">public class CheLueCompator &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Student stu[] = &#123;</div><div class="line">				new Student(&quot;005&quot;, &quot;Jackson&quot;, 3, 6, &quot;football&quot;),</div><div class="line">				new Student(&quot;001&quot;, &quot;Zero&quot;, 1, 3, &quot;basketball&quot;),</div><div class="line">				new Student(&quot;002&quot;, &quot;Adam&quot;, 5, 2, &quot;tennis&quot;)</div><div class="line">		&#125;;</div><div class="line">		List&lt;Student&gt; list = Arrays.asList(stu);</div><div class="line">		</div><div class="line">		sortList(list);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public static void sortList(List&lt;Student&gt; list) &#123;</div><div class="line">		Scanner input = new Scanner(System.in);</div><div class="line">		System.out.println(&quot;请输入排序编号 1按照学生名称  2按照爱好  3按照班级编号&quot;);</div><div class="line">		int num = input.nextInt();</div><div class="line">		switch (num) &#123;</div><div class="line">		case 1:</div><div class="line">			//两个参数 1需要排序的列表 2排序的策略   （按照名称排序）</div><div class="line">			//匿名内部类：接口回调（由谁回调谁？）sort方法回调匿名内部类</div><div class="line">			//好莱坞原则：sort理解为好莱坞 ，匿名内部类理解为演员</div><div class="line">			//你不要找我，如果有需要我来找你，前提（匿名内部类需要向好莱坞进行注册）</div><div class="line">			//如何注册（匿名内部类作为参数传入sort方法），sort方法需要的时候会回调匿名内部类的方法</div><div class="line">			Collections.sort(list, new Comparator&lt;Student&gt;() &#123;</div><div class="line">				@Override</div><div class="line">				public int compare(Student o1, Student o2) &#123;</div><div class="line">					//调用String的compareTo()方法 </div><div class="line">					return o1.getName().compareTo(o2.getName());</div><div class="line">				&#125;</div><div class="line">			&#125;);</div><div class="line">			break;</div><div class="line">		case 2:</div><div class="line">			Collections.sort(list,new StuHobbyCompator());</div><div class="line">			 break;</div><div class="line">		case 3:</div><div class="line">			Collections.sort(list,new StuClassNoCompator());</div><div class="line">			break;</div><div class="line">		default:</div><div class="line">			System.out.println(&quot;Error&quot;);</div><div class="line">			break;</div><div class="line">		&#125;</div><div class="line">		input.close();</div><div class="line">		iteratorStu(list);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public static void iteratorStu(List&lt;Student&gt; list) &#123;</div><div class="line">		for(Student student : list)&#123;</div><div class="line">			System.out.println(student);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Comparable和Comparator的区别</p>
-<p>1、Comparable:在java.lang包，通常由实体类(Student)来实现，用来定义默认的排序规则<br>StudentComparable.java回调容器中Student对象的 compareTo方法<br>Comparator:在java.util包，排序的工具类，是一种策略，通常一个实体类(Student)有一种默认的排序法，还有多种排序策略<br>Comparable 定义在 Person类的内部:</p>
-<p>public class Persion implements Comparable {..比较Person的大小..},<br>因为已经实现了比较器,那么我们的Person现在是一个可以比较大小的对象了,它的比较功能和String完全一样</p>
-<p>2、Comparator<br>Comparator 是定义在Person的外部的, 此时我们的Person类的结构不需要有任何变化,如</p>
-<p>public class Person{ String name; int age },</p>
-<p>然后我们另外定义一个比较器:</p>
-<p>public PersonComparator implements Comparator() {..比较Person的大小..},<br>用 Comparator 是策略模式（strategy design pattern），就是不改变对象自身，而用一个策略对象（strategy object）来改变它的行为。<br>在PersonComparator里面实现了怎么比较两个Person的大小. 所以,用这种方法,当我们要对一个 personList进行排序的时候, 我们除了了要传递personList过去, 还需要把PersonComparator传递过去,因为怎么比较Person的大小是在PersonComparator里面实现的, 如:</p>
-<p>Collections.sort( personList , new PersonComparator() ).<br><strong><em>一个是自已完成比较，一个是外部程序实现比较的差别而已。</em></strong><br>3、Comparator 和 Comparable 的实例<br>实现Comparable接口要覆盖compareTo方法, 在compareTo方法里面实现比较</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public class Person implements Comparable &#123;</div><div class="line">     String name;</div><div class="line">     int age</div><div class="line">     public int compareTo(Person another) &#123;</div><div class="line">          int i = 0;</div><div class="line">          i = name.compareTo(another.name); // 使用字符串的比较</div><div class="line">          if(i == 0) &#123; // 如果名字一样,比较年龄, 返回比较年龄结果</div><div class="line">               return age - another.age;</div><div class="line">          &#125; else &#123;</div><div class="line">               return i; // 名字不一样, 返回比较名字的结果.</div><div class="line">          &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这时我们可以直接用 Collections.sort( personList ) 对其排序了.</p>
-<p>实现Comparator需要覆盖 compare 方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class Person&#123;</div><div class="line">     String name;</div><div class="line">     int age</div><div class="line">&#125;</div><div class="line">class PersonComparator implements Comparator &#123; </div><div class="line">     public int compare(Person one, Person another) &#123;</div><div class="line">          int i = 0;</div><div class="line">          i = one.name.compareTo(another.name); // 使用字符串的比较，即调用String的比较丰富</div><div class="line">          if(i == 0) &#123; // 如果名字一样,比较年龄,返回比较年龄结果</div><div class="line">               return one.age - another.age;</div><div class="line">          &#125; else &#123;</div><div class="line">               return i; // 名字不一样, 返回比较名字的结果.</div><div class="line">          &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line">   Collections.sort( personList , new PersonComparator()) 可以对其排序</div></pre></td></tr></table></figure>
-<p>4、总结<br>        两种方法各有优劣, 用Comparable 简单, 只要实现Comparable 接口的对象直接就成为一个可以比较的对象,但是需要修改源代码, 用Comparator 的好处是不需要修改源代码, 而是另外实现一个比较器, 当某个自定义的对象需要作比较的时候,把比较器和对象一起传递过去就可以比大小了, 并且在Comparator 里面用户可以自己实现复杂的可以通用的逻辑,使其可以匹配一些比较简单的对象,那样就可以节省很多重复劳动了。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2014/05/12/比较器comparable和comparator的区别/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-03-12T05:32:22.000Z"><a href="/2014/03/12/Java中为什么要单继承，多实现/">2014-03-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2014/03/12/Java中为什么要单继承，多实现/">Java中为什么要单继承，多实现</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p><strong>为什么是多实现呢？</strong><br>  若为多继承，那么当<strong>多个父类中有重复的属性或者方法时，子类的调用结果会含糊不清</strong>，因此用了单继承。<br><strong>为什么是多实现呢？</strong><br>  通过实现接口拓展了类的功能，若实现的多个接口中有重复的方法也没关系，因为实现类中必须重写接口中的方法，所以调用时还是调用的实现类中重写的方法。那么各个接口中重复的变量又是怎么回事呢？<br>  接口中，所有属性都是 static final修饰的，即常量，这个什么意思呢，由于JVM的底层机制，所有static final修饰的变量都在编译时期确定了其值，若在使用时，两个相同的常量值不同，在编译时期就不能通过。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2014/03/12/Java中为什么要单继承，多实现/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
     <a href="/page/2/" class="alignleft prev">上一页</a>
   
+  
+    <a href="/page/4/" class="alignright next">下一页</a>
   
   <div class="clearfix"></div>
 </nav>
@@ -640,7 +784,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">3</span></li></ul> 
 </div>
  
 
@@ -688,7 +832,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 12.5px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/安卓/" style="font-size: 17.5px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 15px;">安卓，Java</a>
+    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 10px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16px;">安卓，Java</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
   </div>
 </div>
 
@@ -696,7 +840,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">3</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">6</span></li></ul>
   </div>
 
 </aside>
