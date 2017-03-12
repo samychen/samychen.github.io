@@ -103,69 +103,7 @@
         
     </div>
 
-        <p>在处理大文件时，如果利用普通的FileInputStream 或者FileOutputStream 抑或RandomAccessFile 来进行频繁的读写操作，都将导致进程因频繁读写外存而降低速度.如下为一个对比实验。</p>
-<p>public class Test {</p>
-<p>public static void main(String[] args) {</p>
-<p>try {</p>
-<p>FileInputStream fis=new FileInputStream(“/home/tobacco/test/res.txt”);</p>
-<p>int sum=0;</p>
-<p>int n;</p>
-<p>long t1=System.currentTimeMillis();</p>
-<p>try {</p>
-<p>while((n=fis.read())&gt;=0){</p>
-<p>sum+=n;</p>
-<p>}</p>
-<p>} catch (IOException e) {</p>
-<p>// TODO Auto-generated catch block</p>
-<p>e.printStackTrace();</p>
-<p>}</p>
-<p>long t=System.currentTimeMillis()-t1;</p>
-<p>System.out.println(“sum:”+sum+”  time:”+t);</p>
-<p>} catch (FileNotFoundException e) {</p>
-<p>// TODO Auto-generated catch block</p>
-<p>e.printStackTrace();</p>
-<p>}</p>
-<p>try {</p>
-<p>FileInputStream fis=new FileInputStream(“/home/tobacco/test/res.txt”);</p>
-<p>BufferedInputStream bis=new BufferedInputStream(fis);</p>
-<p>int sum=0;</p>
-<p>int n;</p>
-<p>long t1=System.currentTimeMillis();</p>
-<p>try {</p>
-<p>while((n=bis.read())&gt;=0){</p>
-<p>sum+=n;</p>
-<p>}</p>
-<p>} catch (IOException e) {</p>
-<p>// TODO Auto-generated catch block</p>
-<p>e.printStackTrace();</p>
-<p>}</p>
-<p>long t=System.currentTimeMillis()-t1;</p>
-<p>System.out.println(“sum:”+sum+”  time:”+t);</p>
-<p>} catch (FileNotFoundException e) {</p>
-<p>// TODO Auto-generated catch block</p>
-<p>e.printStackTrace();</p>
-<p>}</p>
-<p>MappedByteBuffer buffer=null;</p>
-<p>try {</p>
-<p>buffer=new RandomAccessFile(“/home/tobacco/test/res.txt”,”rw”).getChannel().map(FileChannel.MapMode.READ_WRITE, 0, 1253244);</p>
-<p>int sum=0;</p>
-<p>int n;</p>
-<p>long t1=System.currentTimeMillis();</p>
-<p>for(int i=0;i&lt;1253244;i++){</p>
-<p>n=0x000000ff&amp;buffer.get(i);</p>
-<p>sum+=n;</p>
-<p>}</p>
-<p>long t=System.currentTimeMillis()-t1;</p>
-<p>System.out.println(“sum:”+sum+”  time:”+t);</p>
-<p>} catch (FileNotFoundException e) {</p>
-<p>// TODO Auto-generated catch block</p>
-<p>e.printStackTrace();</p>
-<p>} catch (IOException e) {</p>
-<p>// TODO Auto-generated catch block</p>
-<p>e.printStackTrace();</p>
-<p>}</p>
-<p>}</p>
-<p>}</p>
+        <p>在处理大文件时，如果利用普通的FileInputStream 或者FileOutputStream 抑或RandomAccessFile 来进行频繁的读写操作，都将导致进程因频繁读写外存而降低速度.如下为一个对比实验。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public class Test &#123;</div><div class="line"></div><div class="line">public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">try &#123;</div><div class="line"></div><div class="line">FileInputStream fis=new FileInputStream(&quot;/home/tobacco/test/res.txt&quot;);</div><div class="line"></div><div class="line">int sum=0;</div><div class="line"></div><div class="line">int n;</div><div class="line"></div><div class="line">long t1=System.currentTimeMillis();</div><div class="line"></div><div class="line">try &#123;</div><div class="line"></div><div class="line">while((n=fis.read())&gt;=0)&#123;</div><div class="line"></div><div class="line">sum+=n;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125; catch (IOException e) &#123;</div><div class="line"></div><div class="line">// TODO Auto-generated catch block</div><div class="line"></div><div class="line">e.printStackTrace();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">long t=System.currentTimeMillis()-t1;</div><div class="line"></div><div class="line">System.out.println(&quot;sum:&quot;+sum+&quot;  time:&quot;+t);</div><div class="line"></div><div class="line">&#125; catch (FileNotFoundException e) &#123;</div><div class="line"></div><div class="line">// TODO Auto-generated catch block</div><div class="line"></div><div class="line">e.printStackTrace();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">try &#123;</div><div class="line"></div><div class="line">FileInputStream fis=new FileInputStream(&quot;/home/tobacco/test/res.txt&quot;);</div><div class="line"></div><div class="line">BufferedInputStream bis=new BufferedInputStream(fis);</div><div class="line"></div><div class="line">int sum=0;</div><div class="line"></div><div class="line">int n;</div><div class="line"></div><div class="line">long t1=System.currentTimeMillis();</div><div class="line"></div><div class="line">try &#123;</div><div class="line"></div><div class="line">while((n=bis.read())&gt;=0)&#123;</div><div class="line"></div><div class="line">sum+=n;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125; catch (IOException e) &#123;</div><div class="line"></div><div class="line">// TODO Auto-generated catch block</div><div class="line"></div><div class="line">e.printStackTrace();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">long t=System.currentTimeMillis()-t1;</div><div class="line"></div><div class="line">System.out.println(&quot;sum:&quot;+sum+&quot;  time:&quot;+t);</div><div class="line"></div><div class="line">&#125; catch (FileNotFoundException e) &#123;</div><div class="line"></div><div class="line">// TODO Auto-generated catch block</div><div class="line"></div><div class="line">e.printStackTrace();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">MappedByteBuffer buffer=null;</div><div class="line"></div><div class="line">try &#123;</div><div class="line"></div><div class="line">buffer=new RandomAccessFile(&quot;/home/tobacco/test/res.txt&quot;,&quot;rw&quot;).getChannel().map(FileChannel.MapMode.READ_WRITE, 0, 1253244);</div><div class="line"></div><div class="line">int sum=0;</div><div class="line"></div><div class="line">int n;</div><div class="line"></div><div class="line">long t1=System.currentTimeMillis();</div><div class="line"></div><div class="line">for(int i=0;i&lt;1253244;i++)&#123;</div><div class="line"></div><div class="line">n=0x000000ff&amp;buffer.get(i);</div><div class="line"></div><div class="line">sum+=n;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">long t=System.currentTimeMillis()-t1;</div><div class="line"></div><div class="line">System.out.println(&quot;sum:&quot;+sum+&quot;  time:&quot;+t);</div><div class="line"></div><div class="line">&#125; catch (FileNotFoundException e) &#123;</div><div class="line"></div><div class="line">// TODO Auto-generated catch block</div><div class="line"></div><div class="line">e.printStackTrace();</div><div class="line"></div><div class="line">&#125; catch (IOException e) &#123;</div><div class="line"></div><div class="line">// TODO Auto-generated catch block</div><div class="line"></div><div class="line">e.printStackTrace();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>测试文件为一个大小为1253244字节的文件。测试结果：</p>
 <p>sum:220152087 time:1464</p>
 <p>sum:220152087 time:72</p>
