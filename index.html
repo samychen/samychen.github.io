@@ -88,6 +88,137 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2017-03-08T07:18:38.000Z"><a href="/2017/03/08/Cordova-HelloWorld/">2017-03-08</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/03/08/Cordova-HelloWorld/">Cordova HelloWorld</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>创建第一个Helloworld项目，现在来分析运行机制</p>
+<p>####MainActivity.java<br>&emsp;&emsp;我们已经将MainActivity导入到了eclipse中。打开scr下com.example.hello下的MainActivity.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public class MainActivity extends CordovaActivity</div><div class="line">&#123;</div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState)</div><div class="line">    &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line"></div><div class="line">        // enable Cordova apps to be started in the background</div><div class="line">        Bundle extras = getIntent().getExtras();</div><div class="line">        if (extras != null &amp;&amp; extras.getBoolean(&quot;cdvStartInBackground&quot;, false)) &#123;</div><div class="line">            moveTaskToBack(true);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Set by &lt;content src=&quot;index.html&quot; /&gt; in config.xml</div><div class="line">        loadUrl(launchUrl);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　loadUrl(launchUrl);会在当前的WebView中去加载首页，当然这个首页是我们自己配置的，在res/xml/config.xml中。<content src="index.html">。这个路径都是指的assets/www下的路径。</content></p>
+<p>　　这样这个app启动的时候会首先调用这个MainActivity(当然这是在AndroidManifest.xml中配置的)，然后Activity启动的时候会将index.html加载在其WebView中，然后我们就看到了Cordova的页面。</p>
+<p>####index.html<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;cordova.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;js/index.js&quot;&gt;&lt;/script&gt;</div><div class="line">...</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;在显示这个index页面的时候，会加载两个js文件。cordova.js就是cordova的api，调用原生内容用的，相当于jar包。</p>
+<p>####index.js<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">var app = &#123;</div><div class="line">    // 初始化方法，会调用绑定事件的方法</div><div class="line">    initialize: function() &#123;</div><div class="line">        this.bindEvents();</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 绑定事件的方法,事件可以是这些:</div><div class="line">    // &apos;load&apos;, &apos;deviceready&apos;, &apos;offline&apos;, and &apos;online&apos;.</div><div class="line">    //该事件是在 cordova 载入完成后发生的事件，它表示cordova 加载完成并准备访问，yourCallbackFunction，相当于程序的入口功能</div><div class="line">    bindEvents: function() &#123;</div><div class="line">        document.addEventListener(&apos;deviceready&apos;, this.onDeviceReady, false);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // deviceready 后事件处理</div><div class="line">    onDeviceReady: function() &#123;</div><div class="line">        app.receivedEvent(&apos;deviceready&apos;);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 事件处理，更新DOM，改变两个元素的css</div><div class="line">    receivedEvent: function(id) &#123;</div><div class="line">        var parentElement = document.getElementById(id);</div><div class="line">        var listeningElement = parentElement.querySelector(&apos;.listening&apos;);</div><div class="line">        var receivedElement = parentElement.querySelector(&apos;.received&apos;);</div><div class="line"></div><div class="line">        listeningElement.setAttribute(&apos;style&apos;, &apos;display:none;&apos;);</div><div class="line">        receivedElement.setAttribute(&apos;style&apos;, &apos;display:block;&apos;);</div><div class="line"></div><div class="line">        console.log(&apos;Received Event: &apos; + id);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">//调用初始化方法</div><div class="line">app.initialize();</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;加载index.js之后，程序会首先调用初始化方法，初始化的时候会去绑定事件监听：document.addEventListener(‘deviceready’, this.onDeviceReady, false);</p>
+<p>&emsp;&emsp;deviceready事件：该事件是在 cordova 载入完成后发生的事件，它表示cordova 加载完成并准备访问，你传进去的回调函数，相当于程序的入口函数。</p>
+<p>&emsp;&emsp;当cordova准备好的时候，会去首先执行你传进去的回调函数，这里是onDeviceReady()。这个方法会改变DOM元素的css样式。</p>
+<p>&emsp;&emsp;最终效果就是，当cordova没有加载完的时候，页面上Apache Cordova下面那里显示的是：Connecting to Device（背景是灰色）。加载完之后，cordova准备好之后，原来显示的消失，现在显示的是：Device is Ready（背景是绿色）</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/03/08/Cordova-HelloWorld/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2017-03-07T05:40:51.000Z"><a href="/2017/03/07/Cordova入门/">2017-03-07</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/03/07/Cordova入门/">Cordova入门</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>&emsp;&emsp;由于公司业务发展需求，最近都在研究混合式开发APP，项目采用的Apache的Cordova框架，这篇文章就是所有编程语言的第一步，创建第一个Cordova安卓平台HellWorld</p>
+<p>####创建APP<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova create hello com.example.hello HelloWorld</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;这将会为你的cordova应用创造必须的目录。默认情况下，cordova create命令生成基于web的应用程序的骨骼，项目的主页是 www/index.html 文件。</p>
+<p>####添加平台</p>
+<p>&emsp;&emsp;所有后续命令都需要在项目目录或者项目目录的任何子目录运行:先进入项目目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cd hello</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;给你的App添加目标平台。我们将会添加’ios’和’android’平台，并确保他们保存在了config.xml中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cordova platform add ios --save</div><div class="line">$ cordova platform add android --save</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;检查你当前平台设置状况，查看平台:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova platform ls</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;删除平台<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&amp; cordova platform remove android</div><div class="line">&amp; cordova platform rm android</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;运行add或者remove平台的命令将会影响项目 platforms的内容，在这个目录中每个指定平台都有一个子目录</p>
+<blockquote>
+<p>注意:在你使用CLI创建应用的时候， 不要 修改/platforms/目录中的任何文件。当准备构建应用或者重新安装插件时这个目录通常会被重写。</p>
+</blockquote>
+<p>####安装构建先决条件<br>&emsp;&emsp;要构建和运行App，你需要安装每个你需要平台的SDK。另外，当你使用浏览器开发你可以添加 browser平台，它不需要任何平台SDK。</p>
+<p>&emsp;&emsp;检测你是否满足构建平台的要求:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ cordova requirements</div><div class="line">Requirements check results for android:</div><div class="line">Java JDK: installed .</div><div class="line">Android SDK: installed</div><div class="line">Android target: installed android-19,android-21,android-22,android-23,Google Inc.:Google APIs:19,Google Inc.:Google APIs (x86 System Image):19,Google Inc.:Google APIs:23</div><div class="line">Gradle: installed</div><div class="line"></div><div class="line">Requirements check results for ios:</div><div class="line">Apple OS X: not installed</div><div class="line">Cordova tooling for iOS requires Apple OS X</div><div class="line">Error: Some of requirements check failed</div></pre></td></tr></table></figure></p>
+<p>####构建App<br>&emsp;&emsp;默认情况下, cordova create生产基于web应用程序的骨架，项目开始页面位于www/index.html文件。任何初始化任务应该在www/js/index.js文件中的<a href="http://cordova.axuer.com/docs/zh-cn/latest/cordova/events/events.html#deviceready" target="_blank" rel="external">deviceready</a>事件的事件处理函数中。<br>运行下面命令为<em>所有</em>添加的平台构建:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova build</div></pre></td></tr></table></figure></p>
+<p>你可以在每次构建中选择限制平台范围<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova build android</div></pre></td></tr></table></figure></p>
+<p>####运行<br>模拟器上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova emulate android</div></pre></td></tr></table></figure></p>
+<p>浏览器上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova serve android</div></pre></td></tr></table></figure></p>
+<p>浏览器访问<a href="http://localhost:8000/" target="_blank" rel="external">http://localhost:8000</a>即可<br>真机上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova run android</div></pre></td></tr></table></figure></p>
+<p>####添加插件<br>&emsp;&emsp;你可以修改默认生成的App通过标准的web技术，但是App要接触设备级别的特性，就需要你添加插件了。<br>&emsp;&emsp;一个<em>插件</em> 通过JavascriptAPI暴露原生SDK功能。插件通常由npm分发，你可以搜索他们在 <a href="http://cordova.axuer.com/plugins/" target="_blank" rel="external">插件搜索页</a>。一些关键的API由Apache Cordova开源项目提供并且这些插件是作为[核心插件API]的。你也可以使用CLI启动搜索页:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova plugin search camera</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;plugin要添加camera插件，我们需要指定camera的npm包名:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ cordova plugin add cordova-plugin-camera</div><div class="line">Fetching plugin &quot;cordova-plugin-camera@~2.1.0&quot; via npm</div><div class="line">Installing &quot;cordova-plugin-camera&quot; for android</div><div class="line">Installing &quot;cordova-plugin-camera&quot; for ios</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;插件也可以通过目录或者git仓库添加。<br>&emsp;&emsp;使用 plugin ls (或者 plugin list, 或者 plugin自己)查看当前安装的插件。每个插件现实它的标识:</p>
+<p>####使用 merges自定义每个平台<br>&emsp;&emsp;虽然Cordova允许你轻松的部署App在各个平台，但是有时我们需要在某些平台做一些自定义。在这种情况下， 不要想去修改顶级platforms目录下的www目录，因为，通常会被顶级 www目录的跨平台源码替换<br>&emsp;&emsp;取而代之，顶级merges目录提供了特定平台部署特定资源的地方。每个特定平台在merges中的子目录反映了www 源代码树中的结构， 允许你重写和添加文件。例如，这是如何使用merges来提供Android设备中的默认字体大小。</p>
+<ul>
+<li><p>编辑www/index.html文件,添加link标签来添加额外的css文件, overrides.css在这种情况下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/overrides.css&quot; /&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>（可选）创建一个空的www/css/overrides.css文件，适合所有非Android构建，来防止文件找不到的错误。</p>
+</li>
+<li>在merges/android里面创建一个css子目录,然后添加对应的overrides.css文件。特定的CSS重写www/css/index.css文件中的12px的默认大小，例子:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">body &#123; font-size:14px; &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>&emsp;&emsp;当你重写构建项目，Android具有自定义的字体大小，而其他平台的不变。<br>&emsp;&emsp;你也可以在merges目录中添加www目录中不存在的文件。例如，一个应用程序在iOS界面中要包含一个 <em>后退按钮</em>,存储在merges/ios/img/back_button.png<br>,而Android版本则可以捕获<a href="http://cordova.axuer.com/docs/zh-cn/latest/cordova/events/events.html#backbutton" target="_blank" rel="external">后退按钮</a>事件通过对应的硬件按钮。</p>
+<p>####更新Cordova和你的项目<br>在安装cordova工具之后，你可以运行下面命令更新到最新版本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm update -g cordova</div></pre></td></tr></table></figure></p>
+<p>用下面语法安装指定版本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm install -g cordova@3.1.0-0.2.0</div></pre></td></tr></table></figure></p>
+<p>运行cordova -v查看当前版本。要查找最新的cordova版本，可以运行:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm info cordova version</div></pre></td></tr></table></figure></p>
+<p>更新完cordova后，更新目标项目的平台:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cordova platform update android --save</div><div class="line">$ cordova platform update ios --save</div></pre></td></tr></table></figure></p>
+<p>####总结<br>hybrid app相对native app来说开发起来速度快，相对容易，但是没有native那么流畅，性能和体验稍微差些。并且文件大小相差也很大，同样一个应用native只要几k，而hybrid却要几兆。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/03/07/Cordova入门/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2016-07-30T05:44:18.000Z"><a href="/2016/07/30/Java8新特性之lambda表达式入门（二）/">2016-07-30</a></time>
         
   
@@ -563,170 +694,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-05-11T06:06:15.000Z"><a href="/2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/">2016-05-11</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/">android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>在做一个view背景特效的时候被坐标的各个获取方法搞晕了，几篇抄来抄去的博客也没弄很清楚。</p>
-<p>现在把整个总结一下。</p>
-<p>其实只要把下面这张图看明白就没问题了。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-3251e6068bb1e1f5?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>涉及到的方法一共有下面几个：<br>view获取自身坐标：getLeft(),getTop(),getRight(),getBottom()<br>view获取自身宽高：getHeight(),getWidth()<br>motionEvent获取坐标：getX(),getY(),getRawX(),getRawY()<br>首先是view的几个方法，<br>获取自身的宽高的这两个方法很清楚，不用多说，获取坐标的这几个就有点混乱了。<br>根据上面的图应该会比较容易明白，图中屏幕上放了一个ViewGroup布局，里面有个View控件<br>getTop：获取到的，是view自身的顶边到其父布局顶边的距离<br>getLeft：获取到的，是view自身的左边到其父布局左边的距离<br>getRight：获取到的，是view自身的右边到其父布局左边的距离<br>getBottom：获取到的，是view自身的底边到其父布局顶边的距离</p>
-<p>这些方法获取到的数据可以用在什么地方呢？比如要实现一个自定义的特殊布局，像<a href="http://blog.csdn.net/singwhatiwanna/article/details/42614953这里要实现的是一个水波纹特效布局，该布局内的任何控件点击后都会出现波纹效果" target="_blank" rel="external">http://blog.csdn.net/singwhatiwanna/article/details/42614953这里要实现的是一个水波纹特效布局，该布局内的任何控件点击后都会出现波纹效果</a><br>那么在点击了布局内的一个控件之后，就要通过不断刷新布局，去更新这个控件上面的波纹半径，为了节省资源，每次刷新布局都时候不会整个布局都刷新，而只是通过<br><code>postInvalidateDelayed(INVALIDATE_DURATION, left, top, right, bottom);</code></p>
-<p>在布局的画布上每次只去更新点击事件所点击的对应的控件的位置，那么这里就可以用view的那四个方法，分别获取自身的四条边对应的坐标<br>从而让布局去刷新重绘。</p>
-<p>当然博客中是使用绝对坐标去计算的，因为这里实现的是一个布局，可能里面还会嵌套另外的布局，经过多次嵌套之后所获取到的值，是相对于控件直接对应的父布局（这个布局有可能已经是我们重写的布局的子布局了）的距离，这样去刷新的区域肯定是不准确的，所以博客里面使用相对屏幕的绝对坐标计算需要刷新的控件区域。</p>
-<p>如果这里自定义的不是布局，而只是一个控件的话，就可以通过以上方法获取到坐标，然后要求自己所在的布局去重绘这一区域就可以了。当然这只是一种思路，其实没必要去要求布局重绘，完全可以直接view自身重绘就可以了。</p>
-<p>然后是motionEvent的方法：</p>
-<p>getX()：获取点击事件相对控件左边的x轴坐标，即点击事件距离控件左边的距离</p>
-<p>getY()：获取点击事件相对控件顶边的y轴坐标，即点击事件距离控件顶边的距离</p>
-<p>getRawX()：获取点击事件相对整个屏幕左边的x轴坐标，即点击事件距离整个屏幕左边的距离</p>
-<p>getRawY()：获取点击事件相对整个屏幕顶边的y轴坐标，即点击事件距离整个屏幕顶边的距离</p>
-<p>这些方法可以用在什么地方呢？</p>
-<p>getRawX和getRawY在之前那篇博客里广泛使用了，可以去那里看用法，getX()和getY()这两个方法在对view进行自定义的时候可能用的会比较多。</p>
-<p>###<a href="http://www.cnblogs.com/virtual-young/p/4578424.html" target="_blank" rel="external">MotionEvent中getRawX、getRawY与getX、getY以及View中的getScrollX、getScrollY</a></p>
-<p>1.getRawX、getRawY与getX、getY的区别<br>在编写android的自定义控件，或者判断用户手势操作时，往往需要使用MotionEvent中的getRawX()、getRawY()与getX()、getY()取得触摸点在X轴与Y轴上的距离，这四个方法都返回一个float类型的参数，单位为像素（Pixel）。getRawX()、getRawY()返回的是触摸点相对于屏幕的位置，而getX()、getY()返回的则是触摸点相对于View的位置。<br>以下两张图直观的表现了这几个方法的区别，在屏幕中央放置了一个Button，并为它注册了OnTouchListener，图中绿圆点为触摸点位置。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-436d27429779abc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="">    <img src="http://upload-images.jianshu.io/upload_images/4398977-ea980ca264ad742c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>2.View中的getScrollX、getScrollY<br>getScrollX()与getScrollY()的值由调用View的scrollTo(int x, int y)或者scrollBy(int x, int y)产生，其中scrollTo是将View中的内容移动到指定的坐标x、y处，此x、y是相对于<br>View的左上角，而不是屏幕的左上角。scrollBy(int x, int y)则是改变View中的相对位置，参数x、y为距离上一次的相对位置。<br>文字解释总是不好理解的，那么我们就直接上图吧，直观一些。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-66127203a89fb7c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://upload-images.jianshu.io/upload_images/4398977-205675aec563fdea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><img src="http://upload-images.jianshu.io/upload_images/4398977-d6333d61fc2421dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>               （图1）                                                         （图2）                                                                （图3）<br>1.图1中，屏幕中心放置了一个button，而button的内容被放置在了它的左上角。<br>2.调用button的scrollTo(-100, -100)方法，结果如图2所示，button内的内容被移至相对button左上角(-100，-100)的位置<br>3.对图2的button调用scrollBy(-100,-100)方法，结果如图3所示，button内的内容被移至相对于图2的(-100,-100)位置<br>这时的getScrollX()与getScrollY()的值为：</p>
-<p>06-15 15:44:56.072 20471-20471/com.test.yangy.studiotest V/ScrollActivity﹕ btn scroll X=-20006-15 15:44:56.072 20471-20471/com.test.yangy.studiotest V/ScrollActivity﹕ btn scroll Y=-200</p>
-<p>值得注意的是，当View中的内容向右移动时，getScrollX()的值为负数，同理，向scrollTo与scrollBy的x中传入负数，view中的内容向右移动，反之向左。<br>当View中的内容向下移动时，getScrollY()的值为负数，同理，向scrollTo与scrollBy的y中传入负数，view中的内容向下移动，反之向上。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-05-02T05:41:42.000Z"><a href="/2016/05/02/Java8新特性之lambda表达式入门/">2016-05-02</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/05/02/Java8新特性之lambda表达式入门/">Java8新特性之lambda表达式入门</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>功能接口</p>
-<p>只包含一个方法的接口被称为功能接口，Lambda 表达式用用于任何功能接口适用的地方，java.awt.event.ActionListener 就是一个功能接口，因为它只有一个方法：</p>
-<p>void actionPerformed(ActionEvent)</p>
-<p>一、lambda引入原因</p>
-<p>1、更加紧凑的代码</p>
-<p>比如Java中现有的匿名内部类以及监听器(listeners)和事件处理器(handlers）都显得很冗长</p>
-<p>2、修改方法的能力</p>
-<p>比如Collection接口的contains方法，当且仅当传入的元素真正包含在集合中，才返回true。而假如我们想对一个字符串集合，传入一个字符串，只要这个字符串出现在集合中（忽略大小写）就返回true。</p>
-<p>简单地说，我们想要的是传入“一些我们自己的代码”到已有的方法中，已有的方法将会执行我们传入的代码。Lambda表达式能很好地支持这点</p>
-<p>3、更好地支持多核处理</p>
-<p>例如，通过Java 8新增的Lambda表达式，我们可以很方便地并行操作大集合，充分发挥多核CPU的潜能。</p>
-<p>并行处理函数如filter、map和reduce。</p>
-<p>实例1 FileFilter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;);</div><div class="line"></div><div class="line">FileFilter directoryFilter=newFileFilter() &#123;public boolean accept(File file) &#123;</div><div class="line"></div><div class="line">returnfile.isDirectory();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<p>通过Lambda表达式这段代码可以简化为如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;);</div><div class="line"></div><div class="line">FileFilter directoryFilter= (File f) -&gt;f.isDirectory();</div><div class="line"></div><div class="line">File[] dirs= dir.listFiles(directoryFilter);</div></pre></td></tr></table></figure></p>
-<p>进一步简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;)；</div><div class="line"></div><div class="line">File[] dirs= dir.listFiles((File f) -&gt; f.isDirectory());</div></pre></td></tr></table></figure></p>
-<p>Lambda表达式利用了类型推断（type inference）技术：</p>
-<p>编译器知道FileFilter只有一个方法accept()，所以accept()方法肯定对应(File f) -&gt; f.isDirectory()，就是利用了类型推断，而且accept()方法只有一个File类型的参数，所以(File f) -&gt;f.isDirectory()中的File f就是这个参数了，.NET把类型推断做得更绝，如果上面用.NET Lambda表达式写法的话是这样的：File[] dirs= dir.ListFiles(f =&gt;f.isDirectory());即压根就不需要出现File类型指示。</p>
-<p>实例2 Event Handler<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Button bt =newButton();</div><div class="line"></div><div class="line">bt.addActionListener(newActionListener() &#123;public void actionPerformed(ActionEvent e) &#123;</div><div class="line"></div><div class="line">ui.showSomething();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
-<p>使用Lambda表达式后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Button bt =newButton();</div><div class="line"></div><div class="line">ActionListener listener= event -&gt;&#123; ui.showSomething(); &#125;;</div><div class="line"></div><div class="line">bt.addActionListener(listener);</div></pre></td></tr></table></figure></p>
-<p>进一步简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Button bt =newButton();</div><div class="line"></div><div class="line">bt.addActionListener(event-&gt; &#123; ui.showSomething(); &#125;);</div></pre></td></tr></table></figure></p>
-<p>newActionListener的内部类只有actionPerformed方法，event就是参数</p>
-<p>actionPerformed()方法的返回类型是void，所以需要特殊处理，即在ui.showSomething();左右加上花括号。（想象下不加会怎么样？如果不加的话，若showSomething()方法返回值是整数类型，那么就意味着actionPerformed()返回整数类型，显然不是，所以必须加花括号用来标记）。</p>
-<p>如果Lambda表达式主体部分包含多条语句，也必须用花括号，并且return语句不能省。</p>
-<p>比如下面这个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">File dir =newFile(&quot;/an/dir/&quot;);</div><div class="line"></div><div class="line">File[] dirs= dir.listFiles((File f) -&gt;&#123;</div><div class="line"></div><div class="line">System.out.println(&quot;Log:...&quot;);</div><div class="line"></div><div class="line">return f.isDirectory();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">);</div></pre></td></tr></table></figure></p>
-<p>函数集合</p>
-<p>Java 8 的类库包含一个新的包 java.util.functions ，这个包中有很多新的功能接口，这些接口可与集合 API 一起使用。</p>
-<p>外循环、内循环和Map、Reduce、Filter</p>
-<p>一直到现在，处理Java集合的标准做法是采用外循环。比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =newArrayList();</div><div class="line"></div><div class="line">list.add(&quot;hello&quot;);</div><div class="line"></div><div class="line">list.add(&quot;world&quot;);for(intitem: list) &#123;//处理item&#125;</div></pre></td></tr></table></figure></p>
-<p>还有迭代器循环，它们都是外循环，并且都是顺序处理（sequential handling）。顺序特性也常常引发ConcurrentModificationException，只要我们尝试着并发修改集合。</p>
-<p>Lambda表达式提供了内循环机制。</p>
-<p>我们工作中可能经常面临下面的需求：</p>
-<blockquote>
-<p>过滤掉一个集合中不符合条件的元素得到一个新集合</p>
-<p>对集合中的每个元素进行某种转换，并且对转换后的集合进行处理</p>
-<p>统计整个集合的某个属性，比如统计集合元素值的总和或平均值</p>
-</blockquote>
-<p>这些任务即filter、map和reduce，他们的共同特点是：</p>
-<p>需要对集合中的每个元素运行一小段相同的代码。</p>
-<p>传统的实现这些任务的代码让人感到很乏味，幸运的是Java 8提供了完成这些任务的更简洁的方案，当然还是利用Lambda表达式，但也引入了一个新的类库java.util.functions，包含Predicate、Mapper和Block。</p>
-<p>Java 8中，一个Predicate（谓词）是这样一个方法：它根据变量的值进行评估(evaluate），返回true或false。java.util.functions.Predicate</p>
-<p>比如下面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =getMyStrings();</div><div class="line"></div><div class="line">for(String myString: list) &#123;if(myString.contains(possible)) &#123;</div><div class="line"></div><div class="line">System.out.println(myString+ &quot; contains &quot; +possible);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>使用Predicate和Filter后得到下面代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =getMyStrings();</div><div class="line"></div><div class="line">Predicate matched = s -&gt;s.equalsIgnoreCase(possible);</div><div class="line"></div><div class="line">list.filter(matched);</div></pre></td></tr></table></figure></p>
-<p>进一步简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List list =getMyStrings();</div><div class="line"></div><div class="line">list.filter(s-&gt; s.equalsIgnoreCase(possible));</div></pre></td></tr></table></figure></p>
-<p>使用谓词 (Predicate) 来筛选集合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List names = Arrays.asList(&quot;Alice&quot;,&quot;Bob&quot;,&quot;Charlie&quot;,&quot;Dave&quot;);</div><div class="line"></div><div class="line">List filteredNames = names.filter(e -&gt; e.length() &gt;=4).into(new ArrayList());</div><div class="line"></div><div class="line">for(String name : filteredNames) &#123;</div><div class="line"></div><div class="line">System.out.println(name);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>这里我们有两个新方法：</p>
-<p>Iterable filter(Predicate) 用于获取元素满足某个谓词返回 true 的结果</p>
-<p><a extends="" fillableinto<?="" super="" t="">&gt;A into(A) 将用返回的结果填充 ArrayList </a></p>
-<p>java.util.functions.Block</p>
-<p>我们可使用一个新的迭代器方法来替换 for 循环 void forEach(Block&lt;? super T&gt;):</p>
-<p>List names = Arrays.asList(“Alice”,”Bob”,”Charlie”,”Dave”);</p>
-<p>names.filter(e -&gt; e.length() &gt;=4).forEach(e -&gt; { System.out.println(e); });<br>forEach() 方法是 internal iteration 的一个实例：迭代过程在 Iterable 和 Block 内部进行，每次可访问一个元素。</p>
-<p>最后的结果就是用更少的代码来处理集合：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List names = Arrays.asList(&quot;Alice&quot;,&quot;Bob&quot;,&quot;Charlie&quot;,&quot;Dave&quot;);</div><div class="line"></div><div class="line">names</div><div class="line"></div><div class="line">.mapped(e -&gt; &#123;return e.length(); &#125;)</div><div class="line"></div><div class="line">.asIterable()// returns an Iterable of BiValue elements</div><div class="line"></div><div class="line">// an element&apos;s key is the person&apos;s name, its value is the string length</div><div class="line"></div><div class="line">.filter(e -&gt; e.getValue() &gt;=4)</div><div class="line"></div><div class="line">.sorted((a, b) -&gt; a.getValue() - b.getValue())</div><div class="line"></div><div class="line">.forEach(e -&gt; &#123; System.out.println(e.getKey() +&apos;\t&apos;+ e.getValue()); &#125;);</div></pre></td></tr></table></figure></p>
-<p>方法引用</p>
-<p>我们可通过 :: 语法来引用某个方法。方法引用被认为是跟 Lambda 表达式一样的，可用于功能接口所适用的地方。</p>
-<p>我们可以引用一个静态方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">executorService.submit(MethodReference::sayHello);</div><div class="line"></div><div class="line">privatestaticvoidsayHello() &#123;</div><div class="line"></div><div class="line">System.out.println(&quot;hello&quot;);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>或者是一个实例的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Arrays.asList(&quot;Alice&quot;,&quot;Bob&quot;,&quot;Charlie&quot;,&quot;Dave&quot;).forEach(System.out::println);</div></pre></td></tr></table></figure></p>
-<p>我们也可以创建工程方法并将构造器引用赋值给 java.util.functions.Factory:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Factory biscuitFactory = Biscuit::new;</div><div class="line"></div><div class="line">Biscuit biscuit = biscuitFactory.make();</div></pre></td></tr></table></figure></p>
-<p>最后，我们创建一个引用到随意实例的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface Accessor&lt;BEAN, PROPERTY&gt; &#123;</div><div class="line"></div><div class="line">PROPERTY access(BEAN bean);</div><div class="line"></div><div class="line">&#125;</div><div class="line">publicstaticvoidmain(String[] args) &#123;</div><div class="line"></div><div class="line">Address address =newAddress(&quot;29 Acacia Road&quot;,&quot;Tunbridge Wells&quot;);</div><div class="line"></div><div class="line">Accessor accessor = Address::getCity;</div><div class="line"></div><div class="line">System.out.println(accessor.access(address));</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>这里我们无需绑定方法引用到某个实例，我们直接将实例做为功能接口的参数进行传递。</p>
-<p>默认方法</p>
-<p>直到今天的 Java ，都不可能为一个接口添加方法而不会影响到已有的实现类。而 Java 8 允许你为接口自身指定一个默认的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface Queue &#123;</div><div class="line"></div><div class="line">Message read();</div><div class="line"></div><div class="line">void delete(Message message);</div><div class="line"></div><div class="line">void deleteAll()  default&#123;</div><div class="line"></div><div class="line">Message message;</div><div class="line"></div><div class="line">while((message = read()) !=null) &#123;</div><div class="line"></div><div class="line">delete(message);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>子接口可以覆盖默认的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface BatchQueue extends Queue &#123;</div><div class="line"></div><div class="line">void setBatchSize(int batchSize);</div><div class="line"></div><div class="line">void deleteAll()  default&#123;</div><div class="line"></div><div class="line">setBatchSize(100);</div><div class="line"></div><div class="line">Queue.super.deleteAll();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>或者子接口也可以通过重新声明一个没有方法体的方法来删除默认的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">interface FastQueue extends Queue &#123;</div><div class="line"></div><div class="line">void deleteAll();</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/05/02/Java8新特性之lambda表达式入门/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -740,7 +707,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -788,7 +755,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 12px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 12px;">生产者消费者模式</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
+    <a href="/tags/Cordova/" style="font-size: 12px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 12px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 12px;">生产者消费者模式</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
   </div>
 </div>
 
@@ -796,7 +763,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
