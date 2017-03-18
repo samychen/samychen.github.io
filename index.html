@@ -576,7 +576,7 @@
         <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、工具：adb-或Python"><span class="toc-text">一、工具：adb 或Python</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、热启动"><span class="toc-text">二、热启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、冷启动"><span class="toc-text">三、冷启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么会出现白屏"><span class="toc-text">为什么会出现白屏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何缩短初始化时间"><span class="toc-text">如何缩短初始化时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
 
-        <p>&emsp;&emsp;对于Android平台上的线程优先级设置来说可以处理很多并发线程的阻塞问题，比如很多无关紧要的线程会占用大量的CPU时间，虽然通过了MultiThread来解决慢速I/O但是合理分配优先级对于并发编程来说十分重要。Android在线程方面主要使用的是Java本身的Thread类，我们可以在Thread或Runnable接口中的run方法首句加入Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND); //设置线程优先级为后台，这样当多个线程并发后很多无关紧要的线程分配的CPU时间将会减少，有利于主线程的处理</p>
+        <p>&emsp;&emsp;对于Android平台上的线程优先级设置来说可以处理很多并发线程的阻塞问题，比如很多无关紧要的线程会占用大量的CPU时间，虽然通过了MultiThread来解决慢速I/O但是合理分配优先级对于并发编程来说十分重要。Android在线程方面主要使用的是Java本身的Thread类，我们可以在Thread或Runnable接口中的run方法首句加入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND); //设置线程优先级为后台，这样当多个线程并发后很多无关紧要的线程分配的CPU时间将会减少，有利于主线程的处理</div></pre></td></tr></table></figure></p>
 <p>现场优先级：</p>
 <p>int THREAD_PRIORITY_AUDIO //标准音乐播放使用的线程优先级</p>
 <p>int THREAD_PRIORITY_BACKGROUND //标准后台程序</p>
