@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Http协议与TCP协议易混淆点（一） | SamyChen</title>
+  <title>Cordova手动导入第三方插件 | SamyChen</title>
   <meta name="author" content="SamyChen">
   
   <meta name="description" content="学习总结 思考感悟">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Http协议与TCP协议易混淆点（一）"/>
+  <meta property="og:title" content="Cordova手动导入第三方插件"/>
   <meta property="og:site_name" content="SamyChen"/>
 
   
@@ -87,10 +87,10 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2015-03-22T05:22:46.000Z"><a href="/2015/03/22/Http协议与TCP协议易混淆点（一）/">2015-03-22</a></time>
+        <time datetime="2017-03-12T10:24:19.000Z"><a href="/2017/03/12/Cordova手动导入第三方插件/">2017-03-12</a></time>
         
   
-    <h1 class="title">Http协议与TCP协议易混淆点（一）</h1>
+    <h1 class="title">Cordova手动导入第三方插件</h1>
   
 
     </header>
@@ -99,14 +99,115 @@
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Http协议与TCP协议"><span class="toc-text">Http协议与TCP协议</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#手动导入第三方插件到Cordova项目中"><span class="toc-text">手动导入第三方插件到Cordova项目中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
 
-        <h3 id="Http协议与TCP协议"><a href="#Http协议与TCP协议" class="headerlink" title="Http协议与TCP协议"></a>Http协议与TCP协议</h3><p>1.<strong>TCP协议对应于传输层，而HTTP协议对应于应用层，从本质上来说，二者没有可比性。</strong><br>2.<strong>Http协议是建立在TCP协议基础之上的，当浏览器需要从服务器获取网页数据的时候，会发出一次Http请求。Http会通过TCP建立起一个到服务器的连接通道，当本次请求需要的数据完毕后，Http会立即将TCP连接断开，这个过程是很短的。所以Http连接是一种短连接，是一种无状态的连接。</strong></p>
-<hr>
-<p>&emsp;&emsp;所谓的<strong>无状态</strong>，是指浏览器每次向服务器发起请求的时候，不是通过一个连接，而是<strong>每次都建立一个新的连接</strong>。如果是一个连接的话，服务器进程中就能保持住这个连接并且在内存中记住一些信息状态。而每次请求结束后，连接就关闭，相关的内容就释放了，所以<strong>记不住任何状态</strong>，成为无状态连接。</p>
-<p><strong>那么问题来了：每次创建新连接不耗费性能吗？</strong><br>&emsp;&emsp;从HTTP/1.1起，默认都开启了Keep-Alive，保持连接特性。也就是说，在打开一个网页之后，客户端与服务器之间的传输数据的TCP连接不马上关闭，客户端再次访问时会使用，但是Keep-Alive保持时间不是有限的，超时之后还是会断开，所以我们还把其看做是每次连接完成后就会关闭。后来，通过Session, Cookie等相关技术，也能保持一些用户的状态。但是还是每次都使用一个连接，依然是无状态连接。</p>
-<p><strong>为什么HTTP是无状态的短连接，而TCP是有状态的长连接？Http不是建立在TCP的基础上吗，为什么还能是短连接？</strong><br>&emsp;&emsp;Http就是在每次请求完成后就把TCP连接关了，所以是短连接。而我们直接通过Socket编程使用TCP协议的时候，因为<strong>我们自己可以通过代码区控制什么时候打开连接什么时候关闭连接</strong>，只要我们不通过代码把连接关闭，这个连接就会在客户端和服务端的进程中一直存在，<strong>相关状态数据会一直保存着</strong>。</p>
+        <h4 id="手动导入第三方插件到Cordova项目中"><a href="#手动导入第三方插件到Cordova项目中" class="headerlink" title="手动导入第三方插件到Cordova项目中"></a>手动导入第三方插件到Cordova项目中</h4><p>&emsp;&emsp;Cordova项目中可以自定义插件，也可以从官方和其他渠道通过命令行导入工程中，因为需求总是在变，有时候第三方插件里面还包含不需要用到的功能，所有我们需要手动导入。</p>
+<p>&emsp;&emsp;采用github中的ImagePicker插件来说明手动导入过程。首先从guihub上查看plugin.xml的内容，我们需要实现图库选择图片的功能只需要ImagePicker这个类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;config-file target=&quot;res/xml/config.xml&quot; parent=&quot;/*&quot;&gt;</div><div class="line">                        &lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div><div class="line">                &lt;/config-file&gt;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;source-file src=&quot;src/android/com/synconset/ImagePicker/ImagePicker.java&quot; target-dir=&quot;src/com/synconset&quot; /&gt;</div></pre></td></tr></table></figure>
+<p>初步看出需要在config.xml中配置如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div></pre></td></tr></table></figure></p>
+<p>然后把ImagePicker.java拷贝到工程中，目录结构为/ser/com/synconset/ImagePicker.java。<br>&emsp;&emsp;接着我们需要在把github中的www目录结构中的imagepicker.js文件复制到我们的工程中，目录结构是assets/www/plugins/..，我的目录结构是assets/www/plugins/imagepicker/www/imagepicker.js</p>
+<p><strong>注意：</strong>直接拷贝js文件还需要配置js文件，最外围默认是没有cordova定义语句的，在js文件最外围拷贝如下代码，第三方js文件不知道我们定义的插件ID，需要我们自己配置，我的项目中的ID就是com.synconset.ImagePicker，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cordova.define(&quot;com.synconset.ImagePicker&quot;, function(require, exports, module) &#123;</div><div class="line"></div><div class="line">module.exports = new ImagePicker()</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>默认创建插件对象的语句是window.imagePicker = new ImagePicker();window.imagePicker 就是我在注册插件时配置好了的，当然也可以用上面的<code>module.exports = new ImagePicker()</code>来创建</p>
+</blockquote>
+<p>&emsp;&emsp;最后我们需要在assets/www/cordova_plugins.js中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">             &quot;id&quot;: &quot;com.synconset.ImagePicker&quot;,</div><div class="line">             &quot;file&quot;: &quot;plugins/imagepicker/www/imagepicker.js&quot;,</div><div class="line">             &quot;merges&quot;: [</div><div class="line">                 &quot;window.imagePicker&quot;</div><div class="line">             ]</div><div class="line">         &#125;</div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong>在platform_www下的cordova_plugins.js中也需要配置上面的内容，否则报找不到ImagePicker中方法的警告，因为我们是直接拷贝js文件过来，不像自定义可以直接编译生成到cordova_plugins.js中</p>
+<p>&emsp;&emsp;然后这时候ImagePicker.java报找不到MultiImageChooserActivity类，把需要的类一并拷贝到项目中，导入的Activity需要在清单文件中注册</p>
+<p>&emsp;&emsp;运行到模拟器上，在<br><code>setContentView(fakeR.getId(&quot;layout&quot;, &quot;multiselectorgrid&quot;));</code>出错，因为项目中没有找到multiselectrgrid.xml文件，在res中新建layout文件夹把需要的文件拷贝进去，之后在<br><code>BitmapFactory.decodeResource(getResources(), fakeR.getId(&quot;drawable&quot;, &quot;loading_icon&quot;));</code>报找不到图片，将需要的图片也拷贝进去。</p>
+<blockquote>
+<p>使用getIdentifier()方法可以方便的获各应用包下的指定资源ID。<br>方式一<br>int indentify = getResources().getIdentifier(“com.test.demo:drawable/icon”,null,null);<br>第一个参数格式是：包名 + : +资源文件夹名 + / +资源名；是这种格式 然后其他的可以为null<br>方式二<br>intindentify= getResources().getIdentifier(“icon”, “drawable”, “com.test.demo”);<br>第一个参数为ID名，第二个为资源属性是ID或者是Drawable，第三个为包名。</p>
+</blockquote>
+<pre><code>import java.lang.reflect.Field;
+import android.content.Context;
+
+public class ResourceUtil {
+    private static Context sContext;
+
+    public static void init(Context context) {
+        if (context != null)
+            sContext = context;
+    }
+
+    public static int getLayoutId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;layout&quot;, sContext.getPackageName());
+    }
+
+    public static int getStringId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;string&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getDrawableId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;drawable&quot;, sContext.getPackageName());
+    }
+
+    public static int getStyleId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;style&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;id&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getColorId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;color&quot;, sContext.getPackageName());
+    }
+
+    public static int getDimenId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;dimen&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getAnimId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;anim&quot;, sContext.getPackageName());
+    }
+
+    // 通过反射实现
+    public static final int[] getStyleableIntArray(String name) {
+        try {
+            if (sContext == null)
+                return null;
+            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
+            int[] ret = (int[]) field.get(null);
+            return ret;
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
+    public static final int getStyleableIntArrayIndex(String name) {
+        try {
+            if (sContext == null)
+                return 0;
+            // use reflection to access the resource class
+            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
+            int ret = (Integer) field.get(null);
+            return ret;
+        } catch (Throwable t) {
+        }
+        return 0;
+    }
+}
+</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;总之，Cordova手动导入第三方插件过程就是这个过程，我们需要的就是拷贝文件然后配置好需要配置的地方就行，项目报找不到插件的方法就一定是配置出了问题，其他大多数问题就是所需要的资源文件问题。</p>
 
       
     </div>
@@ -115,12 +216,12 @@
         
   
   <div class="categories">
-    <a href="/categories/Android/">Android</a>
+    <a href="/categories/Cordova/">Cordova</a>
   </div>
 
         
   <div class="tags">
-    <a href="/tags/安卓，Java/">安卓，Java</a>
+    <a href="/tags/Cordova/">Cordova</a>
   </div>
 
         <div class = "counter">
@@ -152,7 +253,7 @@
     
     
         <!-- 多说评论框 start -->
-        <div class="ds-thread" data-thread-key="2015/03/22/Http协议与TCP协议易混淆点（一）/" data-title="Http协议与TCP协议易混淆点（一）" data-url="http://samychen.com/2015/03/22/Http协议与TCP协议易混淆点（一）/"></div>
+        <div class="ds-thread" data-thread-key="2017/03/12/Cordova手动导入第三方插件/" data-title="Cordova手动导入第三方插件" data-url="http://samychen.com/2017/03/12/Cordova手动导入第三方插件/"></div>
         <!-- 多说评论框 end -->
         <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
         <script type="text/javascript">
