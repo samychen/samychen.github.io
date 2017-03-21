@@ -330,7 +330,6 @@
 <p>默认创建插件对象的语句是window.imagePicker = new ImagePicker();window.imagePicker 就是我在注册插件时配置好了的，当然也可以用上面的<code>module.exports = new ImagePicker()</code>来创建</p>
 </blockquote>
 <p>&emsp;&emsp;最后我们需要在assets/www/cordova_plugins.js中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">             &quot;id&quot;: &quot;com.synconset.ImagePicker&quot;,</div><div class="line">             &quot;file&quot;: &quot;plugins/imagepicker/www/imagepicker.js&quot;,</div><div class="line">             &quot;merges&quot;: [</div><div class="line">                 &quot;window.imagePicker&quot;</div><div class="line">             ]</div><div class="line">         &#125;</div></pre></td></tr></table></figure></p>
-<p><strong>注意：</strong>在platform_www下的cordova_plugins.js中也需要配置上面的内容，否则报找不到ImagePicker中方法的警告，因为我们是直接拷贝js文件过来，不像自定义可以直接编译生成到cordova_plugins.js中</p>
 <p>&emsp;&emsp;然后这时候ImagePicker.java报找不到MultiImageChooserActivity类，把需要的类一并拷贝到项目中，导入的Activity需要在清单文件中注册</p>
 <p>&emsp;&emsp;运行到模拟器上，在<br><code>setContentView(fakeR.getId(&quot;layout&quot;, &quot;multiselectorgrid&quot;));</code>出错，因为项目中没有找到multiselectrgrid.xml文件，在res中新建layout文件夹把需要的文件拷贝进去，之后在<br><code>BitmapFactory.decodeResource(getResources(), fakeR.getId(&quot;drawable&quot;, &quot;loading_icon&quot;));</code>报找不到图片，将需要的图片也拷贝进去。</p>
 <blockquote>
