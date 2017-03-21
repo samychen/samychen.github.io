@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>网络协议 | SamyChen</title>
+  <title>Cordova 添加默认启动图 | SamyChen</title>
   <meta name="author" content="SamyChen">
   
   <meta name="description" content="学习总结 思考感悟">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="Cordova 添加默认启动图"/>
   <meta property="og:site_name" content="SamyChen"/>
 
   
@@ -81,36 +81,104 @@
 </header>
   
     <div id="content" class="inner">
-      <div id="main-col" class="alignleft"><div id="wrapper">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2017-03-13T02:03:08.000Z"><a href="/2017/03/13/Cordova-添加默认启动图/">2017-03-13</a></time>
+        
+  
+    <h1 class="title">Cordova 添加默认启动图</h1>
+  
 
-<h2 class="archive-title fa-tag">网络协议</h2>
-<div class="archive">
-   
-    <article class="post">
-      <div class="post-content">
-        <header>
-          <div class="icon"></div>
-          <time datetime="2017-03-18T15:24:50.000Z"><a href="/2017/03/18/TCP-IP协议架构/">2017-03-18</a></time>
-          
-            <h1 class="title"><a href="/2017/03/18/TCP-IP协议架构/">TCP/IP协议架构</a></h1>
-          
-        </header>
-        <div class='archive-tags'>
-          
-  <div class="tags">
-    <a href="/tags/网络协议/">网络协议</a>
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Cordova添加默认启动图"><span class="toc-text">Cordova添加默认启动图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-修改config-xml配置文件"><span class="toc-text">1. 修改config.xml配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-修改启动图片"><span class="toc-text">2. 修改启动图片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-在设备初始化完成后隐藏Splash画面"><span class="toc-text">3.在设备初始化完成后隐藏Splash画面</span></a></li></ol>
+    </div>
+
+        <h4 id="Cordova添加默认启动图"><a href="#Cordova添加默认启动图" class="headerlink" title="Cordova添加默认启动图"></a>Cordova添加默认启动图</h4><p>&emsp;&emsp;Cordova默认的启动图是Apache默认的logo，如果需要修改默认启动图需要Splash插件，通过CLI语句<code>cordova plugin add org.apache.cordova.splashscreen</code>添加插件</p>
+<h4 id="1-修改config-xml配置文件"><a href="#1-修改config-xml配置文件" class="headerlink" title="1. 修改config.xml配置文件"></a>1. 修改config.xml配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;preference name=&quot;SplashScreen&quot; value=&quot;screen&quot; /&gt; &lt;!-- 不带后缀png的文件名，默认是screen--&gt;</div><div class="line">    &lt;preference name=&quot;SplashScreenDelay&quot; value=&quot;3000&quot; /&gt; &lt;!-- Splash显示时间，默认是3000ms--&gt;</div><div class="line">    &lt;feature name=&quot;SplashScreen&quot;&gt;</div><div class="line">        &lt;param name=&quot;android-package&quot; value=&quot;org.apache.cordova.splashscreen.SplashScreen&quot; /&gt;</div><div class="line">    &lt;/feature&gt;</div></pre></td></tr></table></figure>
+<h4 id="2-修改启动图片"><a href="#2-修改启动图片" class="headerlink" title="2. 修改启动图片"></a>2. 修改启动图片</h4><p>&emsp;&emsp;可以看到启动图片的名字是screen.png,工程下有一些screen.png默认图片了，上面显示的是cordova logo，下面需要把这些图片换成你自己的启动画面，不需要支持的尺寸图片直接删掉就可以了。</p>
+<h4 id="3-在设备初始化完成后隐藏Splash画面"><a href="#3-在设备初始化完成后隐藏Splash画面" class="headerlink" title="3.在设备初始化完成后隐藏Splash画面"></a>3.在设备初始化完成后隐藏Splash画面</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">document.addEventListener(&quot;deviceready&quot;, onDeviceReady, false);  </div><div class="line">function onDeviceReady() &#123;  </div><div class="line">  navigator.splashscreen.hide();  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果使用了ionic框架，直接在app.js 文件的  .run([‘$ionicPlatform’, function ($ionicPlatform) {   … } 里面加上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">navigator.splashscreen.hide();</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Blockquote</p>
+</blockquote>
+<p>&emsp;&emsp;</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Cordova/">Cordova</a>
   </div>
 
-        </div>
-      </div>
-    </article>
-    
+        
+  <div class="tags">
+    <a href="/tags/Cordova/">Cordova</a>
+  </div>
+
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
 </div>
-<nav id="pagination">
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
   
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
   
-  <div class="clearfix"></div>
-</nav></div></div>
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2017/03/13/Cordova-添加默认启动图/" data-title="Cordova 添加默认启动图" data-url="http://samychen.com/2017/03/13/Cordova-添加默认启动图/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
       <aside id="sidebar" class="alignright">
   
 <div class="widget tag">

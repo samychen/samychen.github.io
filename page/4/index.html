@@ -88,6 +88,122 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2015-02-12T05:19:39.000Z"><a href="/2015/02/12/APP开发屏幕适配/">2015-02-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2015/02/12/APP开发屏幕适配/">APP开发屏幕适配</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p><strong>支持不同屏幕尺寸</strong><br>通过下列方法支持不同的屏幕尺寸：</p>
+<ul>
+<li>确保您的布局能够根据屏幕适当地调整大小</li>
+<li>根据屏幕配置提供合适的 UI 布局</li>
+<li>确保对正确的屏幕应用正确的布局</li>
+<li>提供可正常缩放的位图<br><strong>具体适配方案：</strong><br>1、使用“wrap_content”和“match_parent”<br>&emsp;&emsp;为确保您的布局能够灵活地适应不同的屏幕尺寸，您应该为某些视图组件的宽度和高度使用 “wrap_content” 和 “match_parent”，代替硬编码。<br>2、使用 RelativeLayout<br>&emsp;&emsp;RelativeLayout允许您根据组件之间的<strong>空间关系</strong>指定布局。<br>3、使用尺寸限定符<br>&emsp;&emsp; 上述两种方案无法为每一种屏幕尺寸提供最佳用户体验。 因此，您的应用不仅应实现灵活布局，还应针对不同的屏幕配置提供多种备选布局；可以利用<strong>配置限定符</strong>来实现此目的，它允许运行组件<strong>根据当前设备配置（如针对不同屏幕尺寸的不同布局设计）自动选择合适的资源。</strong><br>&emsp;&emsp; 例如，许多应用都针对大屏幕实现了“双窗格”模式（应用可以在一个窗格中显示项目列表，在另一个窗格中显示项目内容）。 平板电脑和 TV 足够大，可在一个屏幕上同时容纳两个窗格，但手机屏幕只能独立显示它们。 因此，如需实现这些布局，您可以建立以下文件：<br>res/layout/main.xml，单窗格（默认）布局：<figure class="highlight plain"><figcaption><span>xmlns:android="http://schemas.android.com/apk/res/android"</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>res/layout-large/main.xml，双窗格布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure></p>
+<p>注意第二个布局目录名称中的 large 限定符。在屏幕归类为大屏幕的设备（例如，7 英寸及更大尺寸的平板电脑）上，将选择此布局。 对于小型设备，将选择另一个布局（无限定符）。<br>4、使用最小宽度限定符<br>&emsp;&emsp;Android 在 Android 3.2 中引入了“最小宽度”限定符。允许您将目标锁定在具有特定最小宽度（单位：dp）的屏幕。<br>&emsp;&emsp; 例如，典型的 7 英寸平板电脑最小宽度为 600dp，因此，如果您希望您的 UI 在这些屏幕上显示两个窗格（但在较小屏幕上显示单个列表），您同样可以为单窗格布局和双窗格布局使用前文中的两种布局，但不使用 large 尺寸限定符，而是使用 sw600dp 为最小宽度是 600dp 的屏幕指定双窗格布局：</p>
+<ul>
+<li>res/layout/main.xml，单窗格（默认）布局：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>res/layout-sw600dp/main.xml，双窗格布局：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这意味着，最小宽度大于或等于 600dp 的设备将选择 layout-sw600dp/main.xml（双窗格）布局，而屏幕较小的设备将选择 layout/main.xml（单窗格）布局。</p>
+<p>不过，这种方法在低于 3.2 版本的设备上不太奏效，因为它们无法将 sw600dp 识别为尺寸限定符，所以您仍需使用 large 限定符。因此，您应该建立一个与 res/layout-sw600dp/main.xml 完全相同的、名为 res/layout-large/main.xml 的文件。下文介绍的技巧可让您避免因此而产生重复的布局文件<br>5、使用布局别名<br>&emsp;&emsp;最小宽度限定符仅在 Android 3.2 及更高版本上提供。因此，您仍应使用兼容早期版本的抽象尺寸容器（小、正常、大和超大）。 例如，如果您想让自己设计的 UI 在手机上显示单窗格 UI，但在 7 英寸平板电脑、TV 及其他大屏设备上显示多窗格 UI，则需要提供下列文件：</p>
+<ul>
+<li>res/layout/main.xml: 单窗格布局</li>
+<li>res/layout-large: 多窗格布局</li>
+<li>res/layout-sw600dp: 多窗格布局</li>
+</ul>
+<p>后两个文件完全相同，因为其中一个将由 Android 3.2 设备匹配，另一个是为了照顾使用早期版本 Android 的平板电脑和 TV 的需要。</p>
+<p>为避免为平板电脑和 TV 产生相同的重复文件（以及由此带来的维护难题），您可以使用别名文件。 例如，您可以定义下列布局:</p>
+<ul>
+<li>res/layout/main.xml，单窗格布局</li>
+<li>res/layout/main_twopanes.xml，双窗格布局</li>
+</ul>
+<p>并添加以下两个文件：</p>
+<ul>
+<li><p>res/values-large/layout.xml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main&quot; type=&quot;layout&quot;&gt;@layout/main_twopanes&lt;/item&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-sw600dp/layout.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main&quot; type=&quot;layout&quot;&gt;@layout/main_twopanes&lt;/item&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>后两个文件内容完全相同，但它们实际上并未定义布局， 而只是<strong>将 main 设置为 main_twopanes 的别名</strong>。由于这些文件具有 large 和 sw600dp 选择器，因此它们适用于任何 Android 版本的平板电脑和电视（低于 3.2 版本的平板电脑和电视匹配 large，高于 3.2 版本者将匹配 sw600dp）<br>6、使用屏幕方向限定符<br>&emsp;&emsp;某些布局在横向和纵向屏幕方向下都表现不错，但其中大多数布局均可通过调整做进一步优化。 在 News Reader 示例应用中，以下是布局在各种屏幕尺寸和屏幕方向下的行为：</p>
+<p>小屏幕，纵向：单窗格，带徽标<br>小屏幕，横向：单窗格，带徽标<br>7 英寸平板电脑，纵向：单窗格，带操作栏<br>7 英寸平板电脑，横向：双窗格，宽，带操作栏<br>10 英寸平板电脑，纵向：双窗格，窄，带操作栏<br>10 英寸平板电脑，横向：双窗格，宽，带操作栏<br>TV，横向：双窗格，宽，带操作栏<br>&emsp;&emsp;因此，以上每一种布局都在 res/layout/ 目录下的某个 XML 文件中定义。如果之后需要将每一种布局分配给各种屏幕配置，应用会使用布局别名将它们与每一种配置进行匹配：</p>
+<ul>
+<li><p>res/layout/onepane.xml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/layout/onepane_with_bar.xml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line">    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; </div><div class="line">                  android:id=&quot;@+id/linearLayout1&quot;  </div><div class="line">                  android:gravity=&quot;center&quot;</div><div class="line">                  android:layout_height=&quot;50dp&quot;&gt;</div><div class="line">        &lt;ImageView android:id=&quot;@+id/imageView1&quot; </div><div class="line">                   android:layout_height=&quot;wrap_content&quot;</div><div class="line">                   android:layout_width=&quot;wrap_content&quot;</div><div class="line">                   android:src=&quot;@drawable/logo&quot;</div><div class="line">                   android:paddingRight=&quot;30dp&quot;</div><div class="line">                   android:layout_gravity=&quot;left&quot;</div><div class="line">                   android:layout_weight=&quot;0&quot; /&gt;</div><div class="line">        &lt;View android:layout_height=&quot;wrap_content&quot; </div><div class="line">              android:id=&quot;@+id/view1&quot;</div><div class="line">              android:layout_width=&quot;wrap_content&quot;</div><div class="line">              android:layout_weight=&quot;1&quot; /&gt;</div><div class="line">        &lt;Button android:id=&quot;@+id/categorybutton&quot;</div><div class="line">                android:background=&quot;@drawable/button_bg&quot;</div><div class="line">                android:layout_height=&quot;match_parent&quot;</div><div class="line">                android:layout_weight=&quot;0&quot;</div><div class="line">                android:layout_width=&quot;120dp&quot;</div><div class="line">                style=&quot;@style/CategoryButtonStyle&quot;/&gt;</div><div class="line">    &lt;/LinearLayout&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot; </div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/layout/twopanes.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/layout/twopanes_narrow.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;200dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>至此所有可能的布局均已定义，现在只需使用配置限定符将正确的布局映射到每一种配置。 现在您可以使用布局别名技巧来完成这项工作：</p>
+<ul>
+<li><p>res/values/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/onepane_with_bar&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;false&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-sw600dp-land/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-sw600dp-port/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/onepane&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;false&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-large-land/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-large-port/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes_narrow&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>7、使用九宫格位图（.9.png）</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2015/02/12/APP开发屏幕适配/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2014-11-14T06:32:57.000Z"><a href="/2014/11/14/生产者-消费者问题的多种Java实现方式/">2014-11-14</a></time>
         
   
@@ -694,53 +810,13 @@ public static void main(String[] args) {
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-03-12T05:32:22.000Z"><a href="/2014/03/12/Java中为什么要单继承，多实现/">2014-03-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2014/03/12/Java中为什么要单继承，多实现/">Java中为什么要单继承，多实现</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p><strong>为什么是多实现呢？</strong><br>  若为多继承，那么当<strong>多个父类中有重复的属性或者方法时，子类的调用结果会含糊不清</strong>，因此用了单继承。<br><strong>为什么是多实现呢？</strong><br>  通过实现接口拓展了类的功能，若实现的多个接口中有重复的方法也没关系，因为实现类中必须重写接口中的方法，所以调用时还是调用的实现类中重写的方法。那么各个接口中重复的变量又是怎么回事呢？<br>  接口中，所有属性都是 static final修饰的，即常量，这个什么意思呢，由于JVM的底层机制，所有static final修饰的变量都在编译时期确定了其值，若在使用时，两个相同的常量值不同，在编译时期就不能通过。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2014/03/12/Java中为什么要单继承，多实现/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
     <a href="/page/3/" class="alignleft prev">上一页</a>
   
+  
+    <a href="/page/5/" class="alignright next">下一页</a>
   
   <div class="clearfix"></div>
 </nav>
@@ -749,7 +825,7 @@ public static void main(String[] args) {
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -805,7 +881,7 @@ public static void main(String[] args) {
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
