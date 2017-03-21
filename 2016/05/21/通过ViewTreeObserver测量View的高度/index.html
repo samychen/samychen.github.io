@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java中为什么要单继承，多实现 | SamyChen</title>
+  <title>通过ViewTreeObserver测量View的高度 | SamyChen</title>
   <meta name="author" content="SamyChen">
   
   <meta name="description" content="学习总结 思考感悟">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Java中为什么要单继承，多实现"/>
+  <meta property="og:title" content="通过ViewTreeObserver测量View的高度"/>
   <meta property="og:site_name" content="SamyChen"/>
 
   
@@ -87,10 +87,10 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2014-03-12T05:32:22.000Z"><a href="/2014/03/12/Java中为什么要单继承，多实现/">2014-03-12</a></time>
+        <time datetime="2016-05-21T10:43:00.000Z"><a href="/2016/05/21/通过ViewTreeObserver测量View的高度/">2016-05-21</a></time>
         
   
-    <h1 class="title">Java中为什么要单继承，多实现</h1>
+    <h1 class="title">通过ViewTreeObserver测量View的高度</h1>
   
 
     </header>
@@ -102,7 +102,16 @@
         
     </div>
 
-        <p><strong>为什么是多实现呢？</strong><br>  若为多继承，那么当<strong>多个父类中有重复的属性或者方法时，子类的调用结果会含糊不清</strong>，因此用了单继承。<br><strong>为什么是多实现呢？</strong><br>  通过实现接口拓展了类的功能，若实现的多个接口中有重复的方法也没关系，因为实现类中必须重写接口中的方法，所以调用时还是调用的实现类中重写的方法。那么各个接口中重复的变量又是怎么回事呢？<br>  接口中，所有属性都是 static final修饰的，即常量，这个什么意思呢，由于JVM的底层机制，所有static final修饰的变量都在编译时期确定了其值，若在使用时，两个相同的常量值不同，在编译时期就不能通过。</p>
+        <p>&emsp;&emsp;ViewTreeObserver用于注册可以通知视图树中的全局变化的监听器。这样的全局事件包括但不限于整个树的布局，绘制路径的开始，触摸模式改变等。ViewTreeObserver不应该由应用程序实例化，因为它是由视图层次结构提供的。</p>
+<p>&emsp;&emsp;在oncreate中View.getWidth和View.getHeight无法获得一个view的高度和宽度，这是因为View组件布局要在onResume回调后完成，只会得到0。所以现在需要使用getViewTreeObserver().addOnGlobalLayoutListener()来获得宽度或者高度。这是获得一个view的宽度和高度的方法之一。</p>
+<p>&emsp;&emsp;ViewTreeObserver有很多内部类，每个触发条件都不同<br>&emsp;&emsp;interface ViewTreeObserver.OnGlobalLayoutListener：当在一个视图树中全局布局发生改变或者视图树中的某个视图的可视状态发生改变时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnPreDrawListener：当一个视图树将要绘制时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnScrollChangedListener：当一个视图树中的一些组件发生滚动时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnTouchModeChangeListener：当一个视图树的触摸模式发生改变时，所要调用的回调函数的接口类</p>
+<p>我们利用OnGlobalLayoutListener可以获取View的高度<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Java代码  final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;  </div><div class="line">            boolean isFirst = true;//默认调用两次，这里只让它执行一次回调  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (isFirst) &#123;  </div><div class="line">                    isFirst = false;  </div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong>OnGlobalLayoutListener可能会被多次触发，因此在得到了高度之后，要将OnGlobalLayoutListener注销掉<br>因此代码改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;    </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;</div><div class="line">                   //直接移除</div><div class="line">                    imageViewContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);</div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());</div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p>类似的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">mGridView.getViewTreeObserver().addOnGlobalLayoutListener( </div><div class="line">         //view 布局完成时调用，每次view改变时都会调用  </div><div class="line">        new ViewTreeObserver.OnGlobalLayoutListener() &#123;  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (mAdapter.getNumColumns() == 0) &#123;  </div><div class="line">                        final int numColumns = (int) Math.floor(  </div><div class="line">                                 mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));  </div><div class="line">                    if (numColumns &gt; 0) &#123;  </div><div class="line">                        final int columnWidth =  </div><div class="line">                            (mGridView.getWidth() / numColumns) - mImageThumbSpacing;  </div><div class="line">                        mAdapter.setNumColumns(numColumns);   //设置 列数  </div><div class="line">                            mAdapter.setItemHeight(columnWidth);  //设置 高度  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p>在gridview布局完成后，根据girdview的宽和高设置adapter列数和每个item高度</p>
 
       
     </div>
@@ -111,12 +120,12 @@
         
   
   <div class="categories">
-    <a href="/categories/Java/">Java</a>
+    <a href="/categories/Android/">Android</a>
   </div>
 
         
   <div class="tags">
-    <a href="/tags/Java/">Java</a>
+    <a href="/tags/安卓，Java/">安卓，Java</a>
   </div>
 
         <div class = "counter">
@@ -148,7 +157,7 @@
     
     
         <!-- 多说评论框 start -->
-        <div class="ds-thread" data-thread-key="2014/03/12/Java中为什么要单继承，多实现/" data-title="Java中为什么要单继承，多实现" data-url="http://samychen.com/2014/03/12/Java中为什么要单继承，多实现/"></div>
+        <div class="ds-thread" data-thread-key="2016/05/21/通过ViewTreeObserver测量View的高度/" data-title="通过ViewTreeObserver测量View的高度" data-url="http://samychen.com/2016/05/21/通过ViewTreeObserver测量View的高度/"></div>
         <!-- 多说评论框 end -->
         <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
         <script type="text/javascript">

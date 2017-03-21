@@ -353,6 +353,57 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2016-05-21T10:43:00.000Z"><a href="/2016/05/21/通过ViewTreeObserver测量View的高度/">2016-05-21</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/05/21/通过ViewTreeObserver测量View的高度/">通过ViewTreeObserver测量View的高度</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>&emsp;&emsp;ViewTreeObserver用于注册可以通知视图树中的全局变化的监听器。这样的全局事件包括但不限于整个树的布局，绘制路径的开始，触摸模式改变等。ViewTreeObserver不应该由应用程序实例化，因为它是由视图层次结构提供的。</p>
+<p>&emsp;&emsp;在oncreate中View.getWidth和View.getHeight无法获得一个view的高度和宽度，这是因为View组件布局要在onResume回调后完成，只会得到0。所以现在需要使用getViewTreeObserver().addOnGlobalLayoutListener()来获得宽度或者高度。这是获得一个view的宽度和高度的方法之一。</p>
+<p>&emsp;&emsp;ViewTreeObserver有很多内部类，每个触发条件都不同<br>&emsp;&emsp;interface ViewTreeObserver.OnGlobalLayoutListener：当在一个视图树中全局布局发生改变或者视图树中的某个视图的可视状态发生改变时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnPreDrawListener：当一个视图树将要绘制时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnScrollChangedListener：当一个视图树中的一些组件发生滚动时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnTouchModeChangeListener：当一个视图树的触摸模式发生改变时，所要调用的回调函数的接口类</p>
+<p>我们利用OnGlobalLayoutListener可以获取View的高度<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Java代码  final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;  </div><div class="line">            boolean isFirst = true;//默认调用两次，这里只让它执行一次回调  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (isFirst) &#123;  </div><div class="line">                    isFirst = false;  </div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong>OnGlobalLayoutListener可能会被多次触发，因此在得到了高度之后，要将OnGlobalLayoutListener注销掉<br>因此代码改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;    </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;</div><div class="line">                   //直接移除</div><div class="line">                    imageViewContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);</div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());</div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p>类似的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">mGridView.getViewTreeObserver().addOnGlobalLayoutListener( </div><div class="line">         //view 布局完成时调用，每次view改变时都会调用  </div><div class="line">        new ViewTreeObserver.OnGlobalLayoutListener() &#123;  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (mAdapter.getNumColumns() == 0) &#123;  </div><div class="line">                        final int numColumns = (int) Math.floor(  </div><div class="line">                                 mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));  </div><div class="line">                    if (numColumns &gt; 0) &#123;  </div><div class="line">                        final int columnWidth =  </div><div class="line">                            (mGridView.getWidth() / numColumns) - mImageThumbSpacing;  </div><div class="line">                        mAdapter.setNumColumns(numColumns);   //设置 列数  </div><div class="line">                            mAdapter.setItemHeight(columnWidth);  //设置 高度  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p>在gridview布局完成后，根据girdview的宽和高设置adapter列数和每个item高度</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/05/21/通过ViewTreeObserver测量View的高度/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2016-05-12T06:08:57.000Z"><a href="/2016/05/12/一个可以进页面自动显示刷新效果的SwipeRefreshLayout/">2016-05-12</a></time>
         
   
@@ -705,53 +756,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-03-11T08:09:54.000Z"><a href="/2016/03/11/SwipeRefreshLayout和ListView的EmptyView共存冲突的问题/">2016-03-11</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/03/11/SwipeRefreshLayout和ListView的EmptyView共存冲突的问题/">SwipeRefreshLayout和ListView的EmptyView共存冲突的问题</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>SwipeRefreshLayout是android官方的下拉刷新控件；<br>它内部有且只能有一个子控件；<br>当一个ListView嵌入到它内部时，就不能为ListView带一个EmptyView了；<br>于是很自然的想到将ListView和EmptyView纳入到一个父控件中；<br>典型的像下面这样的布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;android.support.v4.widget.SwipeRefreshLayout</div><div class="line">        android:id=&quot;@+id/swipeRefreshLayout&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">        &lt;FrameLayout</div><div class="line">            android:layout_width=&quot;match_parent&quot;</div><div class="line">            android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">            &lt;ListView</div><div class="line">                android:id=&quot;@+id/listView&quot;</div><div class="line">                android:layout_width=&quot;match_parent&quot;</div><div class="line">                android:layout_height=&quot;match_parent&quot;</div><div class="line">                android:cacheColorHint=&quot;@android:color/transparent&quot;</div><div class="line">                android:divider=&quot;@color/text_color_c4&quot;</div><div class="line">                android:dividerHeight=&quot;@dimen/line_width&quot;</div><div class="line">                android:footerDividersEnabled=&quot;true&quot; /&gt;</div><div class="line"></div><div class="line">            &lt;include</div><div class="line">                android:id=&quot;@+id/emptyView&quot;</div><div class="line">                layout=&quot;@layout/empty_view_for_tang_friend_0&quot; /&gt;</div><div class="line">        &lt;/FrameLayout&gt;</div><div class="line">    &lt;/android.support.v4.widget.SwipeRefreshLayout&gt;</div></pre></td></tr></table></figure></p>
-<p>这样就可以实现ListView和EmptyView都下拉刷新了；<br>但是问题来了，当ListView的数据超过一屏的时候，再往上滑，滑不上去了；<br>这就是SwipeRefreshLayout和ListView的EmptyView共存冲突的问题（如果SwipeRefreshLayout中仅有一个ListView的话没问题，但现在多了一个EmptyView）； </p>
-<p>解决办法有是有，虽然不那么优雅：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">swipeRefreshLayout = (android.support.v4.widget.SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);</div><div class="line">                swipeRefreshLayout.setColorSchemeResources(R.color.text_color_c6, R.color.yellow, R.color.grey, R.color.red);</div><div class="line">                swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()</div><div class="line">                &#123;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onRefresh()</div><div class="line">                    &#123;</div><div class="line">                        // TODO Auto-generated method stub</div><div class="line">                        //dosomething</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">listView = (ListView) v.findViewById(R.id.listView);</div><div class="line">                listView.setOnScrollListener(new AbsListView.OnScrollListener()</div><div class="line">                &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onScrollStateChanged(AbsListView absListView, int i)</div><div class="line">                    &#123;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount)</div><div class="line">                    &#123;</div><div class="line">                        if (firstVisibleItem == 0)</div><div class="line">                            swipeRefreshLayout.setEnabled(true);</div><div class="line">                        else</div><div class="line">                            swipeRefreshLayout.setEnabled(false);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure></p>
-<p>在ListView滑动的时候做一个判断，看看是不是滑动到顶部了，到顶部了就swipeRefreshLayout.setEnabled(true);让SwipeRefreshLayout可以接受动作，这样就ok了。 </p>
-<p>上面的解决方案比较简单，但是有个小问题，就是当listView滑动到第一个Item（让第一个Item显示一半）的时候，再上滑就上不去了，始终显示半个Item。<br>为了解决这个问题，只能使用笨办法了：将ListView和EmptyView分离，让他们两个分别被两个SwipeRefreshLayout包裹，如下面的布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">    &lt;android.support.v4.widget.SwipeRefreshLayout</div><div class="line">        android:id=&quot;@+id/swipeRefreshLayout&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">        &lt;cn.tangdada.tangbang.widget.LoadMoreListView</div><div class="line">            android:id=&quot;@+id/listView&quot;</div><div class="line">            android:layout_width=&quot;match_parent&quot;</div><div class="line">            android:layout_height=&quot;match_parent&quot;</div><div class="line">            android:cacheColorHint=&quot;@android:color/transparent&quot;</div><div class="line">            android:divider=&quot;@color/text_color_c4&quot;</div><div class="line">            android:dividerHeight=&quot;@dimen/line_width&quot;</div><div class="line">            android:footerDividersEnabled=&quot;false&quot; /&gt;</div><div class="line">    &lt;/android.support.v4.widget.SwipeRefreshLayout&gt;</div><div class="line"></div><div class="line">    &lt;android.support.v4.widget.SwipeRefreshLayout</div><div class="line">        android:id=&quot;@+id/swipeRefreshLayoutEmptyView&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot;</div><div class="line">        android:visibility=&quot;gone&quot; &gt;</div><div class="line"></div><div class="line">        &lt;TextView</div><div class="line">            android:layout_width=&quot;match_parent&quot;</div><div class="line">            android:layout_height=&quot;match_parent&quot;</div><div class="line">            android:gravity=&quot;center&quot;</div><div class="line">            android:paddingLeft=&quot;32dp&quot;</div><div class="line">            android:paddingRight=&quot;32dp&quot;</div><div class="line">            android:text=&quot;@string/empty&quot;</div><div class="line">            android:textColor=&quot;@color/text_color_c3&quot;</div><div class="line">            android:textSize=&quot;@dimen/font_big&quot; /&gt;</div><div class="line">    &lt;/android.support.v4.widget.SwipeRefreshLayout&gt;</div><div class="line"></div><div class="line">&lt;/FrameLayout&gt;</div></pre></td></tr></table></figure></p>
-<p>然后需要在代码中控制显示EmptyView的时机，比如我这里的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">private void updateViews(Object obj)</div><div class="line">    &#123;</div><div class="line">        ArrayList&lt;User&gt; list = (ArrayList&lt;User&gt;) obj;</div><div class="line">        if (list.size() == 0)</div><div class="line">        &#123;</div><div class="line">            //listView.removeLoadMoreListener();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        users.addAll(list);</div><div class="line"></div><div class="line">        if (users.size() == 0)</div><div class="line">        &#123;</div><div class="line">            swipeRefreshLayout.setVisibility(View.GONE);</div><div class="line">            swipeRefreshLayout.setRefreshing(false);</div><div class="line">            swipeRefreshLayoutEmptyView.setVisibility(View.VISIBLE);</div><div class="line">            swipeRefreshLayoutEmptyView.setRefreshing(false);</div><div class="line">        &#125;</div><div class="line">        else</div><div class="line">        &#123;</div><div class="line">            //listView.onLoadMoreComplete();</div><div class="line">            swipeRefreshLayout.setVisibility(View.VISIBLE);</div><div class="line">            swipeRefreshLayout.setRefreshing(false);</div><div class="line">            swipeRefreshLayoutEmptyView.setVisibility(View.GONE);</div><div class="line">            swipeRefreshLayoutEmptyView.setRefreshing(false);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        notifyDataSetChanged();</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/03/11/SwipeRefreshLayout和ListView的EmptyView共存冲突的问题/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -767,7 +771,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -815,7 +819,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18.33px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 16.67px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+    <a href="/tags/Cordova/" style="font-size: 16px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 12px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 12px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
   </div>
 </div>
 
@@ -823,7 +827,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">19</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
