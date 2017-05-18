@@ -88,6 +88,63 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2017-05-18T02:26:57.000Z"><a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/">2017-05-18</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/">MQTT消息格式之SUBSCRIBE消息分析</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>  物联网最近曝光率越来越高。虽然HTTP是网页的事实标准，不过机器之间（Machine-to-Machine，M2M）的大规模沟通需要不同的模式：之前的请求/回答模式不再合适，取而代之的是发布/订阅（Publish/Subscribe）模式。这就是轻量级、可扩展的MQTT（Message Queuing Telemetry Transport）可以施展拳脚的舞台。</p>
+<p>MQTT协议文档<a href="https://www.gitbook.com/book/mcxiaoke/mqtt-cn/details" target="_blank" rel="external">https://www.gitbook.com/book/mcxiaoke/mqtt-cn/details</a></p>
+<p>  采用WireShark抓包工具分析MQTT消息，参考<a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718063分析协议包" target="_blank" rel="external">http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718063分析协议包</a></p>
+<p>首先运行工程</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">[java] view plain copy print?import org.eclipse.paho.client.mqttv3.MqttClient;  </div><div class="line">import org.eclipse.paho.client.mqttv3.MqttConnectOptions;  </div><div class="line">import org.eclipse.paho.client.mqttv3.MqttException;  </div><div class="line">import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;  </div><div class="line">  </div><div class="line">  </div><div class="line">public class SubScriberExample &#123;  </div><div class="line">  </div><div class="line">    /** </div><div class="line">     * @param args </div><div class="line">     */  </div><div class="line">    public static void main(String[] args) &#123;  </div><div class="line">         String[] topicFilters =&#123;&quot;topic1&quot;,&quot;topic2&quot;&#125; ;  </div><div class="line">         String broker = &quot;tcp://192.168.80.196:1883&quot; ;  </div><div class="line">         String clientId = &quot;paho-1&quot; ;  </div><div class="line">         MemoryPersistence persistence = new MemoryPersistence();  </div><div class="line">          try &#123;  </div><div class="line">                 MqttClient sampleClient = new MqttClient(broker, clientId,persistence);  </div><div class="line">                 MqttConnectOptions connOpts = new MqttConnectOptions();  </div><div class="line">                 connOpts.setCleanSession( false );  </div><div class="line">                 System. out .println( &quot;Connecting to broker: &quot; + broker);  </div><div class="line">                 sampleClient.connect(connOpts);  </div><div class="line">                 System. out .println( &quot;Connected&quot; );  </div><div class="line">                 sampleClient.setCallback(new CustomMQTTCallBack());  </div><div class="line">                 sampleClient.subscribe(topicFilters,new int[]&#123;1,1&#125;);  </div><div class="line">                 System. out .println( &quot;Subscribe success for: &quot;+topicFilters.toString());  </div><div class="line">         &#125; catch (MqttException me) &#123;  </div><div class="line">                 System. out .println( &quot;reason &quot; + me.getReasonCode());  </div><div class="line">                 System. out .println( &quot;msg &quot; + me.getMessage());  </div><div class="line">                 System. out .println( &quot;loc &quot; + me.getLocalizedMessage());  </div><div class="line">                 System. out .println( &quot;cause &quot; + me.getCause());  </div><div class="line">                 System. out .println( &quot;excep &quot; + me);  </div><div class="line">                 me.printStackTrace();  </div><div class="line">         &#125;  </div><div class="line">  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当运行客户端之后通过抓取TCP数据包<br><img src="http://upload-images.jianshu.io/upload_images/4398977-0961315a087e8c62?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<ol>
+<li>固定头部<br>SUBSCRIBE 固定头部的消息格式见下表</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-9a31d63c14e39111.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p>从上图的抓包程序得到的数据可知，固定头部的16进制为：82 14<br>结合上面的表1，我们可知其具体含义如下：<br>82—1000 0010 表示连接的请求是Subscribe<br>14–1*16+4=20 表示后面将会跟着20个字节</p>
+<p>2.可变头部</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-91b6849a0ff18fbc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，可变头部的16进制为：00 01<br>结合上面的表2，我们可知其具体含义如下：<br>00 01 —表示当前的Package的ID是1</p>
+<p>3.负载部分<br>SUBSCRIBE 负载部分的消息格式见下表,负载部分主要指定订阅的主题（Topic）的名称以及每个订阅的主题对应的QoS级别（总共三种类型的值：0,1,2）,需要注意的是，在负载部分，一次可以订阅多个主题。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-a40f92187e41129c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，负载部分实际捕获的数据为：00 06 74 6f 70 69 63 31 01 00 06 74 6f 70 69 63 32 01 因为总共有两个主题：topic1 和topic2，所以我们拿第一个主题(topic1)来分析就行了，后面的Topic类似.<br>00 06 代表这个topic的长度是6个字节<br>74 6f 70 69 63 31 代表 topic1<br>01 代表QoS为1</p>
+<p>从此看出MQTT数据包并不复杂，掌握了就能看懂。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2017-03-18T15:24:50.000Z"><a href="/2017/03/18/TCP-IP协议架构/">2017-03-18</a></time>
         
   
@@ -867,65 +924,6 @@ public class ResourceUtil {
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-07-08T06:17:02.000Z"><a href="/2016/07/08/http与https网络请求/">2016-07-08</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/07/08/http与https网络请求/">http与https网络请求</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。"><span class="toc-text">本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#直接使用类HttpsURLConnection访问Web页面"><span class="toc-text">直接使用类HttpsURLConnection访问Web页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#将证书导入到TrustStore文件中"><span class="toc-text">将证书导入到TrustStore文件中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#X509证书信任管理器类的实现及应用"><span class="toc-text">X509证书信任管理器类的实现及应用</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a>
-    </div>
-
-        <p>HTTPS，即安全的超文本传输协议，采用了SSL技术，被广泛使用以保证Web应用系统的安全性。访问Web应用的编程接口大多封装了SSL，使得访问HTTPS和访问HTTP一样简单。</p>
-<h4 id="本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。"><a href="#本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。" class="headerlink" title="本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。"></a>本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。</h4><p>Java安全套接扩展 (Java Secure Socket Extension, JSSE)是实现Internet安全通信的一系列包的集合。它是一个SSL和TLS的纯Java实现，可以透明地提供数据加密、服务器认证、信息完整性等功能，可以使我们像使用普通的套接字一样使用JSSE建立的安全套接字。JSSE是一个开放的标准，不只是Sun公司才能实现一个JSSE，事实上其他公司有自己实现的JSSE。<br>在深入了解JSSE之前，需要了解一个有关Java安全的概念：客户端的TrustStore文件。客户端的TrustStore文件中保存着被客户端所信任的服务器的证书信息。客户端在进行SSL连接时，JSSE将根据这个文件中的证书决定是否信任服务器端的证书。</p>
-<p>JSSE中，有一个信任管理器类负责决定是否信任远端的证书，这个类有如下的处理规则：</p>
-<blockquote>
-<p>1 ) 如果系统属性javax.net.sll.trustStore指定了TrustStore文件，那么信任管理器就去jre安装路径下的lib/security/目录中寻找并使用这个文件来检查证书。<br>2 ) 如果该系统属性没有指定TrustStore文件，它就会去jre安装路径下寻找默认的TrustStore文件，这个文件的相对路径为：lib/security/jssecacerts。<br>3 ) 如果 jssecacerts不存在，但是cacerts存在(它随J2SDK一起发行，含有数量有限的可信任的基本证书)，那么这个默认的TrustStore文件就是cacerts。</p>
-</blockquote>
-<h4 id="直接使用类HttpsURLConnection访问Web页面"><a href="#直接使用类HttpsURLConnection访问Web页面" class="headerlink" title="直接使用类HttpsURLConnection访问Web页面"></a>直接使用类HttpsURLConnection访问Web页面</h4><p>Java提供了一种非常简洁的方法来访问HTTPS网页，即使用类HttpsURLConnection、URL等。这几个类为支持HTTPS对JSSE相关类做了进一步的封装，例子如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">URL reqURL = new URL(&quot;https://www.sun.com&quot; ); //创建URL对象</div><div class="line">HttpsURLConnection httpsConn = (HttpsURLConnection)reqURL.openConnection();</div><div class="line"></div><div class="line">/*下面这段代码实现向Web页面发送数据，实现与网页的交互访问</div><div class="line">httpsConn.setDoOutput(true); </div><div class="line">OutputStreamWriter out = new OutputStreamWriter(huc.getOutputStream(), &quot;8859_1&quot;); </div><div class="line">out.write( &quot;……&quot; ); </div><div class="line">out.flush(); </div><div class="line">out.close();</div><div class="line">*/</div><div class="line"></div><div class="line">//取得该连接的输入流，以读取响应内容 </div><div class="line">InputStreamReader insr = new InputStreamReader(httpsConn.getInputStream();</div><div class="line"></div><div class="line">//读取服务器的响应内容并显示</div><div class="line">int respInt = insr.read();</div><div class="line">while( respInt != -1)&#123;</div><div class="line">　System.out.print((char)respInt);</div><div class="line">　respInt = insr.read();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　这段代码能够正常执行，然而把访问的URL改为<a href="https://login.bjut.edu.cn" target="_blank" rel="external">https://login.bjut.edu.cn</a> 时，程序将抛出异常javax.net.ssl.SSLException，这是由于<a href="https://login.bjut.edu.cn" target="_blank" rel="external">https://login.bjut.edu.cn</a> 站点的安全证书不被JSSE所信任。根据JSSE简介中对信任管理器的分析，一种解决这个问题的方法是按照信任管理器的处理规则，把站点的证书放到证书库文件jssecacerts中，或者把证书存放到任一TrustStore文件中，然后设置系统属性javax.net.sll.trustStore指向该文件。另一种解决方法则是自己实现信任管理器类，让它信任我们指定的证书。下面分别介绍这两种方法。</p>
-<h4 id="将证书导入到TrustStore文件中"><a href="#将证书导入到TrustStore文件中" class="headerlink" title="将证书导入到TrustStore文件中"></a>将证书导入到TrustStore文件中</h4><p>　　Java提供了命令行工具keytool用于创建证书或者把证书从其它文件中导入到Java自己的TrustStore文件中。把证书从其它文件导入到TrustStore文件中的命令行格式为：<br><code>keytool -import -file src_cer_file –keystore dest_cer_store</code><br>其中，src_cer_file为存有证书信息的源文件名，dest_cer_store为目标TrustStore文件。<br>　　在使用keytool之前，首先要取得源证书文件，这个源文件可使用IE浏览器获得，IE浏览器会把访问过的HTTPS站点的证书保存到本地。从IE浏览器导出证书的方法是打开“Internet 选项”，选择“内容”选项卡，点击“证书…”按钮，在打开的证书对话框中，选中一个证书，然后点击“导出…”按钮，按提示一步步将该证书保存到一文件中。最后就可利用keytool把该证书导入到Java的TrustStore文件中。为了能使Java程序找到该文件，应该把这个文件复制到jre安装路径下的lib/security/目录中。</p>
-<p>　　这样，只需在程序中设置系统属性javax.net.sll.trustStore指向文件dest_cer_store，就能使JSSE信任该证书，从而使程序可以访问使用未经验证的证书的HTTPS站点。</p>
-<p>　　使用这种方法，编程非常简单，但需要手工导出服务器的证书。当服务器证书经常变化时，就需要经常进行手工导出证书的操作。下面介绍的实现X509证书信任管理器类的方法将避免手工导出证书的问题。</p>
-<h4 id="X509证书信任管理器类的实现及应用"><a href="#X509证书信任管理器类的实现及应用" class="headerlink" title="X509证书信任管理器类的实现及应用"></a>X509证书信任管理器类的实现及应用</h4><p>　　在JSSE中，证书信任管理器类就是实现了接口X509TrustManager的类。我们可以自己实现该接口，让它信任我们指定的证书。</p>
-<p>　　接口X509TrustManager有下述三个公有的方法需要我们实现：<br>    ⑴ void checkClientTrusted(X509Certificate[] chain, String authType)<br>throws CertificateException<br>           该方法检查客户端的证书，若不信任该证书则抛出异常。由于我们不需要对客户端进行认证，因此我们只需要执行默认的信任管理器的这个方法。JSSE中，默认的信任管理器类为TrustManager。<br>⑵void checkServerTrusted(X509Certificate[] chain, String authType)<br>throws CertificateException </p>
-<p>　　该方法检查服务器的证书，若不信任该证书同样抛出异常。通过自己实现该方法，可以使之信任我们指定的任何证书。在实现该方法时，也可以简单的不做任何处理，即一个空的函数体，由于不会抛出异常，它就会信任任何证书。</p>
-<p>⑶ X509Certificate[] getAcceptedIssuers()<br>返回受信任的X509证书数组。</p>
-<p>自己实现了信任管理器类，如何使用呢？类HttpsURLConnection似乎并没有提供方法设置信任管理器。其实，HttpsURLConnection通过SSLSocket来建立与HTTPS的安全连接，SSLSocket对象是由SSLSocketFactory生成的。HttpsURLConnection提供了方法setSSLSocketFactory(SSLSocketFactory)设置它使用的SSLSocketFactory对象。SSLSocketFactory通过SSLContext对象来获得，在初始化SSLContext对象时，可指定信任管理器对象。下面用一个图简单表示这几个JSSE类的关系：<br><img src="http://dev.yesky.com/imagelist/06/04/d9fe68331950.gif" alt=""><br>假设自己实现的X509TrustManager类的类名为：MyX509TrustManager，下面的代码片断说明了如何使用MyX509TrustManager：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//创建SSLContext对象，并使用我们指定的信任管理器初始化</div><div class="line">TrustManager[] tm = &#123;new MyX509TrustManager ()&#125;; </div><div class="line">SSLContext sslContext = SSLContext.getInstance(&quot;SSL&quot;,&quot;SunJSSE&quot;); </div><div class="line">sslContext.init(null, tm, new java.security.SecureRandom()); </div><div class="line"></div><div class="line">//从上述SSLContext对象中得到SSLSocketFactory对象</div><div class="line">SSLSocketFactory ssf = sslContext.getSocketFactory();</div><div class="line"></div><div class="line">//创建HttpsURLConnection对象，并设置其SSLSocketFactory对象</div><div class="line">HttpsURLConnection httpsConn = (HttpsURLConnection)myURL.openConnection();</div><div class="line">httpsConn.setSSLSocketFactory(ssf);</div></pre></td></tr></table></figure></p>
-<p>这样，HttpsURLConnection对象就可以正常连接HTTPS了，无论其证书是否经权威机构的验证，只要实现了接口X509TrustManager的类MyX509TrustManager信任该证书。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>　　本文主要介绍了在HTTPS的证书未经权威机构认证的情况下，访问HTTPS站点的两种方法，一种方法是把该证书导入到Java的TrustStore文件中，另一种是自己实现并覆盖JSSE缺省的证书信任管理器类。两种方法各有优缺点，第一种方法不会影响JSSE的安全性，但需要手工导入证书；第二种方法虽然不用手工导入证书，但需要小心使用，否则会带来一些安全隐患。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/07/08/http与https网络请求/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -939,7 +937,7 @@ public class ResourceUtil {
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -987,7 +985,7 @@ public class ResourceUtil {
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Cordova/" style="font-size: 16px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 14px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 12px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 18px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 12px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 12px;">装饰者模式</a>
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 10px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
   </div>
 </div>
 
@@ -995,7 +993,7 @@ public class ResourceUtil {
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">19</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">20</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
