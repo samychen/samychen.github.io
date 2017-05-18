@@ -88,6 +88,63 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2017-05-18T05:26:57.000Z"><a href="/2017/05/18/MQTT消息格式之SUBACK消息分析/">2017-05-18</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/05/18/MQTT消息格式之SUBACK消息分析/">MQTT消息格式之SUBACK消息分析</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-运行java工程"><span class="toc-text">1.运行java工程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-协议分析"><span class="toc-text">2.协议分析</span></a></li></ol>
+    </div>
+
+        <p>在上一节中（<a href="http://www.jianshu.com/p/363044e62afd" target="_blank" rel="external">MQTT消息格式之SUBSCRIBE(消息订阅)消息分析</a>），客户端发送了订阅的消息，这个时候，服务器端收到订阅主题的MQTT消息之后，肯定需要给一个应答，这个应答信息就是SUBACK(消息订阅应答)。消息订阅应答相对来说比较简单。</p>
+<h4 id="1-运行java工程"><a href="#1-运行java工程" class="headerlink" title="1.运行java工程"></a>1.运行java工程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">import org.eclipse.paho.client.mqttv3.MqttClient;  </div><div class="line"></div><div class="line">import org.eclipse.paho.client.mqttv3.MqttConnectOptions;  </div><div class="line"></div><div class="line">import org.eclipse.paho.client.mqttv3.MqttException;  </div><div class="line"></div><div class="line">import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;  </div><div class="line"></div><div class="line">import com.tibco.mqtt.test.CustomMQTTCallBack;  </div><div class="line"></div><div class="line"> </div><div class="line">public class SubScriberExample &#123;  </div><div class="line"></div><div class="line">  </div><div class="line">    /** </div><div class="line"></div><div class="line">     * @param args </div><div class="line"></div><div class="line">     */  </div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;  </div><div class="line"></div><div class="line">         String topicFilter =&quot;test&quot;;  </div><div class="line"></div><div class="line">         String broker = &quot;tcp://192.168.80.196:1883&quot; ;  </div><div class="line"></div><div class="line">         String clientId = &quot;paho-1&quot; ;  </div><div class="line"></div><div class="line">         MemoryPersistence persistence = new MemoryPersistence();  </div><div class="line"></div><div class="line">          try &#123;  </div><div class="line"></div><div class="line">                 MqttClient sampleClient = new MqttClient(broker, clientId,persistence);  </div><div class="line"></div><div class="line">                 MqttConnectOptions connOpts = new MqttConnectOptions();  </div><div class="line"></div><div class="line">                 connOpts.setCleanSession( false );  </div><div class="line"></div><div class="line">                 System. out .println( &quot;Connecting to broker: &quot; + broker);  </div><div class="line"></div><div class="line">                 sampleClient.connect(connOpts);  </div><div class="line"></div><div class="line">                 System. out .println( &quot;Connected&quot; );  </div><div class="line"></div><div class="line">                 sampleClient.setCallback(new CustomMQTTCallBack());  </div><div class="line"></div><div class="line">                 sampleClient.subscribe(topicFilter,0);  </div><div class="line"></div><div class="line">                 System. out .println( &quot;Subscribe success for: &quot;+topicFilters.toString());  </div><div class="line"></div><div class="line">         &#125; catch (MqttException me) &#123;  </div><div class="line"></div><div class="line">                 System. out .println( &quot;reason &quot; + me.getReasonCode());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;msg &quot; + me.getMessage());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;loc &quot; + me.getLocalizedMessage());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;cause &quot; + me.getCause());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;excep &quot; + me);  </div><div class="line"></div><div class="line">                 me.printStackTrace();  </div><div class="line"></div><div class="line">         &#125;  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>抓包结果如下：<br><img src="http://upload-images.jianshu.io/upload_images/4398977-cbdeba532e9fed6d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h4 id="2-协议分析"><a href="#2-协议分析" class="headerlink" title="2.协议分析"></a>2.协议分析</h4><p>协议的地址(<a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718068" target="_blank" rel="external">http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718068</a>)</p>
+<ol>
+<li>固定头部</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-f4b7853b0f2fe7ff.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，固定头部的16进制为：90 04<br>结合上面的表1，我们可知其具体含义如下：<br>90—1001 0000 表示连接的请求是SUBACK<br>04–  表示后面将会跟着4个字节</p>
+<ol>
+<li>可变头部</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-942c17dd742db174.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，可变头部的16进制为：00 01<br>结合上面的表2，我们可知其具体含义如下：<br>00 01 —表示当前的SUBACK的消息ID是1,这个和上节中的SUBSCRIBE（消息订阅）的消息ID的值必须保持一致。</p>
+<p>3.负载部分<br>SUBACK负载部分的消息格式见下表,负载部分主要返回订阅的结果。其返回的值下面4中类型，其他的都是没有意义的。<br>允许返回的值<br>0x00 - 表示成功- 最大的QoS 0<br>0x01 - 表示成功- 最大的 QoS 1<br>0x02 - 表示成功- 最大的 QoS 2<br>0x80 - 表示订阅失败。 </p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-c12c5e1371568645.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p>从上图的抓包程序得到的数据可知，负载部分实际捕获的数据为：00 00<br>其表示消息订阅成功，且以后收到得到订阅的消息的QoS的值只能够为0.</p>
+<p>发送确认不需要额外部分，因此负载部分长度只有两个字节。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/05/18/MQTT消息格式之SUBACK消息分析/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2017-05-18T02:26:57.000Z"><a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/">2017-05-18</a></time>
         
   
@@ -869,61 +926,6 @@ public class ResourceUtil {
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-07-12T06:17:02.000Z"><a href="/2016/07/12/https加密过程/">2016-07-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/07/12/https加密过程/">https加密过程</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>HTTPS其实是有两部分组成：HTTP + SSL / TLS，也就是在HTTP上又加了一层处理加密信息的模块。服务端和客户端的信息传输都会通过TLS进行加密，所以传输的数据都是加密后的数据。具体是如何进行加密，解密，验证的，且看下图。<br><img src="http://files.jb51.net/file_images/article/201212/2012121714270132.png" alt=""></p>
-<ul>
-<li><ol>
-<li>客户端发起HTTPS请求<br>　　这个没什么好说的，就是用户在浏览器里输入一个https网址，然后连接到server的443端口。</li>
-</ol>
-</li>
-<li>2.务端的配置<br>　　采用HTTPS协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问，而使用受信任的公司申请的证书则不会弹出提示页面(startssl就是个不错的选择，有1年的免费服务)。这套证书其实就是一对公钥和私钥。如果对公钥和私钥不太理解，可以想象成一把钥匙和一个锁头，只是全世界只有你一个人有这把钥匙，你可以把锁头给别人，别人可以用这个锁把重要的东西锁起来，然后发给你，因为只有你一个人有这把钥匙，所以只有你才能看到被这把锁锁起来的东西。</li>
-<li>3.传送证书<br>　　这个证书其实就是公钥，只是包含了很多信息，如证书的颁发机构，过期时间等等。</li>
-<li>4.客户端解析证书<br>　　这部分工作是有客户端的TLS来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个随机值。然后用证书对该随机值进行加密。就好像上面说的，把随机值用锁头锁起来，这样除非有钥匙，不然看不到被锁住的内容。</li>
-<li>5.传送加密信息<br>　　这部分传送的是用证书加密后的随机值，目的就是让服务端得到这个随机值，以后客户端和服务端的通信就可以通过这个随机值来进行加密解密了。</li>
-<li>6.服务段解密信息<br>　　服务端用私钥解密后，得到了客户端传过来的随机值(私钥)，然后把内容通过该值进行对称加密。所谓对称加密就是，将信息和私钥通过某种算法混合在一起，这样除非知道私钥，不然无法获取内容，而正好客户端和服务端都知道这个私钥，所以只要加密算法够彪悍，私钥够复杂，数据就够安全。</li>
-<li>7.传输加密后的信息<br>　　这部分信息是服务段用私钥加密后的信息，可以在客户端被还原。</li>
-<li>8.客户端解密信息<br>　　客户端用之前生成的私钥解密服务段传过来的信息，于是获取了解密后的内容。整个过程第三方即使监听到了数据，也束手无策。</li>
-</ul>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/07/12/https加密过程/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -937,7 +939,7 @@ public class ResourceUtil {
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -985,7 +987,7 @@ public class ResourceUtil {
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 10px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
   </div>
 </div>
 
@@ -993,7 +995,7 @@ public class ResourceUtil {
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">20</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">20</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>

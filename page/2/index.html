@@ -88,6 +88,61 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2016-07-12T06:17:02.000Z"><a href="/2016/07/12/https加密过程/">2016-07-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/07/12/https加密过程/">https加密过程</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>HTTPS其实是有两部分组成：HTTP + SSL / TLS，也就是在HTTP上又加了一层处理加密信息的模块。服务端和客户端的信息传输都会通过TLS进行加密，所以传输的数据都是加密后的数据。具体是如何进行加密，解密，验证的，且看下图。<br><img src="http://files.jb51.net/file_images/article/201212/2012121714270132.png" alt=""></p>
+<ul>
+<li><ol>
+<li>客户端发起HTTPS请求<br>　　这个没什么好说的，就是用户在浏览器里输入一个https网址，然后连接到server的443端口。</li>
+</ol>
+</li>
+<li>2.务端的配置<br>　　采用HTTPS协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问，而使用受信任的公司申请的证书则不会弹出提示页面(startssl就是个不错的选择，有1年的免费服务)。这套证书其实就是一对公钥和私钥。如果对公钥和私钥不太理解，可以想象成一把钥匙和一个锁头，只是全世界只有你一个人有这把钥匙，你可以把锁头给别人，别人可以用这个锁把重要的东西锁起来，然后发给你，因为只有你一个人有这把钥匙，所以只有你才能看到被这把锁锁起来的东西。</li>
+<li>3.传送证书<br>　　这个证书其实就是公钥，只是包含了很多信息，如证书的颁发机构，过期时间等等。</li>
+<li>4.客户端解析证书<br>　　这部分工作是有客户端的TLS来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个随机值。然后用证书对该随机值进行加密。就好像上面说的，把随机值用锁头锁起来，这样除非有钥匙，不然看不到被锁住的内容。</li>
+<li>5.传送加密信息<br>　　这部分传送的是用证书加密后的随机值，目的就是让服务端得到这个随机值，以后客户端和服务端的通信就可以通过这个随机值来进行加密解密了。</li>
+<li>6.服务段解密信息<br>　　服务端用私钥解密后，得到了客户端传过来的随机值(私钥)，然后把内容通过该值进行对称加密。所谓对称加密就是，将信息和私钥通过某种算法混合在一起，这样除非知道私钥，不然无法获取内容，而正好客户端和服务端都知道这个私钥，所以只要加密算法够彪悍，私钥够复杂，数据就够安全。</li>
+<li>7.传输加密后的信息<br>　　这部分信息是服务段用私钥加密后的信息，可以在客户端被还原。</li>
+<li>8.客户端解密信息<br>　　客户端用之前生成的私钥解密服务段传过来的信息，于是获取了解密后的内容。整个过程第三方即使监听到了数据，也束手无策。</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/07/12/https加密过程/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2016-07-08T06:17:02.000Z"><a href="/2016/07/08/http与https网络请求/">2016-07-08</a></time>
         
   
@@ -745,56 +800,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-04-12T06:06:15.000Z"><a href="/2016/04/12/Invalid-double崩溃分析/">2016-04-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/04/12/Invalid-double崩溃分析/">Invalid double崩溃分析</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>第一次遇到</p>
-<p>java.lang.NumberFormatException: Invalid double: “0,3”<br>这样包含逗号的浮点数异常，第一感觉就是服务器给的数据错误，但前段时间复现了这个异常，才发现是代码不规范导致了这样的异常： 崩溃的详细log如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">E/AndroidRuntime: FATAL EXCEPTION: mainProcess: com.frank.lollipopdemo, PID: </div><div class="line">10898java.lang.RuntimeException: Unable to start activity </div><div class="line">ComponentInfo&#123;com.frank.lollipopdemo/com.frank.lollipopdemo.MainActivity&#125;: </div><div class="line">java.lang.NumberFormatException: Invalid double: &quot;0,3&quot; at </div><div class="line">android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2325) at </div><div class="line">android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2387) at </div><div class="line">android.app.ActivityThread.access$800(ActivityThread.java:151) at </div><div class="line">android.app.ActivityThread$H.handleMessage(ActivityThread.java:1303) at </div><div class="line">android.os.Handler.dispatchMessage(Handler.java:102) at android.os.Looper.loop(Looper.java:135) at </div><div class="line">android.app.ActivityThread.main(ActivityThread.java:5254) at java.lang.reflect.Method.invoke(Native </div><div class="line">Method) at java.lang.reflect.Method.invoke(Method.java:372) at </div><div class="line">com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:903) at </div><div class="line">com.android.internal.os.ZygoteInit.main(ZygoteInit.java:698) Caused by: </div><div class="line">java.lang.NumberFormatException: Invalid double: &quot;0,3&quot; at </div><div class="line">java.lang.StringToReal.invalidReal(StringToReal.java:63) at </div><div class="line">java.lang.StringToReal.initialParse(StringToReal.java:164) at </div><div class="line">java.lang.StringToReal.parseDouble(StringToReal.java:282) at </div><div class="line">java.lang.Double.parseDouble(Double.java:301) at </div><div class="line">com.frank.lollipopdemo.MainActivity.onCreate(MainActivity.java:43) at </div><div class="line">android.app.Activity.performCreate(Activity.java:5990) at </div><div class="line">android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1106) at </div><div class="line">android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2278) at </div><div class="line">android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2387) at </div><div class="line">android.app.ActivityThread.access$800(ActivityThread.java:151) at </div><div class="line">android.app.ActivityThread$H.handleMessage(ActivityThread.java:1303) at </div><div class="line">android.os.Handler.dispatchMessage(Handler.java:102) at android.os.Looper.loop(Looper.java:135) at </div><div class="line">android.app.ActivityThread.main(ActivityThread.java:5254) at java.lang.reflect.Method.invoke(Native </div><div class="line">Method) at java.lang.reflect.Method.invoke(Method.java:372) at </div><div class="line">com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:903) at</div><div class="line">com.android.internal.os.ZygoteInit.main(ZygoteInit.java:698)</div></pre></td></tr></table></figure></p>
-<p>而出错的代码是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        tv_title = (TextView) findViewById(R.id.tv_title);</div><div class="line">        tv_content = (TextView) findViewById(R.id.tv_content);</div><div class="line">        String jsonVal = &quot;0.31415926&quot;;</div><div class="line">        String title = remain1Places(jsonVal);// -&gt; 0.3</div><div class="line">        tv_title.setText(title);</div><div class="line">        tv_content.setText(getPercent(Double.parseDouble(title)));// -&gt; ##.##%</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static String remain1Places(String string) &#123;</div><div class="line">        if (TextUtils.isEmpty(string)) &#123;</div><div class="line">            return &quot;&quot;;</div><div class="line">        &#125;</div><div class="line">        return String.format(&quot;%.1f&quot;, Double.parseDouble(string));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static String getPercent(double value) &#123;</div><div class="line">        NumberFormat numberFormat = NumberFormat.getPercentInstance();</div><div class="line">        numberFormat.setMinimumFractionDigits(1);</div><div class="line">        numberFormat.setMaximumFractionDigits(2);</div><div class="line">        return numberFormat.format(value);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>想把浮点数”0.31415926”保留一位小数，就使用了String.format()<br>方法完成，而且完全不顾编译器对我们的建议： <img src="http://upload-images.jianshu.io/upload_images/4398977-6b4a754e0cd9d8cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述">之后，我们想把保留了一位小数后的浮点数”0.3”转成百分比的形式”30.0%”，当然先转成double，然后利用NumberFormat<br>格式化成百分比。 看似没有问题，但是当我们把系统语言换成法语(France)之后，程序直接Crash，而且当我们只显示remain1Places()<br>后的title时，发现”0.31415926”变成了”0,3”，而不是”0.3”，这就直接导致了Double.parseDouble(“0,3”)抛出一个数据格式异常。 那为什么String.format()<br>会将小数点的”句点(.)“换成了”逗号(,)“呢？<br>摘自<a href="https://en.wikipedia.org/wiki/Decimal_mark" target="_blank" rel="external">维基百科</a>： A decimal mark is a symbol used to separate the integer part from the fractional part of a number written in decimal form. Different countries officially designate different symbols for the decimal mark. The choice of symbol for the decimal mark also affects the choice of symbol for the thousands separator used in digit grouping, so the latter is also treated in this article. <img src="http://upload-images.jianshu.io/upload_images/4398977-562e843356d6da5e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述"></p>
-<p>可以看到，有很多地区都是用<strong>逗号(,)</strong>作为<strong>小数点</strong>的，如19,90€表示19.9欧元；但计算机程序中的浮点数必须用<strong>句点(.)</strong>作为小数点，如double price = 19.90;<br>表示浮点数19.9。所以在使用double的包装类Double<br>的parseDouble(String)<br>或valueOf(String)<br>方法将字符串表示的double值转成double时，字符串所表示的double值必须是用<strong>句点(.)</strong>分隔的浮点数，也就是计算机的浮点数表示形式。<br>Double.valueOf(String)<br>方法仅仅调用了Double.parseDouble(String)<br>并返回Double<br>对象。 Double.parseDouble(String)<br>方法返回原语类型的double<br>变量。</p>
-<p>因此，我们就可以断定这是一个本地化（Locale）的问题了。现在再来看一下编译器(lint)给我们String.format()<br>方法的建议：<br>Implicitly using the default locale is a common source of bugs: Use String.format(Locale, …) instead. 隐式地使用默认的区域设置是常见Bug源，请使用String.format(Locale, …)等方法替换它。</p>
-<p>也就是说，String.format(String format, Object… args)<br>会调用format(Locale.getDefault(), format, args)<br>使用<strong>用户默认的区域设置</strong>返回格式化好且本地化好的字符串，因用户设置的不同而返回不同的字符串，进而出现Bug。如果你只是想格式化字符串而不是人为干预，应该用</p>
-<p><code>String.format(Locale locale, String format, Object... args)</code><br>方法，Locale参数用Locale.US<br>就可以了。<br>因此，我们应该重视本地化问题：<br>将字符串所有字符转为大/小写的方法String.toLowerCase()<br>/String.toUpperCase()<br>并不一定能将字符真正的大/小写（如区域设置为土耳其时，i大写后还是i），因此应该指定要使用的区域设置String.toLowerCase(Locale locale)<br>/String.toUpperCase(Locale locale)<br>。<br>格式化字符串的方法String.format(String format, Object… args)<br>应该指定区域设置，以避免区域设置变化导致的Bug。<br><strong>千万不要将数字format()<br>成字符串后再将该字符串转回原语类型</strong>，因为format()<br>后的字符串可能不是合法的原语类型的数字了。即永远不要出现类似这样</p>
-<p>Double.parseDouble(new DecimalFormat(“#.##”).format(doubleValue))<br>的代码。<br>建议使用NumberFormat<br>，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static String remain1Places(String str) &#123;</div><div class="line">    NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());</div><div class="line">    numberFormat.setMinimumFractionDigits(1);</div><div class="line">    numberFormat.setMaximumFractionDigits(1);</div><div class="line">    return numberFormat.format(Double.parseDouble(str));</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static String getPercent(String str) &#123;</div><div class="line">    NumberFormat numberFormat = NumberFormat.getPercentInstance(Locale.getDefault());</div><div class="line">    numberFormat.setMinimumFractionDigits(1);</div><div class="line">    numberFormat.setMaximumFractionDigits(2);</div><div class="line">    return numberFormat.format(Double.parseDouble(str));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/04/12/Invalid-double崩溃分析/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -810,7 +815,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -858,7 +863,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 10px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
   </div>
 </div>
 
@@ -866,7 +871,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">20</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">20</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
