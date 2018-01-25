@@ -180,7 +180,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -190,7 +190,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
             
-            Über
+            About
           </a>
         </li>
       
@@ -474,7 +474,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2014-05-23T13:24:37+08:00" content="2014-05-23">
               2014-05-23
             </time>
@@ -486,7 +486,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Java/" itemprop="url" rel="index">
@@ -527,17 +527,16 @@
 <!-- 自定义结束 -->
         
           
-            <p>java中的常用集合类</p>
-<p>1、ArrayList：ArrayList 里面的数据都是有序的，并且可以重复<br>ArayList 缺点：删除慢，随机插入慢<br>举例：如何将数组中的元素变为集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String name[] = &#123;&quot;Tom&quot;,&quot;jack&quot;&#125;;</div><div class="line">List&lt;String &gt;list = Arrays.asList(name);</div></pre></td></tr></table></figure>
-<p>2、LinkedList<br>共性：有序 可以重复（里面的元素）<br>区别：数据的存储方式不同<br>        ArrayList本质：数组<br>        LinkedList本质：链表<br>优点：随机插入快，随机删除快<br>缺点：随机获取元素慢，逐个遍历每个元素，而ArrayList是通过下标获取元素</p>
-<p>3、HashSet<br>共性：持有对象，全部放到[ ]中<br>区别：1.存入的对象是无序的（相对无序）<br>                    HashSet 的排序规则是根据hashCode产生的<br>           2.存入HashSet容器的对象不能重复<br>                    HashSet先判断两个对象的hashCode是否相同，再判断                               两个对象的Equals是否相同<br>            注意：放入HashSe中的对象类型，必须覆盖hashCode()方法和Equals方法<br>                        放入Se中的对象类型，必须覆盖hashCode()方法和Equals方法，严格的还需要覆盖toString方法，Set无序，没有get方法</p>
-<p>4、HashMap<br>特点：Map以键值对（key：value）的形式存储数据，Map中的键可以是int，也可以是其他任意数据类型<br>键必须唯一，值可以相同<br>放入Map中的键必须要覆盖Object类hashCode和Equals，toString方法<br>HashMap常用方法：</p>
-<p>containsKey(Object key)<br>containsValue(Object value) </p>
-<p>map.values()返回Map中的所有值<br>map.keySet()返回Map中所有的键</p>
-<p>Map的迭代方法entrySet<br>使用：如何打印系统的所有环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Map&lt;String,String&gt;envMap = System.getenv();</div><div class="line">    for(Map.Entry&lt;String,String&gt;entry:envMap.entrySet())&#123;</div><div class="line">      String key = entry.getKey();</div><div class="line">      String value = entry.getValue();</div><div class="line">      System.out.println(&quot;key = &quot;+key,&quot;value = &quot;+vaule);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-          
+          java中的常用集合类
+1、ArrayList：ArrayList 里面的数据都是有序的，并且可以重复ArayList 缺点：删除慢，随机插入慢举例：如何将数组中的元素变为集合
+12String name[] = &#123;&quot;Tom&quot;,&quot;jack&quot;&#125
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2014/05/23/Java中的常用集合类/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -598,7 +597,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2014-05-12T13:24:37+08:00" content="2014-05-12">
               2014-05-12
             </time>
@@ -610,7 +609,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Java/" itemprop="url" rel="index">
@@ -651,29 +650,15 @@
 <!-- 自定义结束 -->
         
           
-            <p>比较器comparable和comparator的区别</p>
-<p>Java提供了一个集合工具类，里面有排序方法，Collections使用它提供的方法来完成排序<br>注意：Collection不是Collections，Collections是在Collection上进行操作的集合的一个工具类，就如Arrays是数组的工具类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class ComparableTest &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		String names[] = &#123; &quot;Jack&quot;, &quot;Adam&quot;, &quot;Bob&quot; &#125;;</div><div class="line">		List&lt;String&gt; list = Arrays.asList(names);</div><div class="line">		System.out.println(list);</div><div class="line">		//排序的方式String已经替我们完成了</div><div class="line">		//String会调用compareTo（）方法实现排序的功能</div><div class="line">		Collections.sort(list);</div><div class="line">		System.out.println(list);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>String类实现Comparable接口，当调用sort规则时，String会调用compareTo方法实现排序功能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class StudentComparable &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Student stu[] = &#123;</div><div class="line">				new Student(&quot;005&quot;, &quot;Jackson&quot;, 3, 3, &quot;football&quot;),</div><div class="line">				new Student(&quot;001&quot;, &quot;Jerry&quot;, 1, 3, &quot;football&quot;),</div><div class="line">				new Student(&quot;002&quot;, &quot;Adam&quot;, 5, 2, &quot;Tennis&quot;)</div><div class="line">		&#125;;</div><div class="line">		//错误原因：1Student没有实现Comparable接口</div><div class="line">		//       2 没有指定排序规则（id、name、hobby）</div><div class="line">		List&lt;Student&gt; list = Arrays.asList(stu);</div><div class="line">		//如何比较排序？  Collections.sort方法进行排序，它会回调 容器中Student对象的 compareTo方法</div><div class="line">		Collections.sort(list);</div><div class="line">		for(Student student : list)&#123;</div><div class="line">			System.out.println(student);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line">public class Student implements Comparable&lt;Student&gt;&#123;</div><div class="line">	</div><div class="line">	public String getId() &#123;</div><div class="line">		return id;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setId(String id) &#123;</div><div class="line">		this.id = id;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getName() &#123;</div><div class="line">		return name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setName(String name) &#123;</div><div class="line">		this.name = name;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public int getGrade() &#123;</div><div class="line">		return grade;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setGrade(int grade) &#123;</div><div class="line">		this.grade = grade;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public int getClassNo() &#123;</div><div class="line">		return classNo;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setClassNo(int classNo) &#123;</div><div class="line">		this.classNo = classNo;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getHobby() &#123;</div><div class="line">		return hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void setHobby(String hobby) &#123;</div><div class="line">		this.hobby = hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public String toString() &#123;</div><div class="line">		return &quot;Student [id=&quot; + id + &quot;, name=&quot; + name + &quot;, grade=&quot; + grade + &quot;, classNo=&quot; + classNo + &quot;, hobby=&quot; + hobby</div><div class="line">				+ &quot;]&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public int hashCode() &#123;</div><div class="line">		final int prime = 31;</div><div class="line">		int result = 1;</div><div class="line">		result = prime * result + classNo;</div><div class="line">		result = prime * result + grade;</div><div class="line">		result = prime * result + ((hobby == null) ? 0 : hobby.hashCode());</div><div class="line">		result = prime * result + ((id == null) ? 0 : id.hashCode());</div><div class="line">		result = prime * result + ((name == null) ? 0 : name.hashCode());</div><div class="line">		return result;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public boolean equals(Object obj) &#123;</div><div class="line">		if (this == obj)</div><div class="line">			return true;</div><div class="line">		if (obj == null)</div><div class="line">			return false;</div><div class="line">		if (getClass() != obj.getClass())</div><div class="line">			return false;</div><div class="line">		Student other = (Student) obj;</div><div class="line">		if (classNo != other.classNo)</div><div class="line">			return false;</div><div class="line">		if (grade != other.grade)</div><div class="line">			return false;</div><div class="line">		if (hobby == null) &#123;</div><div class="line">			if (other.hobby != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!hobby.equals(other.hobby))</div><div class="line">			return false;</div><div class="line">		if (id == null) &#123;</div><div class="line">			if (other.id != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!id.equals(other.id))</div><div class="line">			return false;</div><div class="line">		if (name == null) &#123;</div><div class="line">			if (other.name != null)</div><div class="line">				return false;</div><div class="line">		&#125; else if (!name.equals(other.name))</div><div class="line">			return false;</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public Student(String id,String name,int grade,int classNo,String hobby) &#123;</div><div class="line">		this.id =id;</div><div class="line">		this.name = name;</div><div class="line">		this.grade = grade;</div><div class="line">		this.classNo = classNo;</div><div class="line">		this.hobby = hobby;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	private String id;</div><div class="line">	</div><div class="line">	private String name;</div><div class="line">	</div><div class="line">	private int grade;</div><div class="line">	</div><div class="line">	private int classNo;</div><div class="line">	</div><div class="line">	private String hobby;</div><div class="line"></div><div class="line">	/**</div><div class="line">	 * Comparable 的compareTo方法为我们提供了比较的功能，</div><div class="line">	 * 如何比较</div><div class="line">	 * 怎么做需要在Student类中实现</div><div class="line">	 * 我的规则：按照学生的ID进行排序</div><div class="line">	 */</div><div class="line">	@Override</div><div class="line">	public int compareTo(Student o) &#123;</div><div class="line">		//两个对象需要做比较  </div><div class="line">		//this的id 如果大于 o 的id  返回的是正数</div><div class="line">		//this的id 如果等于 o 的id  返回的是0</div><div class="line">		//this的id 如果小于 o 的id  返回的是负数</div><div class="line">//		int result = -(this.getId().compareTo(o.getId()));</div><div class="line">//		return result;</div><div class="line">		</div><div class="line">//		if(this.getId().compareTo(o.getId()) &gt;0)&#123;</div><div class="line">//			return 1;</div><div class="line">//		&#125;else if(this.getId().compareTo(o.getId())&lt;0)&#123;</div><div class="line">//			return -1;</div><div class="line">//		&#125;</div><div class="line">//		return 0;</div><div class="line">	   //按照年级进行排序</div><div class="line">		if(this.getGrade() &gt; o.getGrade())&#123;</div><div class="line">			return 1;</div><div class="line">		&#125;else if(this.getGrade() &lt; o.getGrade())&#123;</div><div class="line">			return -1;</div><div class="line">		&#125;</div><div class="line">		return 0;</div><div class="line">	&#125;</div><div class="line">	//制定一个策略：输入1  id   输入2   name   输入3   爱好排序</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果只比较一次 ，可以使用匿名内部类节约资源</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">public class CheLueCompator &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		Student stu[] = &#123;</div><div class="line">				new Student(&quot;005&quot;, &quot;Jackson&quot;, 3, 6, &quot;football&quot;),</div><div class="line">				new Student(&quot;001&quot;, &quot;Zero&quot;, 1, 3, &quot;basketball&quot;),</div><div class="line">				new Student(&quot;002&quot;, &quot;Adam&quot;, 5, 2, &quot;tennis&quot;)</div><div class="line">		&#125;;</div><div class="line">		List&lt;Student&gt; list = Arrays.asList(stu);</div><div class="line">		</div><div class="line">		sortList(list);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public static void sortList(List&lt;Student&gt; list) &#123;</div><div class="line">		Scanner input = new Scanner(System.in);</div><div class="line">		System.out.println(&quot;请输入排序编号 1按照学生名称  2按照爱好  3按照班级编号&quot;);</div><div class="line">		int num = input.nextInt();</div><div class="line">		switch (num) &#123;</div><div class="line">		case 1:</div><div class="line">			//两个参数 1需要排序的列表 2排序的策略   （按照名称排序）</div><div class="line">			//匿名内部类：接口回调（由谁回调谁？）sort方法回调匿名内部类</div><div class="line">			//好莱坞原则：sort理解为好莱坞 ，匿名内部类理解为演员</div><div class="line">			//你不要找我，如果有需要我来找你，前提（匿名内部类需要向好莱坞进行注册）</div><div class="line">			//如何注册（匿名内部类作为参数传入sort方法），sort方法需要的时候会回调匿名内部类的方法</div><div class="line">			Collections.sort(list, new Comparator&lt;Student&gt;() &#123;</div><div class="line">				@Override</div><div class="line">				public int compare(Student o1, Student o2) &#123;</div><div class="line">					//调用String的compareTo()方法 </div><div class="line">					return o1.getName().compareTo(o2.getName());</div><div class="line">				&#125;</div><div class="line">			&#125;);</div><div class="line">			break;</div><div class="line">		case 2:</div><div class="line">			Collections.sort(list,new StuHobbyCompator());</div><div class="line">			 break;</div><div class="line">		case 3:</div><div class="line">			Collections.sort(list,new StuClassNoCompator());</div><div class="line">			break;</div><div class="line">		default:</div><div class="line">			System.out.println(&quot;Error&quot;);</div><div class="line">			break;</div><div class="line">		&#125;</div><div class="line">		input.close();</div><div class="line">		iteratorStu(list);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public static void iteratorStu(List&lt;Student&gt; list) &#123;</div><div class="line">		for(Student student : list)&#123;</div><div class="line">			System.out.println(student);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Comparable和Comparator的区别</p>
-<p>1、Comparable:在java.lang包，通常由实体类(Student)来实现，用来定义默认的排序规则<br>StudentComparable.java回调容器中Student对象的 compareTo方法<br>Comparator:在java.util包，排序的工具类，是一种策略，通常一个实体类(Student)有一种默认的排序法，还有多种排序策略<br>Comparable 定义在 Person类的内部:</p>
-<p>public class Persion implements Comparable {..比较Person的大小..},<br>因为已经实现了比较器,那么我们的Person现在是一个可以比较大小的对象了,它的比较功能和String完全一样</p>
-<p>2、Comparator<br>Comparator 是定义在Person的外部的, 此时我们的Person类的结构不需要有任何变化,如</p>
-<p>public class Person{ String name; int age },</p>
-<p>然后我们另外定义一个比较器:</p>
-<p>public PersonComparator implements Comparator() {..比较Person的大小..},<br>用 Comparator 是策略模式（strategy design pattern），就是不改变对象自身，而用一个策略对象（strategy object）来改变它的行为。<br>在PersonComparator里面实现了怎么比较两个Person的大小. 所以,用这种方法,当我们要对一个 personList进行排序的时候, 我们除了了要传递personList过去, 还需要把PersonComparator传递过去,因为怎么比较Person的大小是在PersonComparator里面实现的, 如:</p>
-<p>Collections.sort( personList , new PersonComparator() ).<br><strong><em>一个是自已完成比较，一个是外部程序实现比较的差别而已。</em></strong><br>3、Comparator 和 Comparable 的实例<br>实现Comparable接口要覆盖compareTo方法, 在compareTo方法里面实现比较</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public class Person implements Comparable &#123;</div><div class="line">     String name;</div><div class="line">     int age</div><div class="line">     public int compareTo(Person another) &#123;</div><div class="line">          int i = 0;</div><div class="line">          i = name.compareTo(another.name); // 使用字符串的比较</div><div class="line">          if(i == 0) &#123; // 如果名字一样,比较年龄, 返回比较年龄结果</div><div class="line">               return age - another.age;</div><div class="line">          &#125; else &#123;</div><div class="line">               return i; // 名字不一样, 返回比较名字的结果.</div><div class="line">          &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这时我们可以直接用 Collections.sort( personList ) 对其排序了.</p>
-<p>实现Comparator需要覆盖 compare 方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class Person&#123;</div><div class="line">     String name;</div><div class="line">     int age</div><div class="line">&#125;</div><div class="line">class PersonComparator implements Comparator &#123; </div><div class="line">     public int compare(Person one, Person another) &#123;</div><div class="line">          int i = 0;</div><div class="line">          i = one.name.compareTo(another.name); // 使用字符串的比较，即调用String的比较丰富</div><div class="line">          if(i == 0) &#123; // 如果名字一样,比较年龄,返回比较年龄结果</div><div class="line">               return one.age - another.age;</div><div class="line">          &#125; else &#123;</div><div class="line">               return i; // 名字不一样, 返回比较名字的结果.</div><div class="line">          &#125;</div><div class="line">     &#125;</div><div class="line">&#125;</div><div class="line">   Collections.sort( personList , new PersonComparator()) 可以对其排序</div></pre></td></tr></table></figure>
-<p>4、总结<br>        两种方法各有优劣, 用Comparable 简单, 只要实现Comparable 接口的对象直接就成为一个可以比较的对象,但是需要修改源代码, 用Comparator 的好处是不需要修改源代码, 而是另外实现一个比较器, 当某个自定义的对象需要作比较的时候,把比较器和对象一起传递过去就可以比大小了, 并且在Comparator 里面用户可以自己实现复杂的可以通用的逻辑,使其可以匹配一些比较简单的对象,那样就可以节省很多重复劳动了。</p>
+          比较器comparable和comparator的区别
+Java提供了一个集合工具类，里面有排序方法，Collections使用它提供的方法来完成排序注意：Collection不是Collections，Collections是在Collection上进行操作的集合的一个工具类，就如Arrays是数
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2014/05/12/比较器comparable和comparator的区别/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -734,7 +719,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2014-03-12T13:32:22+08:00" content="2014-03-12">
               2014-03-12
             </time>
@@ -746,7 +731,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Java/" itemprop="url" rel="index">
@@ -787,9 +772,14 @@
 <!-- 自定义结束 -->
         
           
-            <p><strong>为什么是多实现呢？</strong><br>  若为多继承，那么当<strong>多个父类中有重复的属性或者方法时，子类的调用结果会含糊不清</strong>，因此用了单继承。<br><strong>为什么是多实现呢？</strong><br>  通过实现接口拓展了类的功能，若实现的多个接口中有重复的方法也没关系，因为实现类中必须重写接口中的方法，所以调用时还是调用的实现类中重写的方法。那么各个接口中重复的变量又是怎么回事呢？<br>  接口中，所有属性都是 static final修饰的，即常量，这个什么意思呢，由于JVM的底层机制，所有static final修饰的变量都在编译时期确定了其值，若在使用时，两个相同的常量值不同，在编译时期就不能通过。</p>
+          为什么是多实现呢？  若为多继承，那么当多个父类中有重复的属性或者方法时，子类的调用结果会含糊不清，因此用了单继承。为什么是多实现呢？  通过实现接口拓展了类的功能，若实现的多个接口中有重复的方法也没关系，因为实现类中必须重写接口中的方法，所以调用时还是调用的实现类中重写的方法。那么各个接口中重复的
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2014/03/12/Java中为什么要单继承，多实现/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -861,7 +851,7 @@
           <div class="site-state-item site-state-posts">
             <a href="/archives">
               <span class="site-state-item-count">53</span>
-              <span class="site-state-item-name">Artikel</span>
+              <span class="site-state-item-name">posts</span>
             </a>
           </div>
 
@@ -869,7 +859,7 @@
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">8</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -878,7 +868,7 @@
             <div class="site-state-item site-state-tags">
               <a href="/">
                 <span class="site-state-item-count">14</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -937,7 +927,7 @@
             <ul class="links-of-blogroll-list">
               
                 <li class="links-of-blogroll-item">
-                  <a href="http://blog.csdn.net/csdn_yudong" title="CSDN" target="_blank">CSDN</a>
+                  <a href="https://www.jianshu.com/u/7f733f34fc2f" title="简书" target="_blank">简书</a>
                 </li>
               
             </ul>
@@ -989,7 +979,7 @@
 </div>
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a>
 </div>
 
 <div class="theme-info">

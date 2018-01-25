@@ -180,7 +180,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -190,7 +190,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
             
-            Über
+            About
           </a>
         </li>
       
@@ -474,7 +474,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-07-01T14:13:23+08:00" content="2016-07-01">
               2016-07-01
             </time>
@@ -486,7 +486,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -527,27 +527,15 @@
 <!-- 自定义结束 -->
         
           
-            <p>如果你的项目的网络框架是okhttp，那么使用https还是挺简单的，因为okhttp默认支持HTTPS。<a href="https://github.com/square/okhttp/wiki/HTTPS" target="_blank" rel="external">传送门</a><br>Android 使用 HTTPS 配置的步骤。<br>1.step</p>
-<p>配置hostnameVerifier<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">new HostnameVerifier() &#123;</div><div class="line">    @Override public boolean verify(String hostname, SSLSession session) &#123;</div><div class="line"> return true;</div><div class="line">         &#125;</div><div class="line"> &#125;；</div></pre></td></tr></table></figure></p>
-<p>2.step<br>配置 sslSocketFactory<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div></pre></td><td class="code"><pre><div class="line">public static SSLSocketFactory getSslSocketFactory(InputStream[] certificates, InputStream bksFile, String password)&#123;</div><div class="line">        try&#123;</div><div class="line">            TrustManager[] trustManagers = prepareTrustManager(certificates);</div><div class="line">            KeyManager[] keyManagers = prepareKeyManager(bksFile, password);</div><div class="line">            SSLContext sslContext = SSLContext.getInstance(&quot;TLS&quot;);</div><div class="line">            TrustManager trustManager = null;</div><div class="line">            if (trustManagers != null)&#123;</div><div class="line">                trustManager = new MyTrustManager(chooseTrustManager(trustManagers));</div><div class="line">            &#125; else&#123;</div><div class="line">                trustManager = new UnSafeTrustManager();</div><div class="line">            &#125;</div><div class="line">            sslContext.init(keyManagers, new TrustManager[]&#123;trustManager&#125;, new SecureRandom());</div><div class="line">            return sslContext.getSocketFactory();</div><div class="line">        &#125; catch (NoSuchAlgorithmException e)&#123;</div><div class="line">            throw new AssertionError(e);</div><div class="line">        &#125; catch (KeyManagementException e)&#123;</div><div class="line">            throw new AssertionError(e);</div><div class="line">        &#125; catch (KeyStoreException e)&#123;</div><div class="line">            throw new AssertionError(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private class UnSafeHostnameVerifier implements HostnameVerifier&#123;</div><div class="line">        @Override</div><div class="line">        public boolean verify(String hostname, SSLSession session)&#123;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static class UnSafeTrustManager implements X509TrustManager&#123;</div><div class="line">        @Override</div><div class="line">        public void checkClientTrusted(X509Certificate[] chain, String authType)throws CertificateException&#123;&#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void checkServerTrusted(X509Certificate[] chain, String authType)throws CertificateException&#123;&#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public X509Certificate[] getAcceptedIssuers()&#123;</div><div class="line">            return new X509Certificate[]&#123;&#125;;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static TrustManager[] prepareTrustManager(InputStream... certificates)&#123;</div><div class="line">        if (certificates == null || certificates.length &lt;= 0) return null;</div><div class="line">        try&#123;</div><div class="line">            CertificateFactory certificateFactory = CertificateFactory.getInstance(&quot;X.509&quot;);</div><div class="line">            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());</div><div class="line">            keyStore.load(null);</div><div class="line">            int index = 0;</div><div class="line">            for (InputStream certificate : certificates)&#123;</div><div class="line">                String certificateAlias = Integer.toString(index++);</div><div class="line">                keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));</div><div class="line">                try&#123;</div><div class="line">                    if (certificate != null)</div><div class="line">                        certificate.close();</div><div class="line">                &#125; catch (IOException e)&#123;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            TrustManagerFactory trustManagerFactory = null;</div><div class="line">            trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());</div><div class="line">            trustManagerFactory.init(keyStore);</div><div class="line">            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();</div><div class="line">            return trustManagers;</div><div class="line">        &#125; catch (NoSuchAlgorithmException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (CertificateException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (KeyStoreException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static KeyManager[] prepareKeyManager(InputStream bksFile, String password)&#123;</div><div class="line">        try&#123;</div><div class="line">            if (bksFile == null || password == null) return null;</div><div class="line">            KeyStore clientKeyStore = KeyStore.getInstance(&quot;BKS&quot;);</div><div class="line">            clientKeyStore.load(bksFile, password.toCharArray());</div><div class="line">            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());</div><div class="line">            keyManagerFactory.init(clientKeyStore, password.toCharArray());</div><div class="line">            return keyManagerFactory.getKeyManagers();</div><div class="line">        &#125; catch (KeyStoreException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (NoSuchAlgorithmException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (UnrecoverableKeyException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (CertificateException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (IOException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static X509TrustManager chooseTrustManager(TrustManager[] trustManagers)&#123;</div><div class="line">        for (TrustManager trustManager : trustManagers)&#123;</div><div class="line">            if (trustManager instanceof X509TrustManager)&#123;</div><div class="line">                return (X509TrustManager) trustManager;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static class MyTrustManager implements X509TrustManager&#123;</div><div class="line">        private X509TrustManager defaultTrustManager;</div><div class="line">        private X509TrustManager localTrustManager;</div><div class="line"></div><div class="line">        public MyTrustManager(X509TrustManager localTrustManager) throws NoSuchAlgorithmException, KeyStoreException&#123;</div><div class="line">            TrustManagerFactory var4 = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());</div><div class="line">            var4.init((KeyStore) null);</div><div class="line">            defaultTrustManager = chooseTrustManager(var4.getTrustManagers());</div><div class="line">            this.localTrustManager = localTrustManager;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException&#123;&#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException&#123;</div><div class="line">            try&#123;</div><div class="line">                defaultTrustManager.checkServerTrusted(chain, authType);</div><div class="line">            &#125; catch (CertificateException ce)&#123;</div><div class="line">                localTrustManager.checkServerTrusted(chain, authType);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public X509Certificate[] getAcceptedIssuers()&#123;</div><div class="line">            return new X509Certificate[0];//当使用证书链时，第一个证书总是发送者的</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<h4 id="Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书-java本身没有BouncyCastle密库"><a href="#Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书-java本身没有BouncyCastle密库" class="headerlink" title="Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书,java本身没有BouncyCastle密库"></a>Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书,java本身没有BouncyCastle密库</h4><p>调用 getSslSocketFactory(null,null,null) 即可。<br>3.step<br>设置OkhttpClient。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-e0a539f940e4ae65.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<h4 id="方法-getSslSocketFactory-null-null-null-的第一个参数-本来要传入自签名证书的，当传入null-即可忽略自签名证书。"><a href="#方法-getSslSocketFactory-null-null-null-的第一个参数-本来要传入自签名证书的，当传入null-即可忽略自签名证书。" class="headerlink" title="方法 getSslSocketFactory(null,null,null) 的第一个参数 本来要传入自签名证书的，当传入null 即可忽略自签名证书。"></a>方法 getSslSocketFactory(null,null,null) 的第一个参数 本来要传入自签名证书的，当传入null 即可忽略自签名证书。</h4><p>如果你想尝试不忽略自签名证书 你可以调用下面的方法获取 SSLSocketFactory。并设置到OkhttpClient中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">public static SSLSocketFactory getSSlFactory(Context context) &#123;</div><div class="line"></div><div class="line">       try &#123;</div><div class="line">           CertificateFactory cf = CertificateFactory.getInstance(&quot;X.509&quot;);</div><div class="line">           InputStream caInput = new BufferedInputStream(context.getAssets().open(&quot;client.cer&quot;));//把证书打包在asset文件夹中</div><div class="line">           Certificate ca;</div><div class="line">           try &#123;</div><div class="line">               ca = cf.generateCertificate(caInput);</div><div class="line">               LogUtil.d(&quot;Longer&quot;, &quot;ca=&quot; + ((X509Certificate) ca).getSubjectDN());</div><div class="line">               LogUtil.d(&quot;Longer&quot;, &quot;key=&quot; + ((X509Certificate) ca).getPublicKey());</div><div class="line">           &#125; finally &#123;</div><div class="line">               caInput.close();</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           // Create a KeyStore containing our trusted CAs</div><div class="line">           String keyStoreType = KeyStore.getDefaultType();</div><div class="line">           KeyStore keyStore = KeyStore.getInstance(keyStoreType);</div><div class="line">           keyStore.load(null, null);</div><div class="line">           keyStore.setCertificateEntry(&quot;ca&quot;, ca);</div><div class="line"></div><div class="line">           // Create a TrustManager that trusts the CAs in our KeyStore</div><div class="line">           String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();</div><div class="line">           TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);</div><div class="line">           tmf.init(keyStore);</div><div class="line"></div><div class="line">           // Create an SSLContext that uses our TrustManager</div><div class="line">           SSLContext s = SSLContext.getInstance(&quot;TLSv1&quot;, &quot;AndroidOpenSSL&quot;);</div><div class="line">           s.init(null, tmf.getTrustManagers(), null);</div><div class="line"></div><div class="line">           return s.getSocketFactory();</div><div class="line">       &#125; catch (CertificateException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (IOException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (NoSuchAlgorithmException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (KeyStoreException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (KeyManagementException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (NoSuchProviderException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125;</div><div class="line">       return null;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
-<p>通过上面的几步配置即可使用https的自签名证书 和 单向验证的Https了。<br>Glide 访问Https的图片<br>1.step<br>在build.gradle 引入下面的aar</p>
-<blockquote>
-<p>/<em>提供的Module</em>/compile ‘com.github.bumptech.glide:okhttp3-integration:1.4.0@aar’</p>
-</blockquote>
-<p>2.step<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">OkHttpClient okhttpClient = new OkHttpClient.Builder()</div><div class="line">                .connectTimeout(30, TimeUnit.SECONDS)</div><div class="line">                .retryOnConnectionFailure(true) //设置出现错误进行重新连接。</div><div class="line">                .connectTimeout(15, TimeUnit.SECONDS)</div><div class="line">                .readTimeout(60 * 1000, TimeUnit.MILLISECONDS)</div><div class="line">                .sslSocketFactory(HttpsUtils.getSslSocketFactory(null,null,null))</div><div class="line">                .hostnameVerifier(new HostnameVerifier() &#123;</div><div class="line">                    @Override</div><div class="line">                    public boolean verify(String hostname, SSLSession session) &#123;</div><div class="line">                        return true;</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div><div class="line">                 .build();</div><div class="line">        //让Glide能用HTTPS</div><div class="line">        Glide.get(this).register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(okhttpClient));</div></pre></td></tr></table></figure></p>
-<p>设置已经验证证书的的OkhttpClient 到Glide 既可。<br><a href="http://hukai.me/android-training-course-in-chinese/security/security-ssl.html" target="_blank" rel="external">google开发https参考</a></p>
-<h4 id="SSLContext-初始化"><a href="#SSLContext-初始化" class="headerlink" title="SSLContext 初始化"></a>SSLContext 初始化</h4><p>public final void init(<a href="http://www.cjsdn.net/Doc/JDK60/javax/net/ssl/KeyManager.html" target="_blank" rel="external">KeyManager</a>[] km,<br><a href="http://www.cjsdn.net/Doc/JDK60/javax/net/ssl/TrustManager.html" target="_blank" rel="external">TrustManager</a>[] tm,<br><a href="http://www.cjsdn.net/Doc/JDK60/java/security/SecureRandom.html" target="_blank" rel="external">SecureRandom</a> random) throws <a href="http://www.cjsdn.net/Doc/JDK60/java/security/KeyManagementException.html" target="_blank" rel="external">KeyManagementException</a></p>
-<p>初始化此上下文。前两个参数都可以为 null，在这种情况下将搜索装入的安全提供者来寻找适当工厂的最高优先级实现。同样，安全的 random 参数也可以为 null，在这种情况下将使用默认的实现。只有数组中的第一个特定密钥和/或信任管理器实现类型的实例被使用。（例如，只有数组中的第一个 javax.net.ssl.X509KeyManager 被使用。）</p>
-<p><strong>参数：</strong><br>km</p>
-<ul>
-<li>验证密钥源或 null<br>tm</li>
-<li>同位体验证信任决策源或 null<br>random</li>
-<li>此生成器的随机源或 null<br><strong>抛出：</strong><br><a href="http://www.cjsdn.net/Doc/JDK60/java/security/KeyManagementException.html" target="_blank" rel="external">KeyManagementException</a><br><a href="http://blog.csdn.net/zdx1515888659/article/details/44593967" target="_blank" rel="external">java SSLSocket</a></li>
-</ul>
+          如果你的项目的网络框架是okhttp，那么使用https还是挺简单的，因为okhttp默认支持HTTPS。传送门Android 使用 HTTPS 配置的步骤。1.step
+配置hostnameVerifier12345new HostnameVerifier() &#123;    @Overrid
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/07/01/Android-使用-HTTPS/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -608,7 +596,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-06-07T16:09:54+08:00" content="2016-06-07">
               2016-06-07
             </time>
@@ -620,7 +608,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -661,117 +649,14 @@
 <!-- 自定义结束 -->
         
           
-            <p>&emsp;&emsp;对于Android平台上的线程优先级设置来说可以处理很多并发线程的阻塞问题，比如很多无关紧要的线程会占用大量的CPU时间，虽然通过了MultiThread来解决慢速I/O但是合理分配优先级对于并发编程来说十分重要。Android在线程方面主要使用的是Java本身的Thread类，我们可以在Thread或Runnable接口中的run方法首句加入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND); //设置线程优先级为后台，这样当多个线程并发后很多无关紧要的线程分配的CPU时间将会减少，有利于主线程的处理</div></pre></td></tr></table></figure></p>
-<p>现场优先级：</p>
-<p>int THREAD_PRIORITY_AUDIO //标准音乐播放使用的线程优先级</p>
-<p>int THREAD_PRIORITY_BACKGROUND //标准后台程序</p>
-<p>int THREAD_PRIORITY_DEFAULT // 默认应用的优先级</p>
-<p>int THREAD_PRIORITY_DISPLAY //标准显示系统优先级，主要是改善UI的刷新</p>
-<p>int THREAD_PRIORITY_FOREGROUND //标准前台线程优先级</p>
-<p>int THREAD_PRIORITY_LESS_FAVORABLE //低于favorable</p>
-<p>int THREAD_PRIORITY_LOWEST //有效的线程最低的优先级</p>
-<p>int THREAD_PRIORITY_MORE_FAVORABLE //高于favorable</p>
-<p>int THREAD_PRIORITY_URGENT_AUDIO //标准较重要音频播放优先级</p>
-<p>int THREAD_PRIORITY_URGENT_DISPLAY //标准较重要显示优先级，对于输入事件同样适用。</p>
-<h4 id="一、工具：adb-或Python"><a href="#一、工具：adb-或Python" class="headerlink" title="一、工具：adb 或Python"></a>一、工具：adb 或Python</h4><p>adb计算app启动时间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">adb shell am start -w packagename/activity</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;三个返回结果ThisTime，TotalTime，WaitTime</p>
-<p>&emsp;&emsp;WaitTime就是app启动时间：WaitTime=startTime-endTime</p>
-<p>&emsp;&emsp;startTime：记录的刚准备调用startActivityAndWait()的时间点</p>
-<p>&emsp;&emsp;endTime：记录的是startActivityAndWait()函数调用返回的时间点</p>
-<p>&emsp;&emsp;ThisTime,TotalTime的计算在frameworks\base\services\core\java\com\android\server\am\ActivityRecord.java文件的reportLaunchTimeLocked()函数中。</p>
-<ul>
-<li><p>curTime表示该函数调用的时间点.</p>
-</li>
-<li><p>displayStartTime表示一连串启动Activity中的最后一个Activity的启动时间点.</p>
-</li>
-<li><p>mLaunchStartTime表示一连串启动Activity中第一个Activity的启动时间点.</p>
-</li>
-</ul>
-<p>&emsp;&emsp;displayStartTime和mLaunchStartTime的区别：分两种情况:</p>
-<p>&emsp;&emsp;正常情况下点击桌面图标只启动一个有界面的 Activity，此时 displayStartTime 与mLaunchStartTime 便指向同一时间点，此时 ThisTime=TotalTime。另一种情况是点击桌面图标应用会先启动一个无界面的 Activity 做逻辑处理(如占位界面)，接着又启动一个有界面的Activity，在这种启动一连串 Activity 的情况下（知乎的启动就是属于这种情况），displayStartTime 便指向最后一个 Activity 的开始启动时间点，mLaunchStartTime 指向第一个无界面Activity的开始启动时间点，此时 ThisTime！=TotalTime。这两种情况如下图：</p>
-<p>&emsp;&emsp;如果只关心某个应用自身启动耗时，参考TotalTime；如果关心系统启动应用耗时，参考WaitTime；如果关心应用有界面Activity启动耗时，参考ThisTime。</p>
-<h4 id="二、热启动"><a href="#二、热启动" class="headerlink" title="二、热启动"></a>二、热启动</h4><p>&emsp;&emsp;如果是你按Back键，并没有将应用进程杀掉的话，那么执行上述命令就会快一些，因为不用创建进程了，只需要启动一个Activity即可。这也就是我们说的应用热启动。</p>
-<p>&emsp;&emsp;游戏启动的话，就不适用用命令行的方法来启动了，因为从用户点击桌面图标到登录界面，既有系统的部分也有游戏自己的部分。</p>
-<p>&emsp;&emsp;系统部分：游戏也有一个 Activity，所以启动的时候还是会去启动这个 Activity，所以系统启动部分也就是用户点击桌面桌面响应到这个Activity启动。</p>
-<p>&emsp;&emsp;游戏部分：一般游戏的主 Activity 启动后，还会做一些比较耗时的事情，这时候你看到的界面是不能操作的，比如：加载游戏数据、联网更新数据、读取和更新配置文件、游戏引擎初始化等操作。从游戏开发的角度来看，到了真正用户能操作的界面才算是一个游戏真正加载完成的时间。</p>
-<p>&emsp;&emsp;那么这个时间，就得使用 Log 来记录了，因为加载游戏数据、联网更新数据、读取和更新配置文件、游戏引擎初始化这些操作，都是游戏自己的逻辑，与系统无关，所以得由游戏自己定义加载完成的点。</p>
-<p>&emsp;&emsp;对于游戏的启动时间，我们更倾向于计算从点击桌面图标到用户可以与游戏进行交互这个时间段作为一个游戏的启动时间</p>
-<h4 id="三、冷启动"><a href="#三、冷启动" class="headerlink" title="三、冷启动"></a>三、冷启动</h4><p>&emsp;&emsp;应用不在后台时第一次启动，系统和App本身都有更多的工作要从头开始！、</p>
-<p>&emsp;&emsp;应用在冷启动之前，要执行三个任务：</p>
-<ol>
-<li><p>加载启动App；</p>
-</li>
-<li><p>App启动之后立即展示出一个空白的Window；</p>
-</li>
-<li><p>创建App的进程；</p>
-</li>
-</ol>
-<p>&emsp;&emsp;而这三个任务执行完毕之后会马上执行以下任务：</p>
-<ol>
-<li>创建App对象；</li>
-</ol>
-<p>5.启动Main Thread；</p>
-<p>6.创建启动的Activity对象；</p>
-<ol>
-<li><p>加载View；</p>
-</li>
-<li><p>布置屏幕；</p>
-</li>
-<li><p>进行第一次绘制；</p>
-</li>
-</ol>
-<p>&emsp;&emsp;而一旦App进程完成了第一次绘制，系统进程就会用Main Activity替换已经展示的Background Window，此时用户就可以使用App了。</p>
-<p>&emsp;&emsp;作为普通应用，App进程的创建等环节我们是无法主动控制的，可以优化的也就是Application、Activity创建以及回调等过程。</p>
-<p>&emsp;&emsp;同样，Google也给出了启动加速的方向：</p>
-<p>&emsp;&emsp;利用提前展示出来的Window，快速展示出来一个界面，给用户快速反馈的体验；</p>
-<p>&emsp;&emsp;避免在启动时做密集沉重的初始化（Heavy app initialization）；</p>
-<p>&emsp;&emsp;定位问题：避免I/O操作、反序列化、网络操作、布局嵌套等。</p>
-<p>&emsp;&emsp;备注：方向1属于治标不治本，只是表面上快；方向2、3可以真实的加快启动速度。</p>
-<h4 id="为什么会出现白屏"><a href="#为什么会出现白屏" class="headerlink" title="为什么会出现白屏"></a>为什么会出现白屏</h4><p>通过清单文件可以看见默认配置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">activity</span>    </span></div><div class="line">    <span class="attr">android:name</span>=<span class="string">".StartPageActivity"</span>    </div><div class="line">    <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span>&gt;    </div><div class="line">        <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>        </div><div class="line">            <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;启动界面在完全绘制完页面布局前默认会有白屏或黑屏现象，这是我们可以设置默认主题布局为透明<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"AppBlackTheme"</span> <span class="attr">parent</span>=<span class="string">"Theme.AppCompat.Light.NoActionBar"</span>&gt;</span><span class="xml">    </span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowIsTranslucent"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowBackground"</span>&gt;</span>@android:color/transparent<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>添加到activity标签中<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">activity</span>    </span></div><div class="line">    <span class="attr">android:name</span>=<span class="string">".StartPageActivity"</span>    </div><div class="line">    <span class="attr">android:theme</span>=<span class="string">"@style/AppBlackTheme"</span></div><div class="line">    <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span>&gt;    </div><div class="line">        <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>        </div><div class="line">            <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>而官方给出的做法是采用Activity的windowBackground主题属性来为启动的Activity提供一个简单的drawable。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 防止欢迎页白屏或者黑屏，设置图片 --&gt;</div><div class="line">    &lt;style name=&quot;SplashTheme&quot; parent=&quot;AppTheme&quot;&gt;</div><div class="line">        &lt;item name=&quot;android:windowBackground&quot;&gt;@drawable/welcome1&lt;/item&gt;</div><div class="line">        &lt;item name=&quot;android:windowFullscreen&quot;&gt;true&lt;/item&gt;</div><div class="line">        &lt;item name=&quot;windowNoTitle&quot;&gt;true&lt;/item&gt;</div><div class="line">        &lt;!--&lt;item name=&quot;android:windowIsTranslucent&quot;&gt;false&lt;/item&gt;--&gt;</div><div class="line">        &lt;!--&lt;item name=&quot;android:windowDisablePreview&quot;&gt;true&lt;/item&gt;--&gt;</div><div class="line">    &lt;/style&gt;</div></pre></td></tr></table></figure></p>
-<p>welcome.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;layer-list&gt; xmlns: android=&quot;&quot; android:opacity=&quot;opaque&quot;&gt;</div><div class="line">	&lt;item android:drawable=&quot;@android:color/white&quot;/&gt;</div><div class="line">	&lt;item&gt;</div><div class="line">		&lt;bitmap android:src=&quot;@drawable/spalash&quot; android:gravity=&quot;center&quot;/&gt;</div><div class="line">	&lt;/item&gt;</div><div class="line">	&lt;/layer-list&gt;</div></pre></td></tr></table></figure></p>
-<p>当然welcome也可以是一张图片<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;activity</div><div class="line">            android:name=&quot;.activity.WelcomeActivity&quot;</div><div class="line">            android:theme=&quot;@style/SplashTheme&quot;</div><div class="line">            android:screenOrientation=&quot;portrait&quot;&gt;</div><div class="line">            &lt;intent-filter&gt;</div><div class="line">                &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;</div><div class="line"></div><div class="line">                &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;</div><div class="line">            &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure></p>
-<p>也可以在代码中修改，不用再清单文件中修改，只需在super.onCreate()方法前调用setThreme(R.style.SplashTheme)即可</p>
-<ol>
-<li><p>初始化时间过长<br>APP如果引入第三方服务过多，那么初始化第三方服务(初始化application)需要的时间也越长<br><img src="https://user-gold-cdn.xitu.io/2017/1/10/095de64d7062e30472d9b24273c8bbbc?_=6288399" alt="enter image description here"></p>
-<p>Tinker以及MultiDex的初始化最先执行</p>
-</li>
-</ol>
-<h4 id="如何缩短初始化时间"><a href="#如何缩短初始化时间" class="headerlink" title="如何缩短初始化时间"></a>如何缩短初始化时间</h4><p>方法一 ：IntentService</p>
-<p>&emsp;&emsp;IntentService是继承于Service并处理异步请求的一个类，在IntentService内有一个工作线程来处理耗时操作，启动IntentService的方式和启动传统Service一样，同时，当任务执行完后，IntentService会自动停止，而不需要我们去手动控制。另外，可以启动IntentService多次，而每一个耗时操作会以工作队列的方式在IntentService的onHandleIntent回调方法中执行，并且，每次只会执行一个工作线程，执行完第一个再执行第二个，以此类推。而且，所有请求都在一个单线程中，不会阻塞应用程序的主线程（UI Thread），同一时间只处理一个请求。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class InitializeService extends IntentService &#123;    </div><div class="line">    private static final String ACTION_INIT_WHEN_APP_CREATE = &quot;com.example.appstart.service.action.INIT&quot;;    </div><div class="line">    public InitializeService() &#123;        </div><div class="line">        super(&quot;InitializeService&quot;);    </div><div class="line">    &#125;    </div><div class="line">    public static void start(Context context) &#123;        </div><div class="line">        Intent intent = new Intent(context, InitializeService.class);</div><div class="line">        intent.setAction(ACTION_INIT_WHEN_APP_CREATE);        </div><div class="line">        context.startService(intent);    </div><div class="line">    &#125;    </div><div class="line">    @Override    </div><div class="line">    protected void onHandleIntent(Intent intent) &#123;        </div><div class="line">        if (intent != null) &#123;            </div><div class="line">            final String action = intent.getAction();            </div><div class="line">            if (ACTION_INIT_WHEN_APP_CREATE.equals(action)) &#123;               </div><div class="line">                //初始化操作（耗时操作）</div></pre></td></tr></table></figure></p>
-<pre><code>        }        
-    }    
-}
-</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&amp;emsp;&amp;emsp;在application的onCreate方法中执行就行了，但是如果进入到主界面执行第三方功能的时候还没有初始化完，就会出现第三方库异常</div><div class="line"></div><div class="line">方法二：使用EventBus</div><div class="line"></div><div class="line">&amp;emsp;&amp;emsp;考虑异步初始化，不阻塞现场，延迟部分第三方服务的初始化，Tinker和MultiDex还是在Application主线程初始化</div><div class="line">![enter image description here](http://upload-images.jianshu.io/upload_images/1316299-4e98e3db89f91fe1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line">项目修改：</div><div class="line">1. 将友盟、Bugly、听云、GrowingIO、BlockCanary等组件放在WorkThread中初始化；</div><div class="line">2. 延迟地图定位、ImageLoader、自有统计等组件的初始化：地图及自有统计(GrowingIO)延迟4秒，此时应用已经打开；而ImageLoader</div><div class="line">因为调用关系不能异步以及过久延迟，初始化从Application延迟到SplashActivity；而EventBus因为再Activity中使用所以必须在Application中初始化。</div><div class="line"> ![enter image description here](https://user-gold-cdn.xitu.io/2017/1/10/868beba5d61f7b4947caf1f0d1ba9f7f?_=6288399)</div><div class="line">&amp;emsp;&amp;emsp; 上面初始化即把初始化代码定义在application中，但是不立即调用，而使用eventbus发送消息再进行调用</div><div class="line">通过adb命令查看启动时间</div></pre></td></tr></table></figure></p>
-<p>adb shell am start -W [packageName]/[packageName.MainActivity]<br>```<br>项目中除听云之外其余所有三方组件都抢占先机，在Application主线程初始化<br>卡顿主要发生在：</p>
-<ul>
-<li>部分数据库及IO的操作发生在首屏Activity主线程；</li>
-<li>Application中创建了线程池，Thread、ThreadPoolExecutor、AsyncTask、HandlerThread、IntentService等都各有利弊；例如通常情况下ThreadPoolExecutor比Thread更加高效、优势明显，但是特定场景下单个时间点的表现Thread会比ThreadPoolExecutor好：同样的创建对象，ThreadPoolExecutor的开销明显比Thread大；</li>
-<li>首屏Activity网络请求密集；</li>
-<li>工作线程使用未设置优先级；</li>
-<li>信息未缓存，重复获取同样信息；</li>
-</ul>
-<p>项目修改：</p>
-<ol>
-<li><p>数据库及IO操作都移到工作线程，并且设置线程优先级为THREAD_PRIORITY_BACKGROUND，这样工作线程最多能获取到10%的时间片，优先保证主线程执行。</p>
-</li>
-<li><p>流程梳理，延后执行；</p>
-</li>
-</ol>
-<p><img src="https://user-gold-cdn.xitu.io/2017/1/10/032202be364c3f36a630017421b0db1a?_=6288399" alt="enter image description here"><br>&emsp;&emsp;通过以上三步及三方组件的优化：Application以及首屏Activity回调期间主线程就没有耗时、争抢资源等情况了。</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;并不是每一个组件的初始化以及操作都可以异步或延迟。是否可以取决组件的调用关系以及自己项目具体业务的需要。保证一个准则：<strong>可以异步的都异步，不可以异步的尽量延迟。让应用先启动，再操作。</strong></p>
-<p>通用优化包含以下几点：</p>
-<ul>
-<li>利用主题快速显示界面；</li>
-<li>异步初始化组件；</li>
-<li>梳理业务逻辑，延迟初始化组件、操作；</li>
-<li>正确使用线程；</li>
-<li>去掉无用代码、重复逻辑等。</li>
-</ul>
+          &emsp;&emsp;对于Android平台上的线程优先级设置来说可以处理很多并发线程的阻塞问题，比如很多无关紧要的线程会占用大量的CPU时间，虽然通过了MultiThread来解决慢速I/O但是合理分配优先级对于并发编程来说十分重要。Android在线程方面主要使用的是Java本身的Thread
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/06/07/App启动优化/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -832,7 +717,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-05-21T23:49:00+08:00" content="2016-05-21">
               2016-05-21
             </time>
@@ -844,7 +729,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -885,35 +770,15 @@
 <!-- 自定义结束 -->
         
           
-            <p>Android应用与网络打交道是常有的事情，如果网络数据没有变化而每次都重新请求网络，就会浪费流量，Android系统有自己的缓存机制避免频繁的请求网络。</p>
-<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><p>  把不需要实时更新的数据缓存下来，通过时间或者其他因素　来判别是读缓存还是网络请求，这样可以缓解服务器压力，一定程度上提高应用响应速度，并且支持离线阅读。<br>  访问网络的数据常见返回格式有图片，文件和数据库，因此从这几个方向考虑缓存的实现。</p>
-<h4 id="图片的缓存"><a href="#图片的缓存" class="headerlink" title="图片的缓存"></a>图片的缓存</h4><p>  在许多的情况下(像 ListView, GridView 或 ViewPager 之类的组件 )我们需要一次性加载大量的图片，在屏幕上显示的图片和所有待显示的图片有可能需要马上就在屏幕上无限制的进行滚动、切换。<br>  常见的优化就是子项不可见时，所占用的内存会被回收以供正在前台显示子项使用。如果想让UI运行流畅的话，就不应该每次显示时都去重新加载图片。保持一些内存和文件缓存就变得很有必要了。</p>
-<h4 id="内存缓存"><a href="#内存缓存" class="headerlink" title="内存缓存"></a>内存缓存</h4><p>  通过预先消耗应用的一点内存来存储数据，便可快速的为应用中的组件提供数据，是一种典型的以空间换时间的策略。<br>  LruCache 类（Android v4 Support Library 类库中开始提供）非常适合来做图片缓存任务 ，它可以使用一个LinkedHashMap 的强引用来保存最近使用的对象，并且当它保存的对象占用的内存总和超出了为它设计的最大内存时会把不经常使用的对象成员踢出以供垃圾回收器回收。<br>  给LruCache 设置一个合适的内存大小，需考虑如下因素：</p>
-<ul>
-<li>还剩余多少内存给你的activity或应用使用</li>
-<li>屏幕上需要一次性显示多少张图片和多少图片在等待显示</li>
-<li>手机的大小和密度是多少（密度越高的设备需要越大的 缓存）</li>
-<li>图片的尺寸（决定了所占用的内存大小）</li>
-<li>图片的访问频率（频率高的在内存中一直保存）</li>
-<li>保存图片的质量（不同像素的在不同情况下显示）</li>
-</ul>
-<p>举个栗子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">private LruCache&lt;String, Bitmap&gt; mMemoryCache;</div><div class="line"></div><div class="line">@Override</div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    ...</div><div class="line">    // 获得虚拟机能提供的最大内存，超过这个大小会抛出OutOfMemory的异常</div><div class="line">    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);</div><div class="line"></div><div class="line">    // 用１／８的内存大小作为内存缓存</div><div class="line">    final int cacheSize = maxMemory / 8;</div><div class="line"></div><div class="line">    mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) &#123;</div><div class="line">        @Override</div><div class="line">        protected int sizeOf(String key, Bitmap bitmap) &#123;</div><div class="line">            // 这里返回的不是item的个数，是cache的size（单位1024个字节）</div><div class="line">            return bitmap.getByteCount() / 1024;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">public void addBitmapToMemoryCache(String key, Bitmap bitmap) &#123;</div><div class="line">    if (getBitmapFromMemCache(key) == null) &#123;</div><div class="line">        mMemoryCache.put(key, bitmap);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public Bitmap getBitmapFromMemCache(String key) &#123;</div><div class="line">    return mMemoryCache.get(key);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>  当为ImageView加载一张图片时，会先在LruCache 中看看有没有缓存这张图片，如果有的话直接更新到ImageView中，如果没有的话，一个后台线程会被触发来加载这张图片。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public void loadBitmap(int resId, ImageView imageView) &#123;</div><div class="line">    final String imageKey = String.valueOf(resId);</div><div class="line"></div><div class="line">    // 查看下内存缓存中是否缓存了这张图片</div><div class="line">    final Bitmap bitmap = getBitmapFromMemCache(imageKey);</div><div class="line">    if (bitmap != null) &#123;</div><div class="line">        mImageView.setImageBitmap(bitmap);</div><div class="line">    &#125; else &#123;</div><div class="line">        mImageView.setImageResource(R.drawable.image_placeholder);</div><div class="line">BitmapWorkerTask task = new BitmapWorkerTask(mImageView);</div><div class="line">        task.execute(resId);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在图片加载的Task中，需要把加载好的图片加入到内存缓存中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">class BitmapWorkerTask extends AsyncTask&lt;Integer, Void, Bitmap&gt; &#123;</div><div class="line">    ...</div><div class="line">    // 在后台完成</div><div class="line">    @Override</div><div class="line">    protected Bitmap doInBackground(Integer... params) &#123;</div><div class="line">        final Bitmap bitmap = decodeSampledBitmapFromResource(</div><div class="line">                getResources(), params[0], 100, 100));</div><div class="line">    addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);</div><div class="line">        return bitmap;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="磁盘缓存"><a href="#磁盘缓存" class="headerlink" title="磁盘缓存"></a>磁盘缓存</h4><p>  内存缓存能够快速的获取到最近显示的图片，但不一定就能够获取到。当数据集过大时很容易把内存缓存填满（如GridView ）。你的应用也有可能被其它的任务（比如来电）中断进入到后台，后台应用有可能会被杀死，那么相应的内存缓存对象也会被销毁。 当你的应用重新回到前台显示时，你的应用又需要一张一张的去加载图片了。</p>
-<p>  磁盘文件缓存能够用来处理这些情况，保存处理好的图片，当内存缓存不可用的时候，直接读取在硬盘中保存好的图片，这样可以有效的减少图片加载的次数。读取磁盘文件要比直接从内存缓存中读取要慢一些，而且需要在一个UI主线程外的线程中进行，因为磁盘的读取速度是不能够保证的，磁盘文件缓存显然也是一种以空间换时间的策略。</p>
-<p>  如果图片使用非常频繁的话，一个 ContentProvider 可能更适合代替去存储缓存图片，比如图片gallery 应用。</p>
-<p>  下面是一个DiskLruCache的部分代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div></pre></td><td class="code"><pre><div class="line">private DiskLruCache mDiskLruCache;</div><div class="line">private final Object mDiskCacheLock = new Object();</div><div class="line">private boolean mDiskCacheStarting = true;</div><div class="line">private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB</div><div class="line">private static final String DISK_CACHE_SUBDIR = &quot;thumbnails&quot;;</div><div class="line"></div><div class="line">@Override</div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    ...</div><div class="line">    // 初始化内存缓存</div><div class="line">    ...</div><div class="line">    // 在后台线程中初始化磁盘缓存</div><div class="line">    File cacheDir = getDiskCacheDir(this, DISK_CACHE_SUBDIR);</div><div class="line">    new InitDiskCacheTask().execute(cacheDir);</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">class InitDiskCacheTask extends AsyncTask&lt;File, Void, Void&gt; &#123;</div><div class="line">    @Override</div><div class="line">    protected Void doInBackground(File... params) &#123;</div><div class="line">        synchronized (mDiskCacheLock) &#123;</div><div class="line">            File cacheDir = params[0];</div><div class="line">  mDiskLruCache = DiskLruCache.open(cacheDir, DISK_CACHE_SIZE);</div><div class="line">　 mDiskCacheStarting = false; // 结束初始化</div><div class="line">　 mDiskCacheLock.notifyAll(); // 唤醒等待线程</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">class BitmapWorkerTask extends AsyncTask&lt;Integer, Void, Bitmap&gt; &#123;</div><div class="line">    ...</div><div class="line">    // 在后台解析图片</div><div class="line">    @Override</div><div class="line">    protected Bitmap doInBackground(Integer... params) &#123;</div><div class="line">        final String imageKey = String.valueOf(params[0]);</div><div class="line"></div><div class="line">        // 在后台线程中检测磁盘缓存</div><div class="line">        Bitmap bitmap = getBitmapFromDiskCache(imageKey);</div><div class="line"></div><div class="line">        if (bitmap == null) &#123; // 没有在磁盘缓存中找到图片</div><div class="line"> final Bitmap bitmap = decodeSampledBitmapFromResource(</div><div class="line">                    getResources(), params[0], 100, 100));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 把这个final类型的bitmap加到缓存中</div><div class="line">        addBitmapToCache(imageKey, bitmap);</div><div class="line"></div><div class="line">        return bitmap;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">public void addBitmapToCache(String key, Bitmap bitmap) &#123;</div><div class="line">    // 先加到内存缓存</div><div class="line">    if (getBitmapFromMemCache(key) == null) &#123;</div><div class="line">        mMemoryCache.put(key, bitmap);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //再加到磁盘缓存</div><div class="line">    synchronized (mDiskCacheLock) &#123;</div><div class="line">        if (mDiskLruCache != null &amp;&amp; mDiskLruCache.get(key) == null) &#123;</div><div class="line">            mDiskLruCache.put(key, bitmap);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public Bitmap getBitmapFromDiskCache(String key) &#123;</div><div class="line">    synchronized (mDiskCacheLock) &#123;</div><div class="line">        // 等待磁盘缓存从后台线程打开</div><div class="line">        //磁盘缓存没有初始化完成之前不能够对磁盘缓存进行访问</div><div class="line">        while (mDiskCacheStarting) &#123;</div><div class="line">            try &#123;</div><div class="line">                mDiskCacheLock.wait();</div><div class="line">            &#125; catch (InterruptedException e) &#123;&#125;</div><div class="line">        &#125;</div><div class="line">        if (mDiskLruCache != null) &#123;</div><div class="line">            return mDiskLruCache.get(key);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    return null;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static File getDiskCacheDir(Context context, String uniqueName) &#123;</div><div class="line">    // 优先使用外缓存路径，如果没有挂载外存储，就使用内缓存路径</div><div class="line">final String cachePath =</div><div class="line">            Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ||</div><div class="line">!isExternalStorageRemovable() ?getExternalCacheDir(context).getPath():context.getCacheDir().getPath();</div><div class="line"></div><div class="line">    return new File(cachePath + File.separator + uniqueName);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>不能在UI主线程中进行这项操作，因为初始化磁盘缓存也需要对磁盘进行操作。上面的程序片段中，一个锁对象确保了磁盘缓存没有初始化完成之前不能够对磁盘缓存进行访问。</p>
-<p>  内存缓存在UI线程中进行检测，磁盘缓存在UI主线程外的线程中进行检测，当图片处理完成之后，分别存储到内存缓存和磁盘缓存中。</p>
-<h4 id="设备配置参数改变时加载问题"><a href="#设备配置参数改变时加载问题" class="headerlink" title="设备配置参数改变时加载问题"></a>设备配置参数改变时加载问题</h4><p>  由于应用在运行的时候设备配置参数可能会发生改变，比如设备朝向改变，会导致Android销毁你的Activity然后按照新的配置重启，这种情况下，我们要避免重新去加载处理所有的图片，让用户能有一个流畅的体验。</p>
-<p>  使用Fragment 能够把内存缓存对象传递到新的activity实例中，调用setRetainInstance(true)) 方法来保留Fragment实例。当activity重新创建好后， 被保留的Fragment依附于activity而存在，通过Fragment就可以获取到已经存在的内存缓存对象了，这样就可以快速的获取到图片，并设置到ImageView上，给用户一个流畅的体验。</p>
-<p>下面是一个示例程序片段：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">private LruCache&lt;String, Bitmap&gt; mMemoryCache;</div><div class="line"></div><div class="line">@Override</div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    ...</div><div class="line">RetainFragment mRetainFragment =            RetainFragment.findOrCreateRetainFragment(getFragmentManager());</div><div class="line">    mMemoryCache = RetainFragment.mRetainedCache;</div><div class="line">    if (mMemoryCache == null) &#123;</div><div class="line">        mMemoryCache = new LruCache&lt;String, Bitmap&gt;(cacheSize) &#123;</div><div class="line">            ... //像上面例子中那样初始化缓存</div><div class="line">        &#125;</div><div class="line">        mRetainFragment.mRetainedCache = mMemoryCache;</div><div class="line">    &#125;</div><div class="line">    ...</div><div class="line">&#125;</div><div class="line"></div><div class="line">class RetainFragment extends Fragment &#123;</div><div class="line">    private static final String TAG = &quot;RetainFragment&quot;;</div><div class="line">    public LruCache&lt;String, Bitmap&gt; mRetainedCache;</div><div class="line"></div><div class="line">    public RetainFragment() &#123;&#125;</div><div class="line"></div><div class="line">    public static RetainFragment findOrCreateRetainFragment(FragmentManager fm) &#123;</div><div class="line">        RetainFragment fragment = (RetainFragment) fm.findFragmentByTag(TAG);</div><div class="line">        if (fragment == null) &#123;</div><div class="line">            fragment = new RetainFragment();</div><div class="line">            FragmentTransaction fragmentTransaction = fragmentManager  </div><div class="line">                .beginTransaction(); </div><div class="line">            fragmentTransaction.add(fragment, TAG).commit(); </div><div class="line">        &#125;</div><div class="line">        return fragment;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        // 使得Fragment在Activity销毁后还能够保留下来</div><div class="line">        setRetainInstance(true);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="使用SQLite进行缓存"><a href="#使用SQLite进行缓存" class="headerlink" title="使用SQLite进行缓存"></a>使用SQLite进行缓存</h4><p>  网络请求数据完成后，把文件的相关信息（如url（一般作为唯一标示），下载时间，过期时间）等存放到数据库。下次加载的时候根据url先从数据库中查询，如果查询到并且时间未过期，就根据路径读取本地文件，从而实现缓存的效果。</p>
-<p>  注意：缓存的数据库是存放在/data/data//databases/目录下，是占用内存空间的，如果缓存累计，容易浪费内存，需要及时清理缓存。</p>
-<h4 id="文件缓存"><a href="#文件缓存" class="headerlink" title="文件缓存"></a>文件缓存</h4><p>  思路和一般缓存一样，把需要的数据存储在文件中，下次加载时判断文件是否存在和过期（使用File.lastModified()方法得到文件的最后修改时间，与当前时间判断），存在并未过期就加载文件中的数据，否则请求服务器重新下载。<br>  注意，无网络环境下就默认读取文件缓存中的。</p>
+          Android应用与网络打交道是常有的事情，如果网络数据没有变化而每次都重新请求网络，就会浪费流量，Android系统有自己的缓存机制避免频繁的请求网络。
+实现原理  把不需要实时更新的数据缓存下来，通过时间或者其他因素　来判别是读缓存还是网络请求，这样可以缓解服务器压力，一定程度上提高应用响应速度
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/05/21/Android缓存机制/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -974,7 +839,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-05-21T18:43:00+08:00" content="2016-05-21">
               2016-05-21
             </time>
@@ -986,7 +851,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -1027,18 +892,15 @@
 <!-- 自定义结束 -->
         
           
-            <p>&emsp;&emsp;ViewTreeObserver用于注册可以通知视图树中的全局变化的监听器。这样的全局事件包括但不限于整个树的布局，绘制路径的开始，触摸模式改变等。ViewTreeObserver不应该由应用程序实例化，因为它是由视图层次结构提供的。</p>
-<p>&emsp;&emsp;在oncreate中View.getWidth和View.getHeight无法获得一个view的高度和宽度，这是因为View组件布局要在onResume回调后完成，只会得到0。所以现在需要使用getViewTreeObserver().addOnGlobalLayoutListener()来获得宽度或者高度。这是获得一个view的宽度和高度的方法之一。</p>
-<p>&emsp;&emsp;ViewTreeObserver有很多内部类，每个触发条件都不同<br>&emsp;&emsp;interface ViewTreeObserver.OnGlobalLayoutListener：当在一个视图树中全局布局发生改变或者视图树中的某个视图的可视状态发生改变时，所要调用的回调函数的接口类</p>
-<p>&emsp;&emsp;interface ViewTreeObserver.OnPreDrawListener：当一个视图树将要绘制时，所要调用的回调函数的接口类</p>
-<p>&emsp;&emsp;interface ViewTreeObserver.OnScrollChangedListener：当一个视图树中的一些组件发生滚动时，所要调用的回调函数的接口类</p>
-<p>&emsp;&emsp;interface ViewTreeObserver.OnTouchModeChangeListener：当一个视图树的触摸模式发生改变时，所要调用的回调函数的接口类</p>
-<p>我们利用OnGlobalLayoutListener可以获取View的高度<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Java代码  final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;  </div><div class="line">            boolean isFirst = true;//默认调用两次，这里只让它执行一次回调  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (isFirst) &#123;  </div><div class="line">                    isFirst = false;  </div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
-<p><strong>注意：</strong>OnGlobalLayoutListener可能会被多次触发，因此在得到了高度之后，要将OnGlobalLayoutListener注销掉<br>因此代码改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;    </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;</div><div class="line">                   //直接移除</div><div class="line">                    imageViewContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);</div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());</div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
-<p>类似的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">mGridView.getViewTreeObserver().addOnGlobalLayoutListener( </div><div class="line">         //view 布局完成时调用，每次view改变时都会调用  </div><div class="line">        new ViewTreeObserver.OnGlobalLayoutListener() &#123;  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (mAdapter.getNumColumns() == 0) &#123;  </div><div class="line">                        final int numColumns = (int) Math.floor(  </div><div class="line">                                 mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));  </div><div class="line">                    if (numColumns &gt; 0) &#123;  </div><div class="line">                        final int columnWidth =  </div><div class="line">                            (mGridView.getWidth() / numColumns) - mImageThumbSpacing;  </div><div class="line">                        mAdapter.setNumColumns(numColumns);   //设置 列数  </div><div class="line">                            mAdapter.setItemHeight(columnWidth);  //设置 高度  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
-<p>在gridview布局完成后，根据girdview的宽和高设置adapter列数和每个item高度</p>
+          &emsp;&emsp;ViewTreeObserver用于注册可以通知视图树中的全局变化的监听器。这样的全局事件包括但不限于整个树的布局，绘制路径的开始，触摸模式改变等。ViewTreeObserver不应该由应用程序实例化，因为它是由视图层次结构提供的。
+&emsp;&emsp;在oncreat
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/05/21/通过ViewTreeObserver测量View的高度/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1099,7 +961,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-05-12T14:08:57+08:00" content="2016-05-12">
               2016-05-12
             </time>
@@ -1111,7 +973,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -1152,10 +1014,14 @@
 <!-- 自定义结束 -->
         
           
-            <p>SwipeRefreshLayout出来已经有一段时间了，先后换过两种刷新效果，都在V4包下面，新的刷新效果还是很赞的，很多app都采用了这种刷新效果，我最近也在往这边靠，在研究的时候发现，原始的SwipeRefreshLayout只支持手势下拉才能出现刷新效果，看到《简书》安卓客户端每次都有那种切换页面就自动出来刷新效果，自己也试了下，直接设置setRefreshing(true)这个方法是不能看到效果的，于是对<a href="http://www.2cto.com/ym" target="_blank" rel="external">源码</a>进行了改造，不说多了，直接上代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public class AutoSwipeRefreshLayout extends SwipeRefreshLayout &#123;</div><div class="line"> </div><div class="line">    public AutoSwipeRefreshLayout(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    public AutoSwipeRefreshLayout(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    /**</div><div class="line">     * 自动刷新</div><div class="line">     */</div><div class="line">    public void autoRefresh() &#123;</div><div class="line">        try &#123;</div><div class="line">            Field mCircleView = SwipeRefreshLayout.class.getDeclaredField(mCircleView);</div><div class="line">            mCircleView.setAccessible(true);</div><div class="line">            View progress = (View) mCircleView.get(this);</div><div class="line">            progress.setVisibility(VISIBLE);</div><div class="line"> </div><div class="line">            Method setRefreshing = SwipeRefreshLayout.class.getDeclaredMethod(setRefreshing, boolean.class, boolean.class);</div><div class="line">            setRefreshing.setAccessible(true);</div><div class="line">            setRefreshing.invoke(this, true, true);</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>代码看起来比较简单，确实花了不少功夫去<a href="http://book.2cto.com/" target="_blank" rel="external">阅读</a>源码，除了添加了一个可以自动刷新的方法，没有修改其他的，用法也是和普通SwipeRefreshLayout一样，只不过可以在第一次加载数据的时候调用autoRefresh（）就可以看到刷新效果了，看效果图：<img src="http://upload-images.jianshu.io/upload_images/4398977-2e0a409c5f5f970d.gif?imageMogr2/auto-orient/strip" alt="alt=这里写图片描述"></p>
+          SwipeRefreshLayout出来已经有一段时间了，先后换过两种刷新效果，都在V4包下面，新的刷新效果还是很赞的，很多app都采用了这种刷新效果，我最近也在往这边靠，在研究的时候发现，原始的SwipeRefreshLayout只支持手势下拉才能出现刷新效果，看到《简书》安卓客户端每次都有那种切
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/05/12/一个可以进页面自动显示刷新效果的SwipeRefreshLayout/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1227,7 +1093,7 @@
           <div class="site-state-item site-state-posts">
             <a href="/archives">
               <span class="site-state-item-count">53</span>
-              <span class="site-state-item-name">Artikel</span>
+              <span class="site-state-item-name">posts</span>
             </a>
           </div>
 
@@ -1235,7 +1101,7 @@
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">8</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -1244,7 +1110,7 @@
             <div class="site-state-item site-state-tags">
               <a href="/">
                 <span class="site-state-item-count">14</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -1303,7 +1169,7 @@
             <ul class="links-of-blogroll-list">
               
                 <li class="links-of-blogroll-item">
-                  <a href="http://blog.csdn.net/csdn_yudong" title="CSDN" target="_blank">CSDN</a>
+                  <a href="https://www.jianshu.com/u/7f733f34fc2f" title="简书" target="_blank">简书</a>
                 </li>
               
             </ul>
@@ -1355,7 +1221,7 @@
 </div>
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a>
 </div>
 
 <div class="theme-info">

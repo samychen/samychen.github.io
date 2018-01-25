@@ -180,7 +180,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -190,7 +190,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
             
-            Über
+            About
           </a>
         </li>
       
@@ -474,7 +474,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2017-03-15T17:14:43+08:00" content="2017-03-15">
               2017-03-15
             </time>
@@ -486,7 +486,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Cordova/" itemprop="url" rel="index">
@@ -527,41 +527,15 @@
 <!-- 自定义结束 -->
         
           
-            <p>&emsp;&emsp;Android实现在当前进程打开网页可以将Cordova中的WebView嵌入Android项目中，实现简单，不需要自己实现，所以掌握如何嵌入WebView对项目快速开发很有帮助</p>
-<p>&emsp;&emsp;官方也有这方面的教程操作，但最新版本的cordova android（4.0.0）对其代码库做了大的改动。这种变化，大多是一种设计模式，使得上面描述的方法不能正常工作。</p>
-<p>&emsp;&emsp;本文将展示如何与cordova Android的新变化合作，嵌入cordova webview在本机Android应用程序。</p>
-<h4 id="创建Cordova安卓项目"><a href="#创建Cordova安卓项目" class="headerlink" title="创建Cordova安卓项目"></a>创建Cordova安卓项目</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cordova create test_cordova com.example.hello HelloWorld</div><div class="line">cordova platform add android</div><div class="line">cordova plugin add nl.x-services.plugins.toast</div><div class="line">cordova plugin add org.apache.cordova.device</div><div class="line">cordova build</div></pre></td></tr></table></figure>
-<p>上面第三行和第四行是将其他的第三方插件也嵌入安卓原生工程使用</p>
-<h4 id="创建Android-Native项目"><a href="#创建Android-Native项目" class="headerlink" title="创建Android Native项目"></a>创建Android Native项目</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends Activity &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void startCordovaActivity(View view) &#123;</div><div class="line">        Intent intent = new Intent(this, TestCordovaActivity.class);</div><div class="line">        startActivity(intent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void startCordovaActivityWithLayout(View view) &#123;</div><div class="line">        Intent intent = new Intent(this, TestCordovaWithLayoutActivity.class);</div><div class="line">        startActivity(intent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<ul>
-<li>startCordovaActivity 将转移到一个新活动，其布局是以程序方式创建的cordova webview。</li>
-<li>startCordovaActivity 将转移到一个新的活动，其布局使用xml布局文件定义并嵌入cordova webview。</li>
-</ul>
-<p>TestCordovaActivity<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class TestCordovaActivity extends CordovaActivity &#123;</div><div class="line"></div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        super.init();</div><div class="line">        // Load your application</div><div class="line">         launchUrl = &quot;file:///android_asset/www/index.html&quot;;</div><div class="line">//        launchUrl = &quot;file:///android_asset/www/index2.html&quot;;</div><div class="line">        loadUrl(launchUrl);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>不需要xml布局，加载的是index.html网页</p>
-<p>TestCordovaWithLayoutActivity<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">public class TestCordovaWithLayoutActivity extends CordovaActivity &#123;</div><div class="line"></div><div class="line"></div><div class="line">    /** Called when the activity is first created. */</div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_test_cordova_with_layout);</div><div class="line">        super.init();</div><div class="line">        // Load your application</div><div class="line">        // launchUrl = &quot;file:///android_asset/www/index.html&quot;</div><div class="line">        launchUrl = &quot;file:///android_asset/www/index2.html&quot;;</div><div class="line">        loadUrl(launchUrl);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected CordovaWebView makeWebView() &#123;</div><div class="line">        SystemWebView webView = (SystemWebView)findViewById(R.id.cordovaWebView);</div><div class="line">        return new CordovaWebViewImpl(new SystemWebViewEngine(webView));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void createViews() &#123;</div><div class="line">        //Why are we setting a constant as the ID? This should be investigated</div><div class="line">//        appView.getView().setId(100);</div><div class="line">//        appView.getView().setLayoutParams(new FrameLayout.LayoutParams(</div><div class="line">//                ViewGroup.LayoutParams.MATCH_PARENT,</div><div class="line">//                ViewGroup.LayoutParams.MATCH_PARENT));</div><div class="line">//</div><div class="line">//        setContentView(appView.getView());</div><div class="line"></div><div class="line">        if (preferences.contains(&quot;BackgroundColor&quot;)) &#123;</div><div class="line">            int backgroundColor = preferences.getInteger(&quot;BackgroundColor&quot;, Color.BLACK);</div><div class="line">            // Background of activity:</div><div class="line">            appView.getView().setBackgroundColor(backgroundColor);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        appView.getView().requestFocusFromTouch();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>使用setContentView显式设置布局xml。需要重写两个方法：</p>
-<ul>
-<li>makeWebView： 它使用R.id.cordovaWebView，在layout xml文件中定义</li>
-<li>createViews ： 我们重写它只是因为它将默认使用setContentView。但是我们想使用我们的xml布局，所以需要它。</li>
-</ul>
-<p>activity_test_cordova_with_layout.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    xmlns:tools=&quot;http://schemas.android.com/tools&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    tools:context=&quot;com.example.jimmy.embeddedcordovawebviewdemo.TestCordovaWithLayoutActivity&quot;&gt;</div><div class="line"></div><div class="line">    &lt;TextView</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;100dp&quot;</div><div class="line">        android:background=&quot;#FF0000&quot;</div><div class="line">        android:textColor=&quot;#FFFFFF&quot;</div><div class="line">        android:gravity=&quot;center&quot;</div><div class="line">        android:text=&quot;This is native text view&quot;</div><div class="line">        /&gt;</div><div class="line"></div><div class="line">    &lt;org.apache.cordova.engine.SystemWebView</div><div class="line">        android:id=&quot;@+id/cordovaWebView&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot;</div><div class="line">        /&gt;</div><div class="line"></div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure></p>
-<p>为了向后兼容，我们使用cordova库中的org.apache.cordova.engine.SystemWebView,直到4.0.0之前也是可以使用org.apache.cordova.CordovaWebView</p>
-<h4 id="将Cordova-Android项目复制到本机Android应用程序"><a href="#将Cordova-Android项目复制到本机Android应用程序" class="headerlink" title="将Cordova Android项目复制到本机Android应用程序"></a>将Cordova Android项目复制到本机Android应用程序</h4><h4 id="拷贝jar包"><a href="#拷贝jar包" class="headerlink" title="拷贝jar包"></a>拷贝jar包</h4><p>去Apache官方网站下载最新的<a href="https://github.com/apache/cordova-android/releases/tag/4.0.0" target="_blank" rel="external">cordova Android Packet</a>，然后创建jar包。<a href="http://cordova.apache.org/docs/en/5.0.0/guide/platforms/android/webview.html" target="_blank" rel="external">官方网站</a><br>下载好官方压缩文件cordova-android-xxx.zip，解压缩，通过ant工具导航到 <code>/framework</code>目录下，执行ant jar命令，如果提示<br>build fali, you need to create the file’local.properties’ by running ‘android update project -p .’命令，在cmd窗口执行如上命令之后再次执行ant jar<br>将会在当前目录生成cordova-4.0.0.jar<br>拷贝jar包到项目中，在build.gradle中添加依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">compile files(&apos;libs/cordova-4.0.0.jar&apos;)</div></pre></td></tr></table></figure></p>
-<h4 id="拷贝www目录"><a href="#拷贝www目录" class="headerlink" title="拷贝www目录"></a>拷贝www目录</h4><p>目录结构如下<br><strong><code>platforms/android/assets/www</code> -&gt; <code>src/main/assets/www</code></strong></p>
-<h4 id="拷贝插件"><a href="#拷贝插件" class="headerlink" title="拷贝插件"></a>拷贝插件</h4><p><strong>注意：</strong>拷贝<code>platforms/android/src/</code>目录结构下的所有文件，而不是plugins/下的所有文件。因为在运行cordova build命令时，cordova将复制<code>plugins/</code>文件夹下的插件到目录<code>platforms/android/src/</code>下，并执行一些操作。</p>
-<h4 id="拷贝config-xml"><a href="#拷贝config-xml" class="headerlink" title="拷贝config.xml"></a>拷贝config.xml</h4><p><strong>注意：</strong>不要拷贝更目录下的config.xml，要拷贝的是platforms下的config.xml<br>目录结构如下<br><code>platforms/android/res/xml/config.xml</code> -&gt; <code>src/main/res/xml/</code></p>
-<p>整个工程的目录结构如下图所示：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-ec810e0277b57799.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-0254bcf13589b1b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>参考文献：</p>
-<ul>
-<li><a href="http://cordova.apache.org/docs/en/5.0.0/guide_platforms_android_webview.md.html" target="_blank" rel="external">http://cordova.apache.org/docs/en/5.0.0/guide_platforms_android_webview.md.html</a></li>
-<li><a href="http://richardgilmour.co.uk/2013/03/03/embedding-a-cordova-webview-in-a-native-android-app/" target="_blank" rel="external">http://richardgilmour.co.uk/2013/03/03/embedding-a-cordova-webview-in-a-native-android-app/</a></li>
-<li><a href="https://github.com/Adobe-Marketing-Cloud-Apps/app-sample-android-phonegap/wiki/Embed-Webview-in-Android-Fragment" target="_blank" rel="external">https://github.com/Adobe-Marketing-Cloud-Apps/app-sample-android-phonegap/wiki/Embed-Webview-in-Android-Fragment</a></li>
-</ul>
+          &emsp;&emsp;Android实现在当前进程打开网页可以将Cordova中的WebView嵌入Android项目中，实现简单，不需要自己实现，所以掌握如何嵌入WebView对项目快速开发很有帮助
+&emsp;&emsp;官方也有这方面的教程操作，但最新版本的cordova android（4
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/15/原生Android中嵌入Cordova-Webview/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -622,7 +596,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2017-03-13T10:03:08+08:00" content="2017-03-13">
               2017-03-13
             </time>
@@ -634,7 +608,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Cordova/" itemprop="url" rel="index">
@@ -675,17 +649,15 @@
 <!-- 自定义结束 -->
         
           
-            <h4 id="Cordova添加默认启动图"><a href="#Cordova添加默认启动图" class="headerlink" title="Cordova添加默认启动图"></a>Cordova添加默认启动图</h4><p>&emsp;&emsp;Cordova默认的启动图是Apache默认的logo，如果需要修改默认启动图需要Splash插件，通过CLI语句<code>cordova plugin add org.apache.cordova.splashscreen</code>添加插件</p>
-<h4 id="1-修改config-xml配置文件"><a href="#1-修改config-xml配置文件" class="headerlink" title="1. 修改config.xml配置文件"></a>1. 修改config.xml配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;preference name=&quot;SplashScreen&quot; value=&quot;screen&quot; /&gt; &lt;!-- 不带后缀png的文件名，默认是screen--&gt;</div><div class="line">    &lt;preference name=&quot;SplashScreenDelay&quot; value=&quot;3000&quot; /&gt; &lt;!-- Splash显示时间，默认是3000ms--&gt;</div><div class="line">    &lt;feature name=&quot;SplashScreen&quot;&gt;</div><div class="line">        &lt;param name=&quot;android-package&quot; value=&quot;org.apache.cordova.splashscreen.SplashScreen&quot; /&gt;</div><div class="line">    &lt;/feature&gt;</div></pre></td></tr></table></figure>
-<h4 id="2-修改启动图片"><a href="#2-修改启动图片" class="headerlink" title="2. 修改启动图片"></a>2. 修改启动图片</h4><p>&emsp;&emsp;可以看到启动图片的名字是screen.png,工程下有一些screen.png默认图片了，上面显示的是cordova logo，下面需要把这些图片换成你自己的启动画面，不需要支持的尺寸图片直接删掉就可以了。</p>
-<h4 id="3-在设备初始化完成后隐藏Splash画面"><a href="#3-在设备初始化完成后隐藏Splash画面" class="headerlink" title="3.在设备初始化完成后隐藏Splash画面"></a>3.在设备初始化完成后隐藏Splash画面</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">document.addEventListener(&quot;deviceready&quot;, onDeviceReady, false);  </div><div class="line">function onDeviceReady() &#123;  </div><div class="line">  navigator.splashscreen.hide();  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>如果使用了ionic框架，直接在app.js 文件的  .run([‘$ionicPlatform’, function ($ionicPlatform) {   … } 里面加上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">navigator.splashscreen.hide();</div></pre></td></tr></table></figure></p>
-<blockquote>
-<p>Blockquote</p>
-</blockquote>
-<p>&emsp;&emsp;</p>
+          Cordova添加默认启动图&emsp;&emsp;Cordova默认的启动图是Apache默认的logo，如果需要修改默认启动图需要Splash插件，通过CLI语句cordova plugin add org.apache.cordova.splashscreen添加插件
+1. 修改config.
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/13/Cordova-添加默认启动图/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -746,7 +718,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2017-03-12T18:24:19+08:00" content="2017-03-12">
               2017-03-12
             </time>
@@ -758,7 +730,7 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Cordova/" itemprop="url" rel="index">
@@ -799,113 +771,15 @@
 <!-- 自定义结束 -->
         
           
-            <h4 id="手动导入第三方插件到Cordova项目中"><a href="#手动导入第三方插件到Cordova项目中" class="headerlink" title="手动导入第三方插件到Cordova项目中"></a>手动导入第三方插件到Cordova项目中</h4><p>&emsp;&emsp;Cordova项目中可以自定义插件，也可以从官方和其他渠道通过命令行导入工程中，因为需求总是在变，有时候第三方插件里面还包含不需要用到的功能，所有我们需要手动导入。</p>
-<p>&emsp;&emsp;采用github中的ImagePicker插件来说明手动导入过程。首先从guihub上查看plugin.xml的内容，我们需要实现图库选择图片的功能只需要ImagePicker这个类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;config-file target=&quot;res/xml/config.xml&quot; parent=&quot;/*&quot;&gt;</div><div class="line">                        &lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div><div class="line">                &lt;/config-file&gt;</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;source-file src=&quot;src/android/com/synconset/ImagePicker/ImagePicker.java&quot; target-dir=&quot;src/com/synconset&quot; /&gt;</div></pre></td></tr></table></figure>
-<p>初步看出需要在config.xml中配置如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div></pre></td></tr></table></figure></p>
-<p>然后把ImagePicker.java拷贝到工程中，目录结构为/ser/com/synconset/ImagePicker.java。<br>&emsp;&emsp;接着我们需要在把github中的www目录结构中的imagepicker.js文件复制到我们的工程中，目录结构是assets/www/plugins/..，我的目录结构是assets/www/plugins/imagepicker/www/imagepicker.js</p>
-<p><strong>注意：</strong>直接拷贝js文件还需要配置js文件，最外围默认是没有cordova定义语句的，在js文件最外围拷贝如下代码，第三方js文件不知道我们定义的插件ID，需要我们自己配置，我的项目中的ID就是com.synconset.ImagePicker，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cordova.define(&quot;com.synconset.ImagePicker&quot;, function(require, exports, module) &#123;</div><div class="line"></div><div class="line">module.exports = new ImagePicker()</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
-<blockquote>
-<p>默认创建插件对象的语句是window.imagePicker = new ImagePicker();window.imagePicker 就是我在注册插件时配置好了的，当然也可以用上面的<code>module.exports = new ImagePicker()</code>来创建</p>
-</blockquote>
-<p>&emsp;&emsp;最后我们需要在assets/www/cordova_plugins.js中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">             &quot;id&quot;: &quot;com.synconset.ImagePicker&quot;,</div><div class="line">             &quot;file&quot;: &quot;plugins/imagepicker/www/imagepicker.js&quot;,</div><div class="line">             &quot;merges&quot;: [</div><div class="line">                 &quot;window.imagePicker&quot;</div><div class="line">             ]</div><div class="line">         &#125;</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;然后这时候ImagePicker.java报找不到MultiImageChooserActivity类，把需要的类一并拷贝到项目中，导入的Activity需要在清单文件中注册</p>
-<p>&emsp;&emsp;运行到模拟器上，在<br><code>setContentView(fakeR.getId(&quot;layout&quot;, &quot;multiselectorgrid&quot;));</code>出错，因为项目中没有找到multiselectrgrid.xml文件，在res中新建layout文件夹把需要的文件拷贝进去，之后在<br><code>BitmapFactory.decodeResource(getResources(), fakeR.getId(&quot;drawable&quot;, &quot;loading_icon&quot;));</code>报找不到图片，将需要的图片也拷贝进去。</p>
-<blockquote>
-<p>使用getIdentifier()方法可以方便的获各应用包下的指定资源ID。<br>方式一<br>int indentify = getResources().getIdentifier(“com.test.demo:drawable/icon”,null,null);<br>第一个参数格式是：包名 + : +资源文件夹名 + / +资源名；是这种格式 然后其他的可以为null<br>方式二<br>intindentify= getResources().getIdentifier(“icon”, “drawable”, “com.test.demo”);<br>第一个参数为ID名，第二个为资源属性是ID或者是Drawable，第三个为包名。</p>
-</blockquote>
-<pre><code>import java.lang.reflect.Field;
-import android.content.Context;
+          手动导入第三方插件到Cordova项目中&emsp;&emsp;Cordova项目中可以自定义插件，也可以从官方和其他渠道通过命令行导入工程中，因为需求总是在变，有时候第三方插件里面还包含不需要用到的功能，所有我们需要手动导入。
+&emsp;&emsp;采用github中的ImagePicker插件
+          ...
 
-public class ResourceUtil {
-    private static Context sContext;
-
-    public static void init(Context context) {
-        if (context != null)
-            sContext = context;
-    }
-
-    public static int getLayoutId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;layout&quot;, sContext.getPackageName());
-    }
-
-    public static int getStringId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;string&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getDrawableId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;drawable&quot;, sContext.getPackageName());
-    }
-
-    public static int getStyleId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;style&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;id&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getColorId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;color&quot;, sContext.getPackageName());
-    }
-
-    public static int getDimenId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;dimen&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getAnimId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;anim&quot;, sContext.getPackageName());
-    }
-
-    // 通过反射实现
-    public static final int[] getStyleableIntArray(String name) {
-        try {
-            if (sContext == null)
-                return null;
-            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
-            int[] ret = (int[]) field.get(null);
-            return ret;
-        } catch (Throwable t) {
-        }
-        return null;
-    }
-
-    public static final int getStyleableIntArrayIndex(String name) {
-        try {
-            if (sContext == null)
-                return 0;
-            // use reflection to access the resource class
-            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
-            int ret = (Integer) field.get(null);
-            return ret;
-        } catch (Throwable t) {
-        }
-        return 0;
-    }
-}
-</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;总之，Cordova手动导入第三方插件过程就是这个过程，我们需要的就是拷贝文件然后配置好需要配置的地方就行，项目报找不到插件的方法就一定是配置出了问题，其他大多数问题就是所需要的资源文件问题。</p>
-
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/12/Cordova手动导入第三方插件/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -966,7 +840,7 @@ public class ResourceUtil {
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2017-03-08T15:18:38+08:00" content="2017-03-08">
               2017-03-08
             </time>
@@ -978,7 +852,7 @@ public class ResourceUtil {
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Cordova/" itemprop="url" rel="index">
@@ -1019,19 +893,15 @@ public class ResourceUtil {
 <!-- 自定义结束 -->
         
           
-            <p>创建第一个Helloworld项目，现在来分析运行机制</p>
-<h4 id="MainActivity-java"><a href="#MainActivity-java" class="headerlink" title="MainActivity.java"></a>MainActivity.java</h4><p>&emsp;&emsp;我们已经将MainActivity导入到了eclipse中。打开scr下com.example.hello下的MainActivity.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public class MainActivity extends CordovaActivity</div><div class="line">&#123;</div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState)</div><div class="line">    &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line"></div><div class="line">        // enable Cordova apps to be started in the background</div><div class="line">        Bundle extras = getIntent().getExtras();</div><div class="line">        if (extras != null &amp;&amp; extras.getBoolean(&quot;cdvStartInBackground&quot;, false)) &#123;</div><div class="line">            moveTaskToBack(true);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Set by &lt;content src=&quot;index.html&quot; /&gt; in config.xml</div><div class="line">        loadUrl(launchUrl);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　loadUrl(launchUrl);会在当前的WebView中去加载首页，当然这个首页是我们自己配置的，在res/xml/config.xml中。<content src="index.html">。这个路径都是指的assets/www下的路径。</content></p>
-<p>　　这样这个app启动的时候会首先调用这个MainActivity(当然这是在AndroidManifest.xml中配置的)，然后Activity启动的时候会将index.html加载在其WebView中，然后我们就看到了Cordova的页面。</p>
-<h4 id="index-html"><a href="#index-html" class="headerlink" title="index.html"></a>index.html</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;cordova.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;js/index.js&quot;&gt;&lt;/script&gt;</div><div class="line">...</div></pre></td></tr></table></figure>
-<p>&emsp;&emsp;在显示这个index页面的时候，会加载两个js文件。cordova.js就是cordova的api，调用原生内容用的，相当于jar包。</p>
-<h4 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">var app = &#123;</div><div class="line">    // 初始化方法，会调用绑定事件的方法</div><div class="line">    initialize: function() &#123;</div><div class="line">        this.bindEvents();</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 绑定事件的方法,事件可以是这些:</div><div class="line">    // &apos;load&apos;, &apos;deviceready&apos;, &apos;offline&apos;, and &apos;online&apos;.</div><div class="line">    //该事件是在 cordova 载入完成后发生的事件，它表示cordova 加载完成并准备访问，yourCallbackFunction，相当于程序的入口功能</div><div class="line">    bindEvents: function() &#123;</div><div class="line">        document.addEventListener(&apos;deviceready&apos;, this.onDeviceReady, false);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // deviceready 后事件处理</div><div class="line">    onDeviceReady: function() &#123;</div><div class="line">        app.receivedEvent(&apos;deviceready&apos;);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 事件处理，更新DOM，改变两个元素的css</div><div class="line">    receivedEvent: function(id) &#123;</div><div class="line">        var parentElement = document.getElementById(id);</div><div class="line">        var listeningElement = parentElement.querySelector(&apos;.listening&apos;);</div><div class="line">        var receivedElement = parentElement.querySelector(&apos;.received&apos;);</div><div class="line"></div><div class="line">        listeningElement.setAttribute(&apos;style&apos;, &apos;display:none;&apos;);</div><div class="line">        receivedElement.setAttribute(&apos;style&apos;, &apos;display:block;&apos;);</div><div class="line"></div><div class="line">        console.log(&apos;Received Event: &apos; + id);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">//调用初始化方法</div><div class="line">app.initialize();</div></pre></td></tr></table></figure>
-<p>&emsp;&emsp;加载index.js之后，程序会首先调用初始化方法，初始化的时候会去绑定事件监听：document.addEventListener(‘deviceready’, this.onDeviceReady, false);</p>
-<p>&emsp;&emsp;deviceready事件：该事件是在 cordova 载入完成后发生的事件，它表示cordova 加载完成并准备访问，你传进去的回调函数，相当于程序的入口函数。</p>
-<p>&emsp;&emsp;当cordova准备好的时候，会去首先执行你传进去的回调函数，这里是onDeviceReady()。这个方法会改变DOM元素的css样式。</p>
-<p>&emsp;&emsp;最终效果就是，当cordova没有加载完的时候，页面上Apache Cordova下面那里显示的是：Connecting to Device（背景是灰色）。加载完之后，cordova准备好之后，原来显示的消失，现在显示的是：Device is Ready（背景是绿色）</p>
+          创建第一个Helloworld项目，现在来分析运行机制
+MainActivity.java&emsp;&emsp;我们已经将MainActivity导入到了eclipse中。打开scr下com.example.hello下的MainActivity.java123456789101112131415
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/08/Cordova-HelloWorld/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1092,7 +962,7 @@ public class ResourceUtil {
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-o"></i>
             </span>
-            <span class="post-meta-item-text">Veröffentlicht am</span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2017-03-07T13:40:51+08:00" content="2017-03-07">
               2017-03-07
             </time>
@@ -1104,7 +974,7 @@ public class ResourceUtil {
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
-              <span class="post-meta-item-text">in</span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Cordova/" itemprop="url" rel="index">
@@ -1145,45 +1015,15 @@ public class ResourceUtil {
 <!-- 自定义结束 -->
         
           
-            <p>&emsp;&emsp;由于公司业务发展需求，最近都在研究混合式开发APP，项目采用的Apache的Cordova框架，这篇文章就是所有编程语言的第一步，创建第一个Cordova安卓平台HellWorld</p>
-<h4 id="创建APP"><a href="#创建APP" class="headerlink" title="创建APP"></a>创建APP</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova create hello com.example.hello HelloWorld</div></pre></td></tr></table></figure>
-<p>&emsp;&emsp;这将会为你的cordova应用创造必须的目录。默认情况下，cordova create命令生成基于web的应用程序的骨骼，项目的主页是 www/index.html 文件。</p>
-<h4 id="添加平台"><a href="#添加平台" class="headerlink" title="添加平台"></a>添加平台</h4><p>&emsp;&emsp;所有后续命令都需要在项目目录或者项目目录的任何子目录运行:先进入项目目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cd hello</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;给你的App添加目标平台。我们将会添加’ios’和’android’平台，并确保他们保存在了config.xml中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cordova platform add ios --save</div><div class="line">$ cordova platform add android --save</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;检查你当前平台设置状况，查看平台:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova platform ls</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;删除平台<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&amp; cordova platform remove android</div><div class="line">&amp; cordova platform rm android</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;运行add或者remove平台的命令将会影响项目 platforms的内容，在这个目录中每个指定平台都有一个子目录</p>
-<blockquote>
-<p>注意:在你使用CLI创建应用的时候， 不要 修改/platforms/目录中的任何文件。当准备构建应用或者重新安装插件时这个目录通常会被重写。</p>
-</blockquote>
-<h4 id="安装构建先决条件"><a href="#安装构建先决条件" class="headerlink" title="安装构建先决条件"></a>安装构建先决条件</h4><p>&emsp;&emsp;要构建和运行App，你需要安装每个你需要平台的SDK。另外，当你使用浏览器开发你可以添加 browser平台，它不需要任何平台SDK。</p>
-<p>&emsp;&emsp;检测你是否满足构建平台的要求:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ cordova requirements</div><div class="line">Requirements check results for android:</div><div class="line">Java JDK: installed .</div><div class="line">Android SDK: installed</div><div class="line">Android target: installed android-19,android-21,android-22,android-23,Google Inc.:Google APIs:19,Google Inc.:Google APIs (x86 System Image):19,Google Inc.:Google APIs:23</div><div class="line">Gradle: installed</div><div class="line"></div><div class="line">Requirements check results for ios:</div><div class="line">Apple OS X: not installed</div><div class="line">Cordova tooling for iOS requires Apple OS X</div><div class="line">Error: Some of requirements check failed</div></pre></td></tr></table></figure></p>
-<h4 id="构建App"><a href="#构建App" class="headerlink" title="构建App"></a>构建App</h4><p>&emsp;&emsp;默认情况下, cordova create生产基于web应用程序的骨架，项目开始页面位于www/index.html文件。任何初始化任务应该在www/js/index.js文件中的<a href="http://cordova.axuer.com/docs/zh-cn/latest/cordova/events/events.html#deviceready" target="_blank" rel="external">deviceready</a>事件的事件处理函数中。<br>运行下面命令为<em>所有</em>添加的平台构建:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova build</div></pre></td></tr></table></figure></p>
-<p>你可以在每次构建中选择限制平台范围<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova build android</div></pre></td></tr></table></figure></p>
-<h4 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h4><p>模拟器上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova emulate android</div></pre></td></tr></table></figure></p>
-<p>浏览器上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova serve android</div></pre></td></tr></table></figure></p>
-<p>浏览器访问<a href="http://localhost:8000/" target="_blank" rel="external">http://localhost:8000</a>即可<br>真机上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova run android</div></pre></td></tr></table></figure></p>
-<h4 id="添加插件"><a href="#添加插件" class="headerlink" title="添加插件"></a>添加插件</h4><p>&emsp;&emsp;你可以修改默认生成的App通过标准的web技术，但是App要接触设备级别的特性，就需要你添加插件了。<br>&emsp;&emsp;一个<em>插件</em> 通过JavascriptAPI暴露原生SDK功能。插件通常由npm分发，你可以搜索他们在 <a href="http://cordova.axuer.com/plugins/" target="_blank" rel="external">插件搜索页</a>。一些关键的API由Apache Cordova开源项目提供并且这些插件是作为[核心插件API]的。你也可以使用CLI启动搜索页:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova plugin search camera</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;plugin要添加camera插件，我们需要指定camera的npm包名:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ cordova plugin add cordova-plugin-camera</div><div class="line">Fetching plugin &quot;cordova-plugin-camera@~2.1.0&quot; via npm</div><div class="line">Installing &quot;cordova-plugin-camera&quot; for android</div><div class="line">Installing &quot;cordova-plugin-camera&quot; for ios</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;插件也可以通过目录或者git仓库添加。<br>&emsp;&emsp;使用 plugin ls (或者 plugin list, 或者 plugin自己)查看当前安装的插件。每个插件现实它的标识:</p>
-<h4 id="使用-merges自定义每个平台"><a href="#使用-merges自定义每个平台" class="headerlink" title="使用 merges自定义每个平台"></a>使用 merges自定义每个平台</h4><p>&emsp;&emsp;虽然Cordova允许你轻松的部署App在各个平台，但是有时我们需要在某些平台做一些自定义。在这种情况下， 不要想去修改顶级platforms目录下的www目录，因为，通常会被顶级 www目录的跨平台源码替换<br>&emsp;&emsp;取而代之，顶级merges目录提供了特定平台部署特定资源的地方。每个特定平台在merges中的子目录反映了www 源代码树中的结构， 允许你重写和添加文件。例如，这是如何使用merges来提供Android设备中的默认字体大小。</p>
-<ul>
-<li><p>编辑www/index.html文件,添加link标签来添加额外的css文件, overrides.css在这种情况下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/overrides.css&quot; /&gt;</div></pre></td></tr></table></figure>
-</li>
-<li><p>（可选）创建一个空的www/css/overrides.css文件，适合所有非Android构建，来防止文件找不到的错误。</p>
-</li>
-<li>在merges/android里面创建一个css子目录,然后添加对应的overrides.css文件。特定的CSS重写www/css/index.css文件中的12px的默认大小，例子:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">body &#123; font-size:14px; &#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>&emsp;&emsp;当你重写构建项目，Android具有自定义的字体大小，而其他平台的不变。<br>&emsp;&emsp;你也可以在merges目录中添加www目录中不存在的文件。例如，一个应用程序在iOS界面中要包含一个 <em>后退按钮</em>,存储在merges/ios/img/back_button.png<br>,而Android版本则可以捕获<a href="http://cordova.axuer.com/docs/zh-cn/latest/cordova/events/events.html#backbutton" target="_blank" rel="external">后退按钮</a>事件通过对应的硬件按钮。</p>
-<h4 id="更新Cordova和你的项目"><a href="#更新Cordova和你的项目" class="headerlink" title="更新Cordova和你的项目"></a>更新Cordova和你的项目</h4><p>在安装cordova工具之后，你可以运行下面命令更新到最新版本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm update -g cordova</div></pre></td></tr></table></figure></p>
-<p>用下面语法安装指定版本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm install -g cordova@3.1.0-0.2.0</div></pre></td></tr></table></figure></p>
-<p>运行cordova -v查看当前版本。要查找最新的cordova版本，可以运行:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm info cordova version</div></pre></td></tr></table></figure></p>
-<p>更新完cordova后，更新目标项目的平台:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cordova platform update android --save</div><div class="line">$ cordova platform update ios --save</div></pre></td></tr></table></figure></p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>hybrid app相对native app来说开发起来速度快，相对容易，但是没有native那么流畅，性能和体验稍微差些。并且文件大小相差也很大，同样一个应用native只要几k，而hybrid却要几兆。</p>
+          &emsp;&emsp;由于公司业务发展需求，最近都在研究混合式开发APP，项目采用的Apache的Cordova框架，这篇文章就是所有编程语言的第一步，创建第一个Cordova安卓平台HellWorld
+创建APP1$ cordova create hello com.example.hello 
+          ...
 
-          
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2017/03/07/Cordova入门/" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -1255,7 +1095,7 @@ public class ResourceUtil {
           <div class="site-state-item site-state-posts">
             <a href="/archives">
               <span class="site-state-item-count">53</span>
-              <span class="site-state-item-name">Artikel</span>
+              <span class="site-state-item-name">posts</span>
             </a>
           </div>
 
@@ -1263,7 +1103,7 @@ public class ResourceUtil {
             <div class="site-state-item site-state-categories">
               
                 <span class="site-state-item-count">8</span>
-                <span class="site-state-item-name">Kategorien</span>
+                <span class="site-state-item-name">categories</span>
               
             </div>
           
@@ -1272,7 +1112,7 @@ public class ResourceUtil {
             <div class="site-state-item site-state-tags">
               <a href="/">
                 <span class="site-state-item-count">14</span>
-                <span class="site-state-item-name">Tags</span>
+                <span class="site-state-item-name">tags</span>
               </a>
             </div>
           
@@ -1331,7 +1171,7 @@ public class ResourceUtil {
             <ul class="links-of-blogroll-list">
               
                 <li class="links-of-blogroll-item">
-                  <a href="http://blog.csdn.net/csdn_yudong" title="CSDN" target="_blank">CSDN</a>
+                  <a href="https://www.jianshu.com/u/7f733f34fc2f" title="简书" target="_blank">简书</a>
                 </li>
               
             </ul>
@@ -1383,7 +1223,7 @@ public class ResourceUtil {
 </div>
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io" rel="external nofollow">Hexo</a>
 </div>
 
 <div class="theme-info">
