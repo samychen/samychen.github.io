@@ -1,0 +1,850 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>第 7 页 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href="/hexo"><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="/atom.xml"><i class="fa fa-rss"></i>订阅</a>
+		    
+		      <a href="/customization"><i class="fa fa-question-circle"></i>留言</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper">
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-03-12T05:38:32.000Z"><a href="/2016/03/12/Java-SSL-Socket通讯实例二/">2016-03-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/03/12/Java-SSL-Socket通讯实例二/">Java SSL Socket通讯实例二</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>对于SSL/TLS协议，如果要每个开发者都自己去实现显然会带来不必要的麻烦，正是为了解决这个问题<a href="http://www.2cto.com/kf/ware/Java/" target="_blank" rel="external">Java</a>为广大开发者提供了Java安全套接字扩展——JSSE，它包含了实现Internet安全通信的一系列包的集合，是SSL和TLS的纯Java实现，同时它是一个开放的标准，每个公司都可以自己实现JSSE，通过它可以透明地提供数据<a href="http://www.2cto.com/Article/jiami/" target="_blank" rel="external">加密</a>、服务器认证、信息完整性等功能，就像使用普通的套接字一样使用安全套接字，大大减轻了开发者的负担，使开发者可以很轻松将SSL协议整合到程序中，并且JSSE能将安全隐患降到了最低点。<br>在利用SSL/TLS进行安全通信时，客户端跟服务器端都必须要支持SSL/TLS协议，不然将无法进行通信。而且客户端和服务器端都可能要设置用于证实自己身份的安全证书，并且还要设置信任对方的哪些安全证书。<br>关于身份认证方面有个名词叫客户端模式，一般情况客户端要对服务器端的身份进行验证，但是无需向服务器证实自己的身份，这样不用向对方证实自己身份的通信端我们就说它处于客户模式，否则成它处于服务器模式。SSLSocket的setUseClientMode(Boolean mode)方法可以设置客户端模式或服务器模式。<br>下面看具体实现的过程<br>① 解决证书问题。<br>一般而言作为服务器端必须要有证书以证明这个服务器的身份，并且证书应该描述此服务器所有者的一些基本信息，例如公司名称、联系人名等。证书由所有人以密码形式签名，基本不可伪造，证书获取的途径有两个：一是从权威机构购买证书，权威机构担保它发出的证书的真实性，而且这个权威机构被大家所信任，进而你可以相信这个证书的有效性；另外一个是自己用JDK提供的工具keytool创建一个自我签名的证书，这种情况下一般是我只想要保证数据的安全性与完整性，避免数据在传送的过程中被窃听或篡改，此时身份的认证已不重要，重点已经在端与端传输的秘密性上，证书的作用只体现在加解密签名。<br>SSL协议通信涉及密钥储存的文件格式比较多，很容易搞混，例如xxx.cer、xxx.pfx、xxx.jks、xxx.keystore、xxx.truststore等格式文件。如图3-1-7-3，搞清楚他们有助于理解后面的程序，.cer格式文件俗称证书，但这个证书中没有私钥，只包含了公钥；.pfx格式文件也称为证书，它一般供<a href="http://www.2cto.com/os/liulanqi/" target="_blank" rel="external">浏览器</a>使用，而且它不仅包含了公钥，还包含了私钥，当然这个私钥是加密的，不输入密码是解不了密的；.jks格式文件表示java密钥存储器（java key store），它可以同时容纳N个公钥跟私钥，是一个密钥库；.keystore格式文件其实跟.jks基本是一样的，只是不同公司叫法不太一样，默认生成的证书存储库格式；.truststore格式文件表示信任证书存储库，它仅仅包含了通信对方的公钥，当然你可以直接把通信对方的jks作为信任库（就算如此你也只能知道通信对方的公钥，要知道密钥都是加密的，你无从获取，只要算法不被<a href="http://www.2cto.com/Article/jiami/" target="_blank" rel="external">破解</a>）。有些时候我们需要把pfx或cert转化为jks以便于用java进行ssl通信，例如一个银行只提供了pfx证书，而我们想用java进行ssl通信时就要将pfx转化为jks格式。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-4282e92c21880f9a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>图3-1-7-3 密钥存储文件格式</p>
+<p>按照理论上，我们一共需要准备四个文件，两个keystore文件和两个truststore文件，通信双方分别拥有一个keystore和一个truststore，keystore用于存放自己的密钥和公钥，truststore用于存放所有需要信任方的公钥。这里为了方便直接使用jks即keystore替代truststore（免去证书导来导去），因为对方的keystore包含了自己需要的信任公钥。<br>下面使用jdk自带的工具分别生成服务器端证书，通过如下命令并输入姓名、组织单位名称、组织名称、城市、省份、国家信息即可生成证书密码为tomcat的证书，此证书存放在密码也为tomcat的tomcat.jks证书存储库中。如果你继续创建证书将继续往tomcat.jks证书存储库中添加证书。如果你仅仅输入keytool -genkey -alias tomcat -keyalg RSA -keypass tomcat -storepass tomcat，不指定证书存储库的文件名及路径，则工具会在用户的home directory目录下生产一个“.keystore”文件作为证书存储库。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-b9350297f1636989.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>类似的，客户端证书也用此方式进行生成。如下<br><img src="http://upload-images.jianshu.io/upload_images/4398977-d60598093e5c7d93.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="\"><br>② 服务端TomcatSSLServer.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line">public class TomcatSSLServer &#123;</div><div class="line"> private static final String SSL_TYPE = &quot;SSL&quot;;</div><div class="line"> private static final String KS_TYPE = &quot;JKS&quot;;</div><div class="line"> private static final String X509 = &quot;SunX509&quot;;</div><div class="line"> private final static int PORT = 443;</div><div class="line"> private static TomcatSSLServer sslServer;</div><div class="line"> private SSLServerSocket svrSocket;</div><div class="line">   </div><div class="line"> public static TomcatSSLServer getInstance() throws Exception &#123;</div><div class="line">   if (sslServer == null) &#123;</div><div class="line">    sslServer = new TomcatSSLServer();</div><div class="line">   &#125;</div><div class="line">   return sslServer;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private TomcatSSLServer() throws Exception&#123;</div><div class="line">  SSLContext sslContext = createSSLContext();</div><div class="line">  SSLServerSocketFactory serverFactory = sslContext.getServerSocketFactory();</div><div class="line">  svrSocket =(SSLServerSocket) serverFactory.createServerSocket(PORT);</div><div class="line">  svrSocket.setNeedClientAuth(true); </div><div class="line">  String[] supported = svrSocket.getEnabledCipherSuites();</div><div class="line">  svrSocket.setEnabledCipherSuites(supported);</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private SSLContext createSSLContext() throws Exception&#123;</div><div class="line">  KeyManagerFactory kmf = KeyManagerFactory.getInstance(X509);</div><div class="line">  TrustManagerFactory tmf = TrustManagerFactory.getInstance(X509);</div><div class="line">  String serverKeyStoreFile = &quot;c:\\tomcat.jks&quot;; </div><div class="line">  String svrPassphrase = &quot;tomcat&quot;;               </div><div class="line">  char[] svrPassword = svrPassphrase.toCharArray();</div><div class="line">  KeyStore serverKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  serverKeyStore.load(new FileInputStream(serverKeyStoreFile), svrPassword);</div><div class="line">  kmf.init(serverKeyStore, svrPassword);</div><div class="line">  String clientKeyStoreFile = &quot;c:\\client.jks&quot;; </div><div class="line">  String cntPassphrase = &quot;client&quot;;              </div><div class="line">  char[] cntPassword = cntPassphrase.toCharArray();</div><div class="line">  KeyStore clientKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  clientKeyStore.load(new FileInputStream(clientKeyStoreFile),cntPassword);</div><div class="line">  tmf.init(clientKeyStore);</div><div class="line">  SSLContext sslContext  = SSLContext.getInstance(SSL_TYPE);</div><div class="line">  sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);</div><div class="line">  return sslContext;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public void startService() &#123;</div><div class="line">  SSLSocket cntSocket = null;</div><div class="line">  BufferedReader ioReader = null;</div><div class="line">  PrintWriter ioWriter = null;</div><div class="line">  String tmpMsg = null;</div><div class="line">  while( true ) &#123;</div><div class="line">   try &#123;</div><div class="line">    cntSocket =(SSLSocket) svrSocket.accept();</div><div class="line">    ioReader = new BufferedReader(new InputStreamReader(cntSocket.getInputStream()));</div><div class="line">    ioWriter = new PrintWriter(cntSocket.getOutputStream());</div><div class="line">    while ( (tmpMsg = ioReader.readLine()) != null) &#123;</div><div class="line">     System.out.println(&quot;客户端通过SSL协议发送信息:&quot;+tmpMsg);</div><div class="line">     tmpMsg=&quot;欢迎通过SSL协议连接&quot;;</div><div class="line">     ioWriter.println(tmpMsg);</div><div class="line">     ioWriter.flush();</div><div class="line">    &#125;</div><div class="line">   &#125; catch(IOException e) &#123;</div><div class="line">    e.printStackTrace();</div><div class="line">   &#125; finally &#123;</div><div class="line">    try &#123;</div><div class="line">     if(cntSocket != null) cntSocket.close();</div><div class="line">    &#125; catch(Exception ex) &#123;ex.printStackTrace();&#125;</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public static void main(String[] args) throws Exception &#123;</div><div class="line">  TomcatSSLServer.getInstance().startService();</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>基本顺序是先得到一个SSLContext实例，再对SSLContext实例进行初始化，密钥管理器及信任管理器作为参数传入，证书管理器及信任管理器按照指定的密钥存储器路径和密码进行加载。接着设置支持的加密套件，最后让SSLServerSocket开始监听客户端发送过来的消息。</p>
+<p>③ 客户端TomcatSSLClient.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">public class TomcatSSLClient &#123;</div><div class="line"> private static final String SSL_TYPE = &quot;SSL&quot;;</div><div class="line"> private static final String X509 = &quot;SunX509&quot;;</div><div class="line"> private static final String KS_TYPE = &quot;JKS&quot;;</div><div class="line"> private SSLSocket sslSocket;</div><div class="line">   </div><div class="line"> public TomcatSSLClient(String targetHost,int port) throws Exception &#123;</div><div class="line">  SSLContext sslContext = createSSLContext(); </div><div class="line">  SSLSocketFactory sslcntFactory =(SSLSocketFactory) sslContext.getSocketFactory();</div><div class="line">  sslSocket = (SSLSocket) sslcntFactory.createSocket(targetHost, port);</div><div class="line">  String[] supported = sslSocket.getSupportedCipherSuites();</div><div class="line">  sslSocket.setEnabledCipherSuites(supported); </div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> private SSLContext createSSLContext() throws Exception&#123;</div><div class="line">  KeyManagerFactory kmf = KeyManagerFactory.getInstance(X509);</div><div class="line">  TrustManagerFactory tmf = TrustManagerFactory.getInstance(X509);</div><div class="line">  String clientKeyStoreFile = &quot;c:\\client.jks&quot;;</div><div class="line">  String cntPassphrase = &quot;client&quot;;</div><div class="line">  char[] cntPassword = cntPassphrase.toCharArray();</div><div class="line">  KeyStore clientKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  clientKeyStore.load(new FileInputStream(clientKeyStoreFile),cntPassword);</div><div class="line">  String serverKeyStoreFile = &quot;c:\\tomcat.jks&quot;;</div><div class="line">  String svrPassphrase = &quot;tomcat&quot;;</div><div class="line">  char[] svrPassword = svrPassphrase.toCharArray();</div><div class="line">  KeyStore serverKeyStore = KeyStore.getInstance(KS_TYPE);</div><div class="line">  serverKeyStore.load(new FileInputStream(serverKeyStoreFile), svrPassword);</div><div class="line">  kmf.init(clientKeyStore, cntPassword);</div><div class="line">  tmf.init(serverKeyStore);</div><div class="line">  SSLContext sslContext  = SSLContext.getInstance(SSL_TYPE);</div><div class="line">  sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);</div><div class="line">  return sslContext;</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public String sayToSvr(String sayMsg) throws IOException&#123;</div><div class="line">  BufferedReader ioReader = new BufferedReader(new InputStreamReader(</div><div class="line">    sslSocket.getInputStream()));</div><div class="line">  PrintWriter ioWriter = new PrintWriter(sslSocket.getOutputStream());</div><div class="line">  ioWriter.println(sayMsg);</div><div class="line">  ioWriter.flush();</div><div class="line">  return ioReader.readLine();</div><div class="line"> &#125;</div><div class="line">   </div><div class="line"> public static void main(String[] args) throws Exception &#123;</div><div class="line">  TomcatSSLClient sslSocket = new TomcatSSLClient(&quot;127.0.0.1&quot;,443);</div><div class="line">  BufferedReader ioReader = new BufferedReader(new InputStreamReader(System.in));</div><div class="line">  String sayMsg = &quot;&quot;;</div><div class="line">  String svrRespMsg= &quot;&quot;;</div><div class="line">  while( (sayMsg = ioReader.readLine())!= null ) &#123;</div><div class="line">   svrRespMsg = sslSocket.sayToSvr(sayMsg);</div><div class="line">   if(svrRespMsg != null &amp;&amp; !svrRespMsg.trim().equals(&quot;&quot;)) &#123;</div><div class="line">    System.out.println(&quot;服务器通过SSL协议响应:&quot;+svrRespMsg);</div><div class="line">   &#125;</div><div class="line">  &#125;</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>客户端的前面操作基本跟服务器端的一样，先创建一个SSLContext实例，再用密钥管理器及信任管理器对SSLContext进行初始化，当然这里密钥存储的路径是指向客户端的client.jks。接着设置加密套件，最后使用SSLSocket进行通信。</p>
+<p>注意服务器端有行代码svrSocket.setNeedClientAuth(true);它是非常重要的一个设置方法，用于设置是否验证客户端的身份。假如我们把它注释掉或设置为false，此时客户端将不再需要自己的密钥管理器，即服务器不需要通过client.jks对客户端的身份进行验证，把密钥管理器直接设置为null也可以跟服务器端进行通信。</p>
+<p>最后谈谈信任管理器，它的职责是决定是否信任远端的证书，那么它凭借什么去判断呢？如果不显式设置信任存储器的文件路径，将遵循如下规则：①如果<a href="http://www.2cto.com/os/" target="_blank" rel="external">系统</a>属性javax.net.ssl.truststore指定了truststore文件，那么信任管理器将去jre路径下的lib/security目录寻找这个文件作为信任存储器；②如果没设置①中的系统属性，则去寻找一个%java_home%/lib/security/jssecacerts文件作为信任存储器；③如果jssecacerts不存在而cacerts存在，则cacerts作为信任存储器。<br>至此，一个利用JSSE实现BIO模式的SSL协议通信的例子已完成。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/03/12/Java-SSL-Socket通讯实例二/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-03-11T08:09:54.000Z"><a href="/2016/03/11/SwipeRefreshLayout和ListView的EmptyView共存冲突的问题/">2016-03-11</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/03/11/SwipeRefreshLayout和ListView的EmptyView共存冲突的问题/">SwipeRefreshLayout和ListView的EmptyView共存冲突的问题</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>SwipeRefreshLayout是android官方的下拉刷新控件；<br>它内部有且只能有一个子控件；<br>当一个ListView嵌入到它内部时，就不能为ListView带一个EmptyView了；<br>于是很自然的想到将ListView和EmptyView纳入到一个父控件中；<br>典型的像下面这样的布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;android.support.v4.widget.SwipeRefreshLayout</div><div class="line">        android:id=&quot;@+id/swipeRefreshLayout&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">        &lt;FrameLayout</div><div class="line">            android:layout_width=&quot;match_parent&quot;</div><div class="line">            android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">            &lt;ListView</div><div class="line">                android:id=&quot;@+id/listView&quot;</div><div class="line">                android:layout_width=&quot;match_parent&quot;</div><div class="line">                android:layout_height=&quot;match_parent&quot;</div><div class="line">                android:cacheColorHint=&quot;@android:color/transparent&quot;</div><div class="line">                android:divider=&quot;@color/text_color_c4&quot;</div><div class="line">                android:dividerHeight=&quot;@dimen/line_width&quot;</div><div class="line">                android:footerDividersEnabled=&quot;true&quot; /&gt;</div><div class="line"></div><div class="line">            &lt;include</div><div class="line">                android:id=&quot;@+id/emptyView&quot;</div><div class="line">                layout=&quot;@layout/empty_view_for_tang_friend_0&quot; /&gt;</div><div class="line">        &lt;/FrameLayout&gt;</div><div class="line">    &lt;/android.support.v4.widget.SwipeRefreshLayout&gt;</div></pre></td></tr></table></figure></p>
+<p>这样就可以实现ListView和EmptyView都下拉刷新了；<br>但是问题来了，当ListView的数据超过一屏的时候，再往上滑，滑不上去了；<br>这就是SwipeRefreshLayout和ListView的EmptyView共存冲突的问题（如果SwipeRefreshLayout中仅有一个ListView的话没问题，但现在多了一个EmptyView）； </p>
+<p>解决办法有是有，虽然不那么优雅：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">swipeRefreshLayout = (android.support.v4.widget.SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshLayout);</div><div class="line">                swipeRefreshLayout.setColorSchemeResources(R.color.text_color_c6, R.color.yellow, R.color.grey, R.color.red);</div><div class="line">                swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()</div><div class="line">                &#123;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onRefresh()</div><div class="line">                    &#123;</div><div class="line">                        // TODO Auto-generated method stub</div><div class="line">                        //dosomething</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">listView = (ListView) v.findViewById(R.id.listView);</div><div class="line">                listView.setOnScrollListener(new AbsListView.OnScrollListener()</div><div class="line">                &#123;</div><div class="line">                    @Override</div><div class="line">                    public void onScrollStateChanged(AbsListView absListView, int i)</div><div class="line">                    &#123;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    @Override</div><div class="line">                    public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount)</div><div class="line">                    &#123;</div><div class="line">                        if (firstVisibleItem == 0)</div><div class="line">                            swipeRefreshLayout.setEnabled(true);</div><div class="line">                        else</div><div class="line">                            swipeRefreshLayout.setEnabled(false);</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div></pre></td></tr></table></figure></p>
+<p>在ListView滑动的时候做一个判断，看看是不是滑动到顶部了，到顶部了就swipeRefreshLayout.setEnabled(true);让SwipeRefreshLayout可以接受动作，这样就ok了。 </p>
+<p>上面的解决方案比较简单，但是有个小问题，就是当listView滑动到第一个Item（让第一个Item显示一半）的时候，再上滑就上不去了，始终显示半个Item。<br>为了解决这个问题，只能使用笨办法了：将ListView和EmptyView分离，让他们两个分别被两个SwipeRefreshLayout包裹，如下面的布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</div><div class="line">&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">    &lt;android.support.v4.widget.SwipeRefreshLayout</div><div class="line">        android:id=&quot;@+id/swipeRefreshLayout&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot; &gt;</div><div class="line"></div><div class="line">        &lt;cn.tangdada.tangbang.widget.LoadMoreListView</div><div class="line">            android:id=&quot;@+id/listView&quot;</div><div class="line">            android:layout_width=&quot;match_parent&quot;</div><div class="line">            android:layout_height=&quot;match_parent&quot;</div><div class="line">            android:cacheColorHint=&quot;@android:color/transparent&quot;</div><div class="line">            android:divider=&quot;@color/text_color_c4&quot;</div><div class="line">            android:dividerHeight=&quot;@dimen/line_width&quot;</div><div class="line">            android:footerDividersEnabled=&quot;false&quot; /&gt;</div><div class="line">    &lt;/android.support.v4.widget.SwipeRefreshLayout&gt;</div><div class="line"></div><div class="line">    &lt;android.support.v4.widget.SwipeRefreshLayout</div><div class="line">        android:id=&quot;@+id/swipeRefreshLayoutEmptyView&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot;</div><div class="line">        android:visibility=&quot;gone&quot; &gt;</div><div class="line"></div><div class="line">        &lt;TextView</div><div class="line">            android:layout_width=&quot;match_parent&quot;</div><div class="line">            android:layout_height=&quot;match_parent&quot;</div><div class="line">            android:gravity=&quot;center&quot;</div><div class="line">            android:paddingLeft=&quot;32dp&quot;</div><div class="line">            android:paddingRight=&quot;32dp&quot;</div><div class="line">            android:text=&quot;@string/empty&quot;</div><div class="line">            android:textColor=&quot;@color/text_color_c3&quot;</div><div class="line">            android:textSize=&quot;@dimen/font_big&quot; /&gt;</div><div class="line">    &lt;/android.support.v4.widget.SwipeRefreshLayout&gt;</div><div class="line"></div><div class="line">&lt;/FrameLayout&gt;</div></pre></td></tr></table></figure></p>
+<p>然后需要在代码中控制显示EmptyView的时机，比如我这里的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">private void updateViews(Object obj)</div><div class="line">    &#123;</div><div class="line">        ArrayList&lt;User&gt; list = (ArrayList&lt;User&gt;) obj;</div><div class="line">        if (list.size() == 0)</div><div class="line">        &#123;</div><div class="line">            //listView.removeLoadMoreListener();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        users.addAll(list);</div><div class="line"></div><div class="line">        if (users.size() == 0)</div><div class="line">        &#123;</div><div class="line">            swipeRefreshLayout.setVisibility(View.GONE);</div><div class="line">            swipeRefreshLayout.setRefreshing(false);</div><div class="line">            swipeRefreshLayoutEmptyView.setVisibility(View.VISIBLE);</div><div class="line">            swipeRefreshLayoutEmptyView.setRefreshing(false);</div><div class="line">        &#125;</div><div class="line">        else</div><div class="line">        &#123;</div><div class="line">            //listView.onLoadMoreComplete();</div><div class="line">            swipeRefreshLayout.setVisibility(View.VISIBLE);</div><div class="line">            swipeRefreshLayout.setRefreshing(false);</div><div class="line">            swipeRefreshLayoutEmptyView.setVisibility(View.GONE);</div><div class="line">            swipeRefreshLayoutEmptyView.setRefreshing(false);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        notifyDataSetChanged();</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/03/11/SwipeRefreshLayout和ListView的EmptyView共存冲突的问题/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-03-11T07:17:50.000Z"><a href="/2016/03/11/安卓开发规范/">2016-03-11</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/03/11/安卓开发规范/">安卓开发规范</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-前言"><span class="toc-text">1 前言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-AS规范"><span class="toc-text">2 AS规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-命名规范"><span class="toc-text">3 命名规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-资源文件规范"><span class="toc-text">4 资源文件规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-版本统一规范"><span class="toc-text">5 版本统一规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-注释规范"><span class="toc-text">6 注释规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-测试规范"><span class="toc-text">7 测试规范</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-其他规范"><span class="toc-text">8 其他规范</span></a></li></ol>
+    </div>
+
+        <p>#安卓开发规范</p>
+<p>@(Android高级)[开发规范]</p>
+<hr>
+<p>摘要</p>
+<p><code>[TOC]</code></p>
+<h4 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h4><p>为了利于项目维护以及规范开发，促进成员之间Code Review的效率，必须按照一定的开发规范。</p>
+<h4 id="2-AS规范"><a href="#2-AS规范" class="headerlink" title="2 AS规范"></a>2 AS规范</h4><p>工欲善其事，必先利其器。</p>
+<ol>
+<li>尽量使用最新版的IDE进行开发；</li>
+<li>编码格式统一为UTF-8；</li>
+<li>编辑完.java, .xml等文件后一定要格式化（基本格式方面使用 AS 默认模板即可）；</li>
+<li>删除多余的import，减少警告出现，可利用AS的Optimize Imports(Settings → Keymap → Optimize Imports)快捷键</li>
+</ol>
+<h4 id="3-命名规范"><a href="#3-命名规范" class="headerlink" title="3 命名规范"></a>3 命名规范</h4><p> 代码中的命名严禁使用拼音与英文混合的方式,更不允许直接使用中文的方式。正确的英文拼写和语法可以让阅读者易于理解,避免歧义。</p>
+<blockquote>
+<p>注意：即使纯拼音命名方式也要避免采用。但alibaba、taobao、youku、hangzhou等国际通用的名称,可视同英文。</p>
+</blockquote>
+<p>3.1 包名<br>包名全部小写，连续的单词只是简单地连接起来，不使用下划线。</p>
+<p>采用反域名命名规则，全部使用小写字母。一级包名是顶级域名，通常为com,edu,gov,net,org等，二级包名为公司名，三级包名根据应用进行命名，四级包名为模块名或层级名。<br>| 包名                |此包中包含           |<br>| :——————-|:—————–:|<br>|com.xx.应用名称缩写.activity|用户界面中所有的Activity类|<br>|com.xx.应用名称缩写.fragment|界面中所有的Fragment类|<br>|com.xx.应用名称缩写.base|基础共享的类|<br>|com.xx.应用名称缩写.adapter|页面用到的Adapter类 (适配器的类)|<br>|com.xx.应用名称缩写.view|自定义的View类|<br>|自定义的View类|自定义的View类|<br>|com.xx.应用名称缩写.util|此包中包含：公共工具方法类（util模块名|<br>|com.xx.应用名称缩写.bean|下面可分：vo、po、dto 此包中包含：JavaBean类|<br>|com.xx.应用名称缩写.model|此包中包含：模型类|<br>|com.xx.应用名称缩写.db|数据库操作类|<br>|com.xx.应用名称缩写.view (或者 com.xx.应用名称缩写.widget )|自定义的View类等|<br>|com.xx.应用名称缩写.service|Service服务|<br>|com.xx.应用名称缩写.receiver|BroadcastReceiver服务|<br>|com.xx.应用名称缩写.config|所有的配置相关的类|</p>
+<blockquote>
+<p><strong>注意</strong>：如果项目采用MVP，所有M、V、P抽取出来的接口都放置在相应模块的i包下，所有的实现都放置在相应模块的impl下</p>
+</blockquote>
+<p>3.2 类名<br>类名都以UpperCamelCase风格编写。</p>
+<p>类名通常是名词或名词短语，接口名称有时可能是形容词或形容词短语。现在还没有特定的规则或行之有效的约定来命名注解类型。</p>
+<p>名词，采用大驼峰命名法，尽量避免缩写，除非该缩写是众所周知的， 比如HTML, URL，如果类名称中包含单词缩写，则单词缩写的每个字母均应大写。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类</th>
+<th style="text-align:right">描述</th>
+<th style="text-align:center">例如</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Activity 类</td>
+<td style="text-align:right">Activity为后缀标识</td>
+<td style="text-align:center">欢迎页面类WelcomeActivity</td>
+</tr>
+<tr>
+<td style="text-align:left">Adapter类</td>
+<td style="text-align:right">Adapter 为后缀标识</td>
+<td style="text-align:center">新闻详情适配器 NewDetailAdapter</td>
+</tr>
+<tr>
+<td style="text-align:left">解析类</td>
+<td style="text-align:right">Parser为后缀标识</td>
+<td style="text-align:center">首页解析类HomePosterParser</td>
+</tr>
+<tr>
+<td style="text-align:left">工具方法类</td>
+<td style="text-align:right">Utils或Manager为后缀标识（与系统或第三方的Utils区分）或功能+Utils</td>
+<td style="text-align:center">线程池管理类：ThreadPoolManager日志工具类：LogUtils（Logger也可）打印工具类：PrinterUtils</td>
+</tr>
+<tr>
+<td style="text-align:left">数据库类</td>
+<td style="text-align:right">以DBHelper后缀标识</td>
+<td style="text-align:center">新闻数据库：NewDBHelper</td>
+</tr>
+<tr>
+<td style="text-align:left">Service类</td>
+<td style="text-align:right">以Service为后缀标识</td>
+<td style="text-align:center">时间服务TimeService</td>
+</tr>
+<tr>
+<td style="text-align:left">BroadcastReceiver类</td>
+<td style="text-align:right">以Receiver为后缀标识</td>
+<td style="text-align:center">推送接收JPushReceiver</td>
+</tr>
+<tr>
+<td style="text-align:left">ContentProvider类</td>
+<td style="text-align:right">以Provider为后缀标识</td>
+<td style="text-align:center">ShareProvider</td>
+</tr>
+<tr>
+<td style="text-align:left">自定义的共享基础类</td>
+<td style="text-align:right">以Base开头</td>
+<td style="text-align:center">BaseActivity,BaseFragment</td>
+</tr>
+</tbody>
+</table>
+<p>测试类的命名以它要测试的类的名称开始，以Test结束。例如：HashTest或HashIntegrationTest。</p>
+<p>接口（interface）：命名规则与类一样采用大驼峰命名法，多以able或ible结尾，如 interface Runnable、interface Accessible。</p>
+<blockquote>
+<p><strong>注意</strong>：如果项目采用MVP，所有Model、View、Presenter的接口都以I为前缀，不加后缀，其他的接口采用上述命名规则。</p>
+</blockquote>
+<p>3.3 方法名<br>方法名都以lowerCamelCase风格编写。</p>
+<p>方法名通常是动词或动词短语。<br>|方法           |说明                     |<br>|:————-|:————-:|<br>|intXX()|初始化相关方法,使用init为前缀标识，如初始化布局initView()|<br>|isXX() checkXX()|方法返回值为boolean型的请使用is或check为前缀标识|<br>|getXX()|返回某个值的方法，使用get为前缀标识|<br>|setXX()|设置某个属性值|<br>|handleXX()/processXX()|对数据进行处理的方法|<br>|displayXX()/showXX()|弹出提示框和提示信息，使用display/show为前缀标识|<br>|updateXX()|更新数据|<br>|saveXX()|保存数据|<br>|resetXX()|重置数据|<br>|clearXX()|清楚数据|<br>|removeXX()|移除数据或者视图等，如removeView();|<br>|drawXX()|绘制数据或效果相关的，使用draw前缀标识|</p>
+<p>3.4 常量名<br>常量名命名模式为CONSTANT_CASE，全部字母大写，用下划线分隔单词。那，到底什么算是一个常量？</p>
+<p>每个常量都是一个静态final字段，但不是所有静态final字段都是常量。在决定一个字段是否是一个常量时，考虑它是否真的感觉像是一个常量。例如，如果任何一个该实例的观测状态是可变的，则它几乎肯定不会是一个常量。只是永远不打算改变对象一般是不够的，它要真的一直不变才能将它示为常量。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Constants</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> NUMBER = <span class="number">5</span>;</div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> ImmutableListNAMES = ImmutableList.of(<span class="string">"Ed"</span>, <span class="string">"Ann"</span>);</div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> Joiner COMMA_JOINER = Joiner.on(<span class="string">','</span>); <span class="comment">// because Joiner is immutable</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> SomeMutableType[] EMPTY_ARRAY = &#123;&#125;;</div><div class="line"><span class="keyword">enum</span> SomeEnum &#123; ENUM_CONSTANT &#125;</div><div class="line"></div><div class="line"><span class="comment">// Not constants</span></div><div class="line"><span class="keyword">static</span> String nonFinal = <span class="string">"non-final"</span>;</div><div class="line"><span class="keyword">final</span> String nonStatic = <span class="string">"non-static"</span>;</div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> SetmutableCollection = <span class="keyword">new</span> HashSet();</div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> ImmutableSetmutableElements = ImmutableSet.of(mutable);</div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> Logger logger = Logger.getLogger(MyClass.getName());</div><div class="line"><span class="keyword">static</span> <span class="keyword">final</span> String[] nonEmptyArray = &#123;<span class="string">"these"</span>, <span class="string">"can"</span>, <span class="string">"change"</span>&#125;;</div></pre></td></tr></table></figure></p>
+<p>3.5 非常量字段名<br>非常量字段名以lowerCamelCase风格的基础上改造为如下风格：基本结构为scopeVariableNameType。</p>
+<p>scope：范围</p>
+<p>非公有，非静态字段命名以m开头。</p>
+<p>静态字段命名以s开头。</p>
+<p>公有非静态字段命名以p开头。</p>
+<p>公有静态字段（全局变量）命名以g开头。</p>
+<p>例子：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyClass</span> </span>&#123;</div><div class="line">      <span class="keyword">int</span> mPackagePrivate;  </div><div class="line">      <span class="keyword">private</span> <span class="keyword">int</span> mPrivate;  </div><div class="line">      <span class="keyword">protected</span> <span class="keyword">int</span> mProtected;</div><div class="line">      <span class="keyword">private</span> <span class="keyword">static</span> MyClass sSingleton;  </div><div class="line">      <span class="keyword">public</span> <span class="keyword">int</span> pField;</div><div class="line">      <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> gField;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用1字符前缀来表示作用范围，1个字符的前缀必须小写，前缀后面是由表意性强的一个单词或多个单词组成的名字，而且每个单词的首写字母大写，其它字母小写，这样保证了对变量名能够进行正确的断句。</p>
+<p>Type：类型</p>
+<p>考虑到Android中使用很多UI控件，为避免控件和普通成员变量混淆以及更好达意，所有用来表示控件的成员变量统一加上控件缩写作为后缀（文末附有缩写表）。</p>
+<p>对于普通变量一般不添加类型后缀，如果统一添加类型后缀，请参考文末的缩写表。</p>
+<p>用统一的量词通过在结尾处放置一个量词，就可创建更加统一的变量，它们更容易理解，也更容易搜索。</p>
+<p>注意：如果项目中使用ButterKnife，则不添加m前缀，以lowerCamelCase风格命名。<br>例如，请使用mCustomerStrFirst和mCustomerStrLast，而不要使用mFirstCustomerStr和mLastCustomerStr。<br>|量词列表|量词后缀说明|<br>|:———–|:————-:|<br>|First|一组变量中的第一个|<br>|Last|一组变量中的最后一个<br>|<br>|Next|一组变量中的下一个变量|<br>|Prev|一组变量中的上一个|<br>|Cur|一组变量中的当前变量|<br>说明：</p>
+<p>集合添加如下后缀：List、Map、Set 数组添加如下后缀：Arr</p>
+<p>注意：所有的VO（值对象）统一采用标准的lowerCamelCase风格编写，所有的DTO（数据传输对象）就按照接口文档中定义的字段名编写。</p>
+<p>3.6 参数名<br>参数名以lowerCamelCase风格编写。 参数应该避免用单个字符命名。</p>
+<p>3.7 局部变量名<br>局部变量名以lowerCamelCase风格编写，比起其它类型的名称，局部变量名可以有更为宽松的缩写。</p>
+<p>虽然缩写更宽松，但还是要避免用单字符进行命名，除了临时变量和循环变量。</p>
+<p>即<br>使局部变量是final和不可改变的，也不应该把它示为常量，自然也不能用常量的规则去命名它。</p>
+<p>3.8 临时变量</p>
+<p>临时变量通常被取名为i、j、k、m和n，它们一般用于整型；c、d、e，它们一般用于字符型。 如：for (int i = 0; i &lt; len ; i++)。</p>
+<p>3.9 类型变量名</p>
+<p>类型变量可用以下两种风格之一进行命名：</p>
+<p>单个的大写字母，后面可以跟一个数字(如：E, T, X, T2)。<br>以类命名方式(参考3.2 类名)，后面加个大写的T(如：RequestT, FooBarT)。</p>
+<h4 id="4-资源文件规范"><a href="#4-资源文件规范" class="headerlink" title="4 资源文件规范"></a>4 资源文件规范</h4><p>4.1 资源布局文件（XML文件（layout布局文件））</p>
+<p>全部小写，采用下划线命名法</p>
+<p>4.1.1 contentView命名</p>
+<p>必须以全部单词小写，单词间以下划线分割，使用名词或名词词组。</p>
+<p>所有Activity或Fragment的contentView必须与其类名对应，对应规则为：将所有字母都转为小写，将类型和功能调换（也就是后缀变前缀）。</p>
+<p>例如：activity_main.xml</p>
+<p>4.1.2 Dialog命名</p>
+<p>规则：dialog_描述.xml</p>
+<p>例如：dialog_hint.xml</p>
+<p>4.1.3 PopupWindow命名</p>
+<p>规则：ppw_描述.xml</p>
+<p>例如：ppw_info.xml</p>
+<p>4.1.4 列表项命名</p>
+<p>规则：item_描述.xml</p>
+<p>例如：item_city.xml</p>
+<p>4.1.5 包含项命名</p>
+<p>规则：模块_(位置)描述.xml</p>
+<p>例如：activity_main_head.xml、activity_main_bottom.xml</p>
+<p>注意：通用的包含项命名采用：项目名称缩写_描述.xml</p>
+<p>例如：xxxx_title.xml</p>
+<p>4.2 资源文件（图片drawable文件夹下）</p>
+<p>全部小写，采用下划线命名法，加前缀区分</p>
+<p>命名模式：可加后缀 _small 表示小图， _big 表示大图，逻辑名称可由多个单词加下划线组成，采用以下规则：</p>
+<p>用途<em>模块名</em>逻辑名称<br>用途<em>模块名</em>颜色<br>用途<em>逻辑名称<br>用途</em>颜色<br>说明：用途也指控件类型（具体见附录UI控件缩写表）</p>
+<p>例如：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">名称</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">btn_main_home.png</td>
+<td style="text-align:center">按键</td>
+</tr>
+<tr>
+<td style="text-align:left">divider_maket_white.png</td>
+<td style="text-align:center">分割线</td>
+</tr>
+<tr>
+<td style="text-align:left">ic_edit.png</td>
+<td style="text-align:center">图标</td>
+</tr>
+<tr>
+<td style="text-align:left">bg_main.png</td>
+<td style="text-align:center">背景</td>
+</tr>
+<tr>
+<td style="text-align:left">btn_red.png</td>
+<td style="text-align:center">红色按钮</td>
+</tr>
+<tr>
+<td style="text-align:left">btn_red_big.png</td>
+<td style="text-align:center">红色大按键</td>
+</tr>
+<tr>
+<td style="text-align:left">ic_head_small.png</td>
+<td style="text-align:center">小头像</td>
+</tr>
+<tr>
+<td style="text-align:left">bg_input.png</td>
+<td style="text-align:center">输入框背景颜色</td>
+</tr>
+<tr>
+<td style="text-align:left">divider_white.png</td>
+<td style="text-align:center">白色分割线</td>
+</tr>
+</tbody>
+</table>
+<p>如果有多种形态，如按钮选择器：btn_xx.xml(selector)<br>|名称                   |说明|<br>|:—————–|:————–:|<br>|btn<em>xx|按钮图片使用btn</em>整体效果（selector）|<br>|btn_xx<em>normal|按钮图片使用btn</em>正常情况效果|<br>|btn_xx<em>pressed|按钮图片使用btn</em>点击时候效果|<br>|btn_xx_focused|state_focused聚焦效果|<br>|btn_xx_hovered|state_hovered悬停效果|<br>|btn_xx_activated    |state_activated激活的|<br>|bg<em>head|背景图片使用bg</em>功能_说明<br>|<br>|def_search<em>cell|默认图片使用def</em>功能_说明|<br>|ic_more<em>help|图标图片使用ic</em>功能_说明|<br>|seg_list<em>line|具有分隔特征的图片使用seg</em>功能_说明|<br>|sel<em>ok|选择图标使用sel</em>功能_说明|</p>
+<blockquote>
+<p><strong>注意：</strong>使用AndroidStudio的插件SelectorChapek可以快速生成selector，前提是命名要规范</p>
+</blockquote>
+<p>4.3 动画文件（anim文件夹下）</p>
+<p>全部小写，采用下划线命名法，加前缀区分。</p>
+<p>具体动画采用以下规则：模块名_逻辑名称。</p>
+<p>例如：refresh_progress.xml、market_cart_add.xml、market_cart_remove.xml。</p>
+<p>普通的tween动画采用如下表格中的命名方式：动画类型_方向</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">名称</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">fade_in</td>
+<td style="text-align:center">淡入</td>
+</tr>
+<tr>
+<td style="text-align:left">fade_out</td>
+<td style="text-align:center">淡出</td>
+</tr>
+<tr>
+<td style="text-align:left">push_down_in</td>
+<td style="text-align:center">从下方推入</td>
+</tr>
+<tr>
+<td style="text-align:left">push_down_out</td>
+<td style="text-align:center">从下方推出</td>
+</tr>
+<tr>
+<td style="text-align:left">push_left</td>
+<td style="text-align:center">推向左方</td>
+</tr>
+<tr>
+<td style="text-align:left">slide_in_from_top</td>
+<td style="text-align:center">从头部滑动进入</td>
+</tr>
+<tr>
+<td style="text-align:left">zoom_enter</td>
+<td style="text-align:center">变形进入</td>
+</tr>
+<tr>
+<td style="text-align:left">slide_in</td>
+<td style="text-align:center">滑动进入</td>
+</tr>
+<tr>
+<td style="text-align:left">shrink_to_middle</td>
+<td style="text-align:center">中间缩小</td>
+</tr>
+</tbody>
+</table>
+<p>4.4 values中name命名</p>
+<p>4.4.1 colors.xml</p>
+<p>colors的name命名使用下划线命名法，在你的colors.xml文件中应该只是映射颜色的名称一个ARGB值，而没有其它的。不要使用它为不同的按钮来定义ARGB值。</p>
+<p>不要这样做<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"button_foreground"</span>&gt;</span>#FFFFFF<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"button_background"</span>&gt;</span>#2A91BD<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"comment_background_inactive"</span>&gt;</span>#5F5F5F<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"comment_background_active"</span>&gt;</span>#939393<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"comment_foreground"</span>&gt;</span>#FFFFFF<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"comment_foreground_important"</span>&gt;</span>#FF9D2F<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      ...</div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"comment_shadow"</span>&gt;</span>#323232<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>使用这种格式，你会非常容易的开始重复定义ARGB值，这使如果需要改变基本色变的很复杂。同时，这些定义是跟一些环境关联起来的，如button或者comment, 应该放到一个按钮风格中，而不是在color.xml文件中。</p>
+<p>相反，这样做<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></div><div class="line"></div><div class="line">      <span class="comment">&lt;!-- grayscale --&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"white"</span>     &gt;</span>#FFFFFF<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"gray_light"</span>&gt;</span>#DBDBDB<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"gray"</span>      &gt;</span>#939393<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"gray_dark"</span> &gt;</span>#5F5F5F<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"black"</span>     &gt;</span>#323232<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line"></div><div class="line">      <span class="comment">&lt;!-- basic colors --&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"green"</span>&gt;</span>#27D34D<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"blue"</span>&gt;</span>#2A91BD<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"orange"</span>&gt;</span>#FF9D2F<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">color</span> <span class="attr">name</span>=<span class="string">"red"</span>&gt;</span>#FF432F<span class="tag">&lt;/<span class="name">color</span>&gt;</span></div><div class="line"></div><div class="line">  <span class="tag">&lt;/<span class="name">resources</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>向应用设计者那里要这个调色板，名称不需要跟”green”、”blue”等等相同。”brand_primary”、”brand_secondary”、”brand_negative”这样的名字也是完全可以接受的。 像这样规范的颜色很容易修改或重构，会使应用一共使用了多少种不同的颜色变得非常清晰。 通常一个具有审美价值的UI来说，减少使用颜色的种类是非常重要的。</p>
+<p>4.4.2 dimens.xml</p>
+<p>像对待colors.xml一样对待dimens.xml文件 与定义颜色调色板一样，你同时也应该定义一个空隙间隔和字体大小的“调色板”。 一个好的例子，如下所示：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="comment">&lt;!-- font sizes --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"font_larger"</span>&gt;</span>22sp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"font_large"</span>&gt;</span>18sp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"font_normal"</span>&gt;</span>15sp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"font_small"</span>&gt;</span>12sp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="comment">&lt;!-- typical spacing between two views --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"spacing_huge"</span>&gt;</span>40dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"spacing_large"</span>&gt;</span>24dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"spacing_normal"</span>&gt;</span>14dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"spacing_small"</span>&gt;</span>10dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"spacing_tiny"</span>&gt;</span>4dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="comment">&lt;!-- typical sizes of views --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"button_height_tall"</span>&gt;</span>60dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"button_height_normal"</span>&gt;</span>40dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dimen</span> <span class="attr">name</span>=<span class="string">"button_height_short"</span>&gt;</span>32dp<span class="tag">&lt;/<span class="name">dimen</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>布局时在写margins和paddings时，你应该使用spacing_xxxx尺寸格式来布局，而不是像对待string字符串一样直接写值。 这样写会非常有感觉，会使组织和改变风格或布局是非常容易。</p>
+<p>4.4.3 strings.xml</p>
+<p>strings的name命名使用下划线命名法，采用以下规则：模块名+逻辑名称</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">名称</th>
+<th style="text-align:center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">main_menu_about</td>
+<td style="text-align:center">主菜单按键文字</td>
+</tr>
+<tr>
+<td style="text-align:left">friend_title</td>
+<td style="text-align:center">好友模块标题栏</td>
+</tr>
+<tr>
+<td style="text-align:left">friend_dialog_del</td>
+<td style="text-align:center">好友删除提示</td>
+</tr>
+<tr>
+<td style="text-align:left">login_check_email</td>
+<td style="text-align:center">登录验证</td>
+</tr>
+<tr>
+<td style="text-align:left">dialog_title</td>
+<td style="text-align:center">弹出框标题</td>
+</tr>
+<tr>
+<td style="text-align:left">button_ok</td>
+<td style="text-align:center">确认键</td>
+</tr>
+<tr>
+<td style="text-align:left">loading</td>
+<td style="text-align:center">加载文字</td>
+</tr>
+</tbody>
+</table>
+<p>4.4.4 styles.xml</p>
+<p>几乎每个项目都需要适当的使用style文件，因为对于一个视图来说有一个重复的外观是很常见的，将所有的外观细节属性（colors、padding、font）放在style文件中。 在应用中对于大多数文本内容，最起码你应该有一个通用的style文件，例如：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"ContentText"</span>&gt;</span><span class="xml"></span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:textSize"</span>&gt;</span>@dimen/font_normal<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:textColor"</span>&gt;</span>@color/basic_black<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>应用到TextView中:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">TextView</span></span></div><div class="line">    <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></div><div class="line">    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></div><div class="line">    <span class="attr">android:text</span>=<span class="string">"@string/price"</span></div><div class="line">    <span class="attr">style</span>=<span class="string">"@style/ContentText"</span></div><div class="line">    /&gt;</div></pre></td></tr></table></figure></p>
+<p>你或许需要为按钮控件做同样的事情，不要停止在那里。将一组相关的和重复android:<em>**</em>的属性放到一个通用的style中。</p>
+<p><strong>将一个大的style文件分割成多个文件</strong>， 你可以有多个styles.xml 文件。Android SDK支持其它文件，styles这个文件名称并没有作用，起作用的是在文件 里xml的<code>&lt;style&gt;</code>标签。<br>因此你可以有多个style文件styles.xml、style_home.xml、style_item_details.xml、styles_forms.xml。 不同于资源文件路径需要为系统构建起的有意义，在res/values目录下的文件可以任意命名。</p>
+<p>4.5 layout中的id命名</p>
+<p>命名模式为：view缩写<em>模块名</em>逻辑名，比如btn_main_search 使用AndroidStudio的插件ButterKnife Zelezny，生成注解非常方便，原生的话可以使用Android Code Generator插件。</p>
+<h4 id="5-版本统一规范"><a href="#5-版本统一规范" class="headerlink" title="5 版本统一规范"></a>5 版本统一规范</h4><p>Android开发存在着众多版本的不同，比如compileSdkVersion、minSdkVersion、targetSdkVersion以及项目中依赖第三方库的版本，不同的module及不同的开发人员都有不同的版本，所以需要一个统一版本规范的文件。</p>
+<h4 id="6-注释规范"><a href="#6-注释规范" class="headerlink" title="6 注释规范"></a>6 注释规范</h4><p>为了减少他人阅读你代码的痛苦值，请在关键地方做好注释。<br>6.1 类注释</p>
+<p>每个类完成后应该有作者姓名和联系方式的注释，对自己的代码负责。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;pre&gt;</div><div class="line"> *     author : Blankj</div><div class="line"> *     e-mail : xxx@xx</div><div class="line"> *     time   : 2017/03/07</div><div class="line"> *     desc   : xxxx描述</div><div class="line"> *     version: 1.0</div><div class="line"> * &lt;/pre&gt;</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WelcomeActivity</span> </span>&#123;</div><div class="line">       ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>具体可以在AS中自己配制，Settings → Editor → File and Code Templates → Includes → File Header，输入<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * &lt;pre&gt;</div><div class="line"> *     author : $&#123;USER&#125;</div><div class="line"> *     e-mail : xxx@xx</div><div class="line"> *     time   : $&#123;YEAR&#125;/$&#123;MONTH&#125;/$&#123;DAY&#125;</div><div class="line"> *     desc   : </div><div class="line"> *     version: 1.0</div><div class="line"> * &lt;/pre&gt;</div><div class="line"> */</div></pre></td></tr></table></figure></p>
+<p>这样便可在每次新建类的时候自动加上该头注释。</p>
+<p>6.2 方法注释</p>
+<p>每一个成员方法（包括自定义成员方法、覆盖方法、属性方法）的方法头都必须做方法头注释，在方法前一行输入/** + 回车或者设置Fix doc comment(Settings → Keymap → Fix doc comment)快捷键，AS便会帮你生成模板，我们只需要补全参数即可，如下所示。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * bitmap转byteArr</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> bitmap bitmap对象</div><div class="line"> * <span class="doctag">@param</span> format 格式</div><div class="line"> * <span class="doctag">@return</span> 字节数组</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] bitmap2Bytes(Bitmap bitmap, CompressFormat format) &#123;</div><div class="line">    <span class="keyword">if</span> (bitmap == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</div><div class="line">    bitmap.compress(format, <span class="number">100</span>, baos);</div><div class="line">    <span class="keyword">return</span> baos.toByteArray();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>6.3 块注释</p>
+<p>块注释与其周围的代码在同一缩进级别。它们可以是/<em> … </em>/风格，也可以是// …风格(//后最好带一个空格）。对于多行的/<em> … </em>/注释，后续行必须从<em>开始， 并且与前一行的</em>对齐。以下示例注释都是OK的。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"> * This is          // And so           /* Or you can</div><div class="line"> * okay.            // is this.          * even do this. */</div><div class="line"> */</div></pre></td></tr></table></figure></p>
+<p>注释不要封闭在由星号或其它字符绘制的框架里。</p>
+<blockquote>
+<p>Tip：在写多行注释时，如果你希望在必要时能重新换行(即注释像段落风格一样)，那么使用/<em> … </em>/。</p>
+</blockquote>
+<h4 id="7-测试规范"><a href="#7-测试规范" class="headerlink" title="7 测试规范"></a>7 测试规范</h4><p> 业务开发完成之后，开发人员做单元测试，单元测试完成之后，保证单元测试全部通过同时单元测试代码覆盖率达到一定程度（这个需要开发和测试约定，理论上越高越好），开发提测。</p>
+<p><code>// TODO...</code></p>
+<h4 id="8-其他规范"><a href="#8-其他规范" class="headerlink" title="8 其他规范"></a>8 其他规范</h4><ol>
+<li>合理布局，有效运用<merge>、<viewstub>、<include>标签；</include></viewstub></merge></li>
+<li>Activity和Fragment里面有许多重复的操作以及操作步骤，所以我们都需要提供一个BaseActivity和BaseFragment，让所有的Activity和Fragment都继承这个基类。</li>
+<li>方法基本上都按照调用的先后顺序在各自区块中排列；</li>
+<li>相关功能作为小区块放在一起（或者封装掉）；</li>
+<li>当一个类有多个构造函数，或是多个同名方法，这些函数/方法应该按顺序出现在一起，中间不要放进其它函数/方法；</li>
+<li>数据提供统一的入口。无论是在 MVP、MVC 还是 MVVM 中，提供一个统一的数据入口，都可以让代码变得更加易于维护。比如可使用一个DataManager，把 http、preference、eventpost、database 都放在DataManger里面进行操作，我们只需要与DataManger打交道；</li>
+<li>多用组合, 少用继承；</li>
+<li>提取方法, 去除重复代码。对于必要的工具类抽取也很重要，这在以后的项目中是可以重用的。</li>
+<li>可引入 Dagger2 减少模块之间的耦合性。Dagger2 是一个依赖注入框架，使用代码自动生成创建依赖关系需要的代码。减少很多模板化的代码，更易于测试，降低耦合，创建可复用可互换的模块；</li>
+<li>项目引入RxJava + RxAndroid这些响应式编程，可以极大的减少逻辑代码；</li>
+<li>通过引入事件总线，如：EventBus、AndroidEventBus、RxBus，它允许我们在DataLayer中发送事件，以便ViewLayer中的多个组件都能够订阅到这些事件，减少回调；</li>
+<li>尽可能使用局部变量；</li>
+<li>及时关闭流；</li>
+<li>尽量减少对变量的重复计算；</li>
+</ol>
+<p>如下面的操作：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; list.size(); i++) &#123;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>建议替换为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, <span class="keyword">int</span> length = list.size(); i &lt; length; i++) &#123;</div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ol>
+<li>尽量采用懒加载的策略，即在需要的时候才创建；</li>
+</ol>
+<p>例如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">String str = <span class="string">"aaa"</span>;</div><div class="line"><span class="keyword">if</span> (i == <span class="number">1</span>) &#123;</div><div class="line">    list.add(str);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>建议替换为：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (i == <span class="number">1</span>) &#123;</div><div class="line">    String str = <span class="string">"aaa"</span>;</div><div class="line">    list.add(str);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<ol>
+<li><p>不要在循环中使用try…catch…，应该把其放在最外层；</p>
+</li>
+<li><p>使用带缓冲的输入输出流进行IO操作；</p>
+</li>
+<li>尽量使用HashMap、ArrayList、StringBuilder，除非线程安全需要，否则不推荐使用Hashtable、Vector、StringBuffer，后三者由于使用同步机制而导致了性能开销；</li>
+<li>尽量在合适的场合使用单例；<br>使用单例可以减轻加载的负担、缩短加载的时间、提高加载的效率，但并不是所有地方都适用于单例，简单来说，单例主要适用于以下三个方面：</li>
+</ol>
+<p>（1）控制资源的使用，通过线程同步来控制资源的并发访问</p>
+<p>（2）控制实例的产生，以达到节约资源的目的</p>
+<p>（3）控制数据的共享，在不建立直接关联的条件下，让多个不相关的进程或线程之间实现通信</p>
+<ol>
+<li><p>把一个基本数据类型转为字符串，基本数据类型.toString()是最快的方式、String.valueOf(数据)次之、数据 + “”最慢；</p>
+</li>
+<li><p>使用AS自带的Lint来优化代码结构（什么，你不会？右键module、目录或者文件，选择Analyze → Inspect Code）；</p>
+</li>
+<li>最后不要忘了内存泄漏的检测；</li>
+</ol>
+<hr>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/03/11/安卓开发规范/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-02-22T05:39:47.000Z"><a href="/2016/02/22/Java-SSL-Socket通讯实例一/">2016-02-22</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/02/22/Java-SSL-Socket通讯实例一/">Java SSL Socket通讯实例一</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Server端代码"><span class="toc-text">Server端代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Client代码"><span class="toc-text">Client代码</span></a></li></ol>
+    </div>
+
+        <p>从最简单来说，Java里面只需要配置几个系统属性，创建及调用几个SSL相关的对象即可。这四个属性分别是:<br>javax.net.ssl.keyStore本方的密码，证书等存放地点(KeyStore文件地址)。<br>javax.net.ssl.keyStorePasswordKeyStore的密码。没有密码可以不填。<br>javax.net.ssl.trustStore受信任证书的存放地点(TrustKeyStore文件地址)。<br>javax.net.ssl.trustStorePasswordTrustKeyStore的密码。没有密码可以不填。</p>
+<p>KeyStore类型默认是JKS类型的，不是的话，还需要设置 javax<a href="http://lib.csdn.net/base/dotnet" target="_blank" rel="external">.NET</a>.ssl.keyStoreType和javax<a href="http://lib.csdn.net/base/dotnet" target="_blank" rel="external">.Net</a>.ssl.trustStoreType。</p>
+<h4 id="Server端代码"><a href="#Server端代码" class="headerlink" title="Server端代码"></a>Server端代码</h4><p>每一次收新的连接，都新开一个线程接待。生产上请用线程池等技术。更推荐用Netty或Mina等框架处理。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line">public class SslServer &#123;</div><div class="line">		public static void main(String[] args) throws Exception &#123;</div><div class="line">			System.setProperty(&quot;javax.net.debug&quot;, &quot;ssl,handshake&quot;);</div><div class="line"></div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStore&quot;, &quot;./cfg/server.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStorePassword&quot;, &quot;123456&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStore&quot;, &quot;./cfg/clienttrust.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStorePassword&quot;, &quot;123456&quot;);</div><div class="line"></div><div class="line">			SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory</div><div class="line">					.getDefault();</div><div class="line">			SSLServerSocket serverSocket = (SSLServerSocket) serverSocketFactory</div><div class="line">					.createServerSocket(9100);</div><div class="line">			// 要求客户端身份验证</div><div class="line">			serverSocket.setNeedClientAuth(true);</div><div class="line"></div><div class="line">			while (true) &#123;</div><div class="line">				SSLSocket socket = (SSLSocket) serverSocket.accept();</div><div class="line">				Accepter accepter = new Accepter(socket);</div><div class="line">				accepter.service();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		static class Accepter implements Runnable &#123;</div><div class="line">			private SSLSocket socket;</div><div class="line"></div><div class="line">			public Accepter(SSLSocket socket) &#123;</div><div class="line">				this.socket = socket;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			public void service() &#123;</div><div class="line">				Thread thread = new Thread(this);</div><div class="line">				thread.start();</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			@Override</div><div class="line">			public void run() &#123;</div><div class="line">				try &#123;</div><div class="line">					InputStream inputStream = socket.getInputStream();</div><div class="line"></div><div class="line">					InputStreamReader inputstreamreader = new InputStreamReader(</div><div class="line">							inputStream);</div><div class="line">					BufferedReader bufferedreader = new BufferedReader(</div><div class="line">							inputstreamreader);</div><div class="line"></div><div class="line">					String string = null;</div><div class="line">					while ((string = bufferedreader.readLine()) != null) &#123;</div><div class="line">						System.out.println(string);</div><div class="line">						System.out.flush();</div><div class="line">					&#125;</div><div class="line">				&#125; catch (Exception e) &#123;</div><div class="line">					// replace with other code</div><div class="line">					e.printStackTrace();</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="Client代码"><a href="#Client代码" class="headerlink" title="Client代码"></a>Client代码</h4><p>建立连接，并发一个消息给Server。很简单。记得换行符以及调用flush方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public class SslClient &#123;</div><div class="line">		public static void main(String[] args) throws Exception &#123;</div><div class="line">			System.setProperty(&quot;javax.net.debug&quot;, &quot;ssl,handshake&quot;);</div><div class="line"></div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStore&quot;, &quot;./cfg/client.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.keyStorePassword&quot;, &quot;123456&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStore&quot;, &quot;./cfg/servertrust.jks&quot;);</div><div class="line">			System.setProperty(&quot;javax.net.ssl.trustStorePassword&quot;, &quot;123456&quot;);</div><div class="line"></div><div class="line">			SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory</div><div class="line">					.getDefault();</div><div class="line">			SSLSocket sslsocket = (SSLSocket) sslsocketfactory.createSocket(</div><div class="line">					&quot;127.0.0.1&quot;, 9100);</div><div class="line"></div><div class="line">			OutputStream outputStream = sslsocket.getOutputStream();</div><div class="line">			BufferedWriter bufferedWriter = new BufferedWriter(</div><div class="line">					new OutputStreamWriter(outputStream));</div><div class="line">			bufferedWriter.write(&quot;沉睡的雄狮\n&quot;);</div><div class="line">			bufferedWriter.flush();</div><div class="line"></div><div class="line">			TimeUnit.SECONDS.sleep(2000);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>结束语<br>JDK后来加了SSLEngine这个类，具有异步通讯的能力。不过看官方文档，给出的代码很长。还是那句话，有条件的推荐用Netty或者Mina来处理通讯的问题，应该会比自己写的性能好一些。<br><a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html" target="_blank" rel="external">Java官方SSL Socket文档</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/02/22/Java-SSL-Socket通讯实例一/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-02-12T05:36:47.000Z"><a href="/2016/02/12/失效的private修饰符/">2016-02-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/02/12/失效的private修饰符/">失效的private修饰符</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>在Java编程中，使用private关键字修饰了某个成员，只有这个成员所在的类和这个类的方法可以使用，其他的类都无法访问到这个private成员。</p>
+<p>上面描述了private修饰符的基本职能，今天来研究一下private功能失效的情况。</p>
+<p>Java内部类</p>
+<p>在Java中相信很多人都用过内部类，Java允许在一个类里面定义另一个类，类里面的类就是内部类，也叫做嵌套类。一个简单的内部类实现可以如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">class OuterClass &#123;</div><div class="line">    class InnerClass&#123;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>今天的问题和Java内部类相关，只涉及到部分和本文研究相关的内部类知识，具体关于Java内部类后续的文章会介绍。</p>
+<p>第一次失效?</p>
+<p>一个我们在编程中经常用到的场景，就是在一个内部类里面访问外部类的private成员变量或者方法，这是可以的。如下面的代码实现。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class OuterClass &#123;</div><div class="line">  private String language = &quot;en&quot;;</div><div class="line">  private String region = &quot;US&quot;;</div><div class="line">  </div><div class="line">  </div><div class="line">  public class InnerClass &#123;</div><div class="line">      public void printOuterClassPrivateFields() &#123;</div><div class="line">          String fields = &quot;language=&quot; + language + &quot;;region=&quot; + region;</div><div class="line">          System.out.println(fields);</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">      OuterClass outer = new OuterClass();</div><div class="line">      OuterClass.InnerClass inner = outer.new InnerClass();</div><div class="line">      inner.printOuterClassPrivateFields();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这是为什么呢，不是private修饰的成员只能被成员所述的类才能访问么？难道private真的失效了么？</p>
+<p>编译器在捣鬼？</p>
+<p>我们使用javap命令查看一下生成的两个class文件</p>
+<p>OuterClass的反编译结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line">15:30 $ javap -c  OuterClass</div><div class="line">Compiled from &quot;OuterClass.java&quot;</div><div class="line">public class OuterClass extends java.lang.Object&#123;</div><div class="line">public OuterClass();</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  invokespecial    #11; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   4:  aload_0</div><div class="line">   5:  ldc  #13; //String en</div><div class="line">   7:  putfield #15; //Field language:Ljava/lang/String;</div><div class="line">   10: aload_0</div><div class="line">   11: ldc  #17; //String US</div><div class="line">   13: putfield #19; //Field region:Ljava/lang/String;</div><div class="line">   16: return</div><div class="line"></div><div class="line">public static void main(java.lang.String[]);</div><div class="line">  Code:</div><div class="line">   0:  new  #1; //class OuterClass</div><div class="line">   3:  dup</div><div class="line">   4:  invokespecial    #27; //Method &quot;&lt;init&gt;&quot;:()V</div><div class="line">   7:  astore_1</div><div class="line">   8:  new  #28; //class OuterClass$InnerClass</div><div class="line">   11: dup</div><div class="line">   12: aload_1</div><div class="line">   13: dup</div><div class="line">   14: invokevirtual    #30; //Method java/lang/Object.getClass:()Ljava/lang/Class;</div><div class="line">   17: pop</div><div class="line">   18: invokespecial    #34; //Method OuterClass$InnerClass.&quot;&lt;init&gt;&quot;:(LOuterClass;)V</div><div class="line">   21: astore_2</div><div class="line">   22: aload_2</div><div class="line">   23: invokevirtual    #37; //Method OuterClass$InnerClass.printOuterClassPrivateFields:()V</div><div class="line">   26: return</div><div class="line"></div><div class="line">static java.lang.String access$0(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #15; //Field language:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">static java.lang.String access$1(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #19; //Field region:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>咦？不对，在OuterClass中我们并没有定义这两个方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">static java.lang.String access$0(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #15; //Field language:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">static java.lang.String access$1(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #19; //Field region:Ljava/lang/String;</div><div class="line">   4:  areturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从给出来的注释来看，access$0返回outerClass的language属性；access$1返回outerClass的region属性。并且这两个方法都接受OuterClass的实例作为参数。这两个方法为什么生成呢，有什么作用呢？我们看一下内部类的反编译结果就知道了。</p>
+<p>OuterClass$InnerClass的反编译结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">15:37 $ javap -c OuterClass\$InnerClass</div><div class="line">Compiled from &quot;OuterClass.java&quot;</div><div class="line">public class OuterClass$InnerClass extends java.lang.Object&#123;</div><div class="line">final OuterClass this$0;</div><div class="line"></div><div class="line">public OuterClass$InnerClass(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #10; //Field this$0:LOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #12; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  return</div><div class="line"></div><div class="line">public void printOuterClassPrivateFields();</div><div class="line">  Code:</div><div class="line">   0:  new  #20; //class java/lang/StringBuilder</div><div class="line">   3:  dup</div><div class="line">   4:  ldc  #22; //String language=</div><div class="line">   6:  invokespecial    #24; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</div><div class="line">   9:  aload_0</div><div class="line">   10: getfield #10; //Field this$0:LOuterClass;</div><div class="line">   13: invokestatic #27; //Method OuterClass.access$0:(LOuterClass;)Ljava/lang/String;</div><div class="line">   16: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   19: ldc  #37; //String ;region=</div><div class="line">   21: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   24: aload_0</div><div class="line">   25: getfield #10; //Field this$0:LOuterClass;</div><div class="line">   28: invokestatic #39; //Method OuterClass.access$1:(LOuterClass;)Ljava/lang/String;</div><div class="line">   31: invokevirtual    #33; //Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</div><div class="line">   34: invokevirtual    #42; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;</div><div class="line">   37: astore_1</div><div class="line">   38: getstatic    #46; //Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   41: aload_1</div><div class="line">   42: invokevirtual    #52; //Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   45: return</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面代码调用access$0的代码,其目的是得到OuterClass的language 私有属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">13:   invokestatic #27; //Method OuterClass.access$0:(LOuterClass;)Ljava/lang/String;</div></pre></td></tr></table></figure></p>
+<p>下面代码调用了access$1的代码，其目的是得到OutherClass的region 私有属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">28:   invokestatic #39; //Method OuterClass.access$1:(LOuterClass;)Ljava/lang/String;</div></pre></td></tr></table></figure></p>
+<p>注意：在内部类构造的时候，会将外部类的引用传递进来，并且作为内部类的一个属性，所以内部类会持有一个其外部类的引用。<br>this$0就是内部类持有的外部类引用，通过构造方法传递引用并赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final OuterClass this$0;</div><div class="line"></div><div class="line">public OuterClass$InnerClass(OuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #10; //Field this$0:LOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #12; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  return</div></pre></td></tr></table></figure>
+<p>小结</p>
+<p>这部分private看上去失效可，实际上并没有失效，因为当内部类调用外部类的私有属性时，其真正的执行是调用了编译器生成的属性的静态方法（即acess$0,access$1等）来获取这些属性值。这一切都是编译器的特殊处理。<br>这次也失效？</p>
+<p>如果说上面的写法很常用，那么这样的写法是不是很少接触，但是却可以运行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class AnotherOuterClass &#123;</div><div class="line">  public static void main(String[] args) &#123;</div><div class="line">      InnerClass inner = new AnotherOuterClass().new InnerClass();</div><div class="line">      System.out.println(&quot;InnerClass Filed = &quot; + inner.x);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  class InnerClass &#123;</div><div class="line">      private int x = 10;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>和上面一样，使用javap反编译看一下。不过这次我们先看一下InnerClass的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">16:03 $ javap -c AnotherOuterClass\$InnerClass</div><div class="line">Compiled from &quot;AnotherOuterClass.java&quot;</div><div class="line">class AnotherOuterClass$InnerClass extends java.lang.Object&#123;</div><div class="line">final AnotherOuterClass this$0;</div><div class="line"></div><div class="line">AnotherOuterClass$InnerClass(AnotherOuterClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  aload_1</div><div class="line">   2:  putfield #12; //Field this$0:LAnotherOuterClass;</div><div class="line">   5:  aload_0</div><div class="line">   6:  invokespecial    #14; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   9:  aload_0</div><div class="line">   10: bipush   10</div><div class="line">   12: putfield #17; //Field x:I</div><div class="line">   15: return</div><div class="line"></div><div class="line">static int access$0(AnotherOuterClass$InnerClass);</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  getfield #17; //Field x:I</div><div class="line">   4:  ireturn</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>又出现了，编译器又自动生成了一个获取私有属性的后门方法access$0一次来获取x的值。</p>
+<p>AnotherOuterClass.class的反编译结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">16:08 $ javap -c AnotherOuterClass</div><div class="line">Compiled from &quot;AnotherOuterClass.java&quot;</div><div class="line">public class AnotherOuterClass extends java.lang.Object&#123;</div><div class="line">public AnotherOuterClass();</div><div class="line">  Code:</div><div class="line">   0:  aload_0</div><div class="line">   1:  invokespecial    #8; //Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   4:  return</div><div class="line"></div><div class="line">public static void main(java.lang.String[]);</div><div class="line">  Code:</div><div class="line">   0:  new  #16; //class AnotherOuterClass$InnerClass</div><div class="line">   3:  dup</div><div class="line">   4:  new  #1; //class AnotherOuterClass</div><div class="line">   7:  dup</div><div class="line">   8:  invokespecial    #18; //Method &quot;&lt;init&gt;&quot;:()V</div><div class="line">   11: dup</div><div class="line">   12: invokevirtual    #19; //Method java/lang/Object.getClass:()Ljava/lang/Class;</div><div class="line">   15: pop</div><div class="line">   16: invokespecial    #23; //Method AnotherOuterClass$InnerClass.&quot;&lt;init&gt;&quot;:(LAnotherOuterClass;)V</div><div class="line">   19: astore_1</div><div class="line">   20: getstatic    #26; //Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   23: new  #32; //class java/lang/StringBuilder</div><div class="line">   26: dup</div><div class="line">   27: ldc  #34; //String InnerClass Filed =</div><div class="line">   29: invokespecial    #36; //Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:(Ljava/lang/String;)V</div><div class="line">   32: aload_1</div><div class="line">   33: invokestatic #39; //Method AnotherOuterClass$InnerClass.access$0:(LAnotherOuterClass$InnerClass;)I</div><div class="line">   36: invokevirtual    #43; //Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</div><div class="line">   39: invokevirtual    #47; //Method java/lang/StringBuilder.toString:()Ljava/lang/String;</div><div class="line">   42: invokevirtual    #51; //Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   45: return</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中这句调用就是外部类通过内部类的实例获取私有属性x的操作<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">33:   invokestatic #39; //Method AnotherOuterClass$InnerClass.access$0:(LAnotherOuterClass$InnerClass;)I</div></pre></td></tr></table></figure></p>
+<p>再来个总结<br>其中<a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-6.html#jls-6.6.1" target="_blank" rel="external">java官方文档</a> 有这样一句话<br>if the member or constructor is declared private, then access is permitted if and only if it occurs within the body of the top level class (§7.6) that encloses the declaration of the member or constructor.</p>
+<p>意思是 如果（内部类的）成员和构造方法设定成了私有修饰符，当且仅当其外部类访问时是允许的。<br>如何让内部类私有成员不被外部访问<br>相信看完上面两部分，你会觉得，内部类的私有成员想不被外部类访问都很困难吧，谁让编译器“爱管闲事”呢，其实也是可以做到的。那就是使用匿名内部类。<br>由于mRunnable对象的类型为Runnable，而不是匿名内部类的类型（我们无法正常拿到），而Runanble中没有x这个属性，所以mRunnable.x是不被允许的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class PrivateToOuter &#123;</div><div class="line">  Runnable mRunnable = new Runnable()&#123;</div><div class="line">      private int x=10;</div><div class="line">      @Override</div><div class="line">      public void run() &#123;</div><div class="line">          System.out.println(x);</div><div class="line">      &#125;</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  public static void main(String[] args)&#123;</div><div class="line">      PrivateToOuter p = new PrivateToOuter();</div><div class="line">      //System.out.println(&quot;anonymous class private filed= &quot;+ p.mRunnable.x); //not allowed</div><div class="line">      p.mRunnable.run(); // allowed</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>最后总结<br>在本文中，private表面上看上去失效了，但实际上是没有的，而是在调用时通过间接的方法来获取私有的属性。<br>Java的内部类构造时持有对外部类的应用，C++不会，这一点和C++不一样。</p>
+<p>深入Java细节的书籍<br><a href="http://www.amazon.cn/gp/product/B0011F7WU4/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B0011F7WU4&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">Java编程思想</a><img src="http://upload-images.jianshu.io/upload_images/4398977-e1327cdd8167447c?imageMogr2/auto-orient/strip" alt=""><br><a href="http://www.amazon.cn/gp/product/B001PTGR52/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B001PTGR52&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">Sun 公司核心技术丛书:Effective Java中文版</a><img src="http://upload-images.jianshu.io/upload_images/4398977-bff8ef82187333df?imageMogr2/auto-orient/strip" alt=""><br><a href="http://www.amazon.cn/gp/product/B00D2ID4PK/ref=as_li_qf_sp_asin_tl?ie=UTF8&amp;camp=536&amp;creative=3200&amp;creativeASIN=B00D2ID4PK&amp;linkCode=as2&amp;tag=droidyue-23" target="_blank" rel="external">深入理解Java虚拟机:JVM高级特性与最佳实践</a><img src="http://upload-images.jianshu.io/upload_images/4398977-1881a22db7263d9d?imageMogr2/auto-orient/strip" alt=""></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/02/12/失效的private修饰符/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+ 
+<nav id="pagination">
+  
+    <a href="/page/6/" class="alignleft prev">上一页</a>
+  
+  
+    <a href="/page/8/" class="alignright next">下一页</a>
+  
+  <div class="clearfix"></div>
+</nav>
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，偶尔做一些开发尝试，更新频率较低。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2018 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
