@@ -1,0 +1,342 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>模糊图像——线性滤波 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="模糊图像——线性滤波"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href=""><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="https://github.com/samychen"><i class="fa fa-"></i>github</a>
+		    
+		      <a href="https://plus.google.com/u/0/103829504368344048794"><i class="fa fa-"></i>google</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2018-02-04T06:17:39.000Z"><a href="/2018/02/04/模糊图像——线性滤波/">2018-02-04</a></time>
+        
+  
+    <h1 class="title">模糊图像——线性滤波</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#中值滤波"><span class="toc-text">中值滤波</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#双边滤波"><span class="toc-text">双边滤波</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自定义线性滤波"><span class="toc-text">自定义线性滤波</span></a></li></ol>
+    </div>
+
+        <p>&emsp;&emsp;模糊图像是opencv常见的操作，使用模糊操作的原因是为了给图像预处理时降低噪声影响，Smooth和Blur是opencv图像模糊的API，其背后的原理其实是数学的卷积操作，而卷积算子计算通常是线性计算，所以也可以称为线性滤波。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-ca27910845d5e18d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="卷积.png"></p>
+<p>&emsp;&emsp;卷积是图像处理的一个操作，是kernel在图像上的每个像素上的操作。kernel本质是一个固定大小的矩阵数组，中心点称为锚点（anchor point）。<br>&emsp;&emsp;把kernel放到像素数组上，求锚点周围覆盖的像素乘积之和（包括锚点），用来替换锚点覆盖下像素点值称为卷积处理。</p>
+<p>&emsp;&emsp;上面的卷积过程是一个3x3的窗口从左到右，从上到下平移过程。黄色的每个像素点之和取平均值赋值给中心的红色点作为卷积处理后的像素值。这是一种均值滤波。<br>opencv提供了均值滤波（模糊）的API <code>blur(Mat src,Mat dst,Size(xradius,yradius),Point(-1,-1))</code><br>&emsp;&emsp;当然还有其他模糊的方式，如高斯模糊 <code>GaussianBlur(Mat src,Mat dst,Size(x,y),sigmax,sigmay)</code> 其中Size(x,y)的x和y必须为正基数，且一般x=y</p>
+<p>&emsp;&emsp;不同卷积算子可以看做不同的滤波结果：<br><img src="http://upload-images.jianshu.io/upload_images/4398977-ea34e661d7992c05.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="卷积.png"></p>
+<h4 id="中值滤波"><a href="#中值滤波" class="headerlink" title="中值滤波"></a>中值滤波</h4><p>中值滤波的应用medianBlur(Mat src,Mat dst,ksize)</p>
+<ul>
+<li>统计排序滤波器</li>
+<li>中值滤波对椒盐噪声有很好的抑制作用</li>
+</ul>
+<p>&emsp;&emsp;椒盐噪声一般是作为最值对信号产生影响，中值滤波对最值有很好的抑制作用。<br>那么是否均值滤波能做为生产环境的滤波处理，均值滤波有什么缺陷呢？</p>
+<p>均值模糊无法克服边缘信息丢失缺陷，因为均值滤波是基于平均权重处理。而高斯模糊部分克服了改缺陷，但是无法完全避免，因为高斯模糊没有考虑像素值不同的影响。</p>
+<h4 id="双边滤波"><a href="#双边滤波" class="headerlink" title="双边滤波"></a>双边滤波</h4><p>&emsp;&emsp;双边滤波也可以称为高斯双边模糊，是边缘保留的滤波方法，避免了边缘信息的丢失，保留了图像轮廓不变。</p>
+<p>&emsp;&emsp;考虑像素值的处理，如果有1和255两个像素值，那么在各自的像素值处离的比较远，可以不做处理</p>
+<p>bilateralFilter(Mat src,Mat dst,d=15,150,3) </p>
+<ul>
+<li>15表示计算的半径，半径之内像素全部纳入计算，如果是-1，那么根据sigma space参数取值</li>
+<li>150 sigma color 决定多少差值之内的像素会被计算</li>
+<li>3 sigma space 如果d的值大于0则声明无效，否则根据它来计算d值</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">using namespace cv;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">	Mat src, dst;</div><div class="line">	src = imread(&quot;F:/cat.jpg&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return - 1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;show img&quot;, src);</div><div class="line">	dst = Mat::zeros(src.size(),src.type());</div><div class="line">	//medianBlur(src, dst, 3);</div><div class="line">	bilateralFilter(src, dst, 15, 100, 5);</div><div class="line">	namedWindow(&quot;bilateralFilter&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;bilateralFilter result&quot;, dst);</div><div class="line"></div><div class="line">	//Mat bgblur(src.size(), src.type());</div><div class="line">	//GaussianBlur(src, bgblur, Size(15, 15), 3, 3);</div><div class="line">	//imshow(&quot;GaussianBlur result&quot;, bgblur);</div><div class="line">	//可以在双边滤波后做对比度增强</div><div class="line">	Mat resultImg(src.size(), src.type());</div><div class="line">	Mat kernel = (Mat_&lt;int&gt;(3, 3) &lt;&lt; 0, -1, 0, -1, 5, -1, 0, -1, 0);</div><div class="line">	filter2D(src, resultImg, -1, kernel, Point(-1, -1), 0);</div><div class="line">	imshow(&quot;result&quot;, resultImg);</div><div class="line">	waitKey(0);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出结果演示<br><img src="http://upload-images.jianshu.io/upload_images/4398977-7850d49ec36abfe9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h4 id="自定义线性滤波"><a href="#自定义线性滤波" class="headerlink" title="自定义线性滤波"></a>自定义线性滤波</h4><p>&emsp;&emsp;线性滤波常用的算子有Sobel算子，Laplance算子，当然我们可以自己定义算子然后通过opencv提供的filter2D来实现自己的滤波器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">using namespace cv;</div><div class="line">int main(int argc,int ** argv)</div><div class="line">&#123;</div><div class="line">	Mat src, dst;</div><div class="line">	int ksize = 0;</div><div class="line">	src = imread(&quot;F:/cat.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;show img&quot;, src);</div><div class="line">	dst = Mat::zeros(src.size(), src.type());</div><div class="line">	namedWindow(&quot;bilateralFilter&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	//Robert X方向</div><div class="line">	//Mat kernelx = (Mat_&lt;int&gt;(2, 2) &lt;&lt; 1, 0, 0, -1);</div><div class="line">	//filter2D(src, dst, -1, kernelx, Point(-1, -1), 0.0);</div><div class="line">	//Robert Y方向</div><div class="line">	//Mat result = Mat::zeros(src.size(), src.type());</div><div class="line">	//Mat kernely = (Mat_&lt;int&gt;(2, 2) &lt;&lt; 0, 1, -1, 0);</div><div class="line">	//filter2D(src, result, -1, kernely, Point(-1, -1), 0.0);</div><div class="line">	</div><div class="line">	//Sobel X方向</div><div class="line">	Mat kernelx = (Mat_&lt;int&gt;(3, 3) &lt;&lt; -1, 0, 1, -2, 0, 2, -1, 0, 1);</div><div class="line">	filter2D(src, dst, -1, kernelx, Point(-1, -1), 0.0);</div><div class="line">	//Sobel Y方向</div><div class="line">	Mat result = Mat::zeros(src.size(), src.type());</div><div class="line">	Mat kernely = (Mat_&lt;int&gt;(3, 3) &lt;&lt; -1, -2, -1, 0, 0, 0, 1, 2, 1);</div><div class="line">	filter2D(src, result, -1, kernely, Point(-1, -1), 0.0);</div><div class="line">	//拉普拉斯算子</div><div class="line">	Mat result_ = Mat::zeros(src.size(), src.type());</div><div class="line">	Mat kernel_ = (Mat_&lt;int&gt;(3, 3) &lt;&lt; 0, -1, 0, -1, 4, -1, 0, -1, 0);</div><div class="line">	filter2D(src, result_, -1, kernel_, Point(-1, -1), 0.0);</div><div class="line">	imshow(&quot;Sobel X result&quot;, dst);</div><div class="line">	imshow(&quot;Sobel Y result&quot;, result);</div><div class="line">	imshow(&quot;laplance result&quot;, result_);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出结果演示<br><img src="http://upload-images.jianshu.io/upload_images/4398977-3fdac31efef3a3ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>可以看出，针对不同卷积算子，得到不同的结果，其中沿X方向的算子和沿Y方向的算子得到的结果都只有部分原图像的特征，使用高斯算子得到的特征比较符合原图像的要求。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/OpenCV/">OpenCV</a>
+  </div>
+
+        
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2018/02/04/模糊图像——线性滤波/" data-title="模糊图像——线性滤波" data-url="http://samychen.com/2018/02/04/模糊图像——线性滤波/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，主要分享安卓开发技术以及前沿技术。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2018 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Mat基本操作 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Mat基本操作"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href=""><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="https://github.com/samychen"><i class="fa fa-"></i>github</a>
+		    
+		      <a href="https://plus.google.com/u/0/103829504368344048794"><i class="fa fa-"></i>google</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2018-02-01T06:17:12.000Z"><a href="/2018/02/01/Mat基本操作/">2018-02-01</a></time>
+        
+  
+    <h1 class="title">Mat基本操作</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#矩阵基本操作"><span class="toc-text">矩阵基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#获取图像像素指针"><span class="toc-text">获取图像像素指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#像素范围处理saturate-cast"><span class="toc-text">像素范围处理saturate_cast</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#矩阵掩膜操作-对比度提高，立体感增强"><span class="toc-text">矩阵掩膜操作(对比度提高，立体感增强)</span></a></li></ol>
+    </div>
+
+        <h4 id="矩阵基本操作"><a href="#矩阵基本操作" class="headerlink" title="矩阵基本操作"></a>矩阵基本操作</h4><p>opencv最基本的结构体是Mat，opencv提供了一系列Mat基本操作<br>加载图片cv::imgread<br>修改图片(色彩变化)cv::cvtColor 第三个参数表示从源色彩空间转换到目的色彩空间<br>保存图片cv::imgwrite<br>显示图像cv::namedWindows cv::imshow<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">using namespace cv;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">	Mat src = imread(&quot;F:/build_android.png&quot;,IMREAD_GRAYSCALE);</div><div class="line">	Mat output_img = Mat::zeros(src.size(),src.type());</div><div class="line">	namedWindow(&quot;test opencv&quot;, CV_WINDOW_AUTOSIZE);//CV_WINDOW_AUTOSIZE不允许任务修改窗口大小</div><div class="line">	imshow(&quot;show img&quot;, src);</div><div class="line"></div><div class="line">	namedWindow(&quot;test opencv2&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	</div><div class="line">	cvtColor(src, output_img, COLOR_BGR2HLS);</div><div class="line">	imshow(&quot;show img2&quot;, output_img);</div><div class="line"></div><div class="line">	int cols = src.cols*src.channels();//图像宽度等于图像的cols乘以图像的通道数</div><div class="line">	int rows = src.rows;//图像高度等于图像的rows</div><div class="line">	for (int row = 1; row &lt; rows-1; row++) &#123;</div><div class="line"></div><div class="line">	&#125;</div><div class="line">	//imwrite(&quot;F:/hlstest.png&quot;,output_img);</div><div class="line">	waitKey(0);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="获取图像像素指针"><a href="#获取图像像素指针" class="headerlink" title="获取图像像素指针"></a>获取图像像素指针</h4><p>CV_Assert(myImage.depth()==CV_8U)<br>Mat.ptr<uchar>(int i=0)获取像素矩阵的指针，索引i表示第几行，从0开始计数<br>获取当前行指针const uchar* current = myImage.ptr<uchar>(row);<br>获取当前像素点P(row,col)的像素值p(row,col) = current[col]</uchar></uchar></p>
+<h4 id="像素范围处理saturate-cast"><a href="#像素范围处理saturate-cast" class="headerlink" title="像素范围处理saturate_cast"></a>像素范围处理saturate_cast<uchar></uchar></h4><p>saturate_cast<uchar>(-100)，返回0<br>saturate_cast<uchar>(2888)，返回255<br>小于0返回0，大于255返回255 这个函数确保像素值在0到255之间</uchar></uchar></p>
+<h4 id="矩阵掩膜操作-对比度提高，立体感增强"><a href="#矩阵掩膜操作-对比度提高，立体感增强" class="headerlink" title="矩阵掩膜操作(对比度提高，立体感增强)"></a>矩阵掩膜操作(对比度提高，立体感增强)</h4><p>数字图像处理中,掩模为二维矩阵数组,有时也用多值图像。数字图像处理中,图像掩模主要用于：</p>
+<ul>
+<li>提取感兴趣区,用预先制作的感兴趣区掩模与待处理图像相乘,得到感兴趣区图像,感兴趣区内图像值保持不变,而区外图像值都为0。</li>
+<li>屏蔽作用,用掩模对图像上某些区域作屏蔽,使其不参加处理或不参加处理参数的计算,或仅对屏蔽区作处理或统计。</li>
+<li>结构特征提取,用相似性变量或图像匹配方法检测和提取图像中与掩模相似的结构特征。</li>
+<li>特殊形状图像的制作。</li>
+</ul>
+<p>掩膜操作实现图像对比度调整，根据掩膜来重新计算每个像素的像素值，掩膜(mask)也被称为 kernel。<br>通过掩膜操作实现图像对比度提高。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-222e88ac7a2228da.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mask.png"></p>
+<p>上面矩阵像素操作可以用下面公式来表示<br><code>I(i,j) = 5*I(i,j) - [I(i-1,j) + I(i+1,j) + I(i,j-1) + I(i,j+1)]</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line"></div><div class="line">using namespace cv;</div><div class="line"></div><div class="line">int main(int argc, const char * argv[]) &#123;</div><div class="line">    Mat src, dst;</div><div class="line">    //加载图像</div><div class="line">    src = imread(&quot;F:/build_android.jpg&quot;);</div><div class="line">    </div><div class="line">    if (!src.data) &#123;</div><div class="line">        printf(&quot;could not load image\n&quot;);</div><div class="line">        return -1;</div><div class="line">    &#125;</div><div class="line">    //显示</div><div class="line">    namedWindow(&quot;input Image&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">    imshow(&quot;input Image&quot;, src);</div><div class="line"></div><div class="line">     //掩膜操作</div><div class="line">     int cols = (src.cols-1) * src.channels();//图像宽度等于图像的cols乘以图像的通道数</div><div class="line">     int offsetx = src.channels();</div><div class="line">     int rows = src.rows;//图像高度等于图像的rows</div><div class="line">     dst = Mat::zeros(src.size(), src.type());</div><div class="line"></div><div class="line">     for (int row = 1; row &lt; rows-1; row++) &#123;</div><div class="line">       const uchar *previous = src.ptr&lt;uchar&gt;(row-1);</div><div class="line">       const uchar *current = src.ptr&lt;uchar&gt;(row);</div><div class="line">       const uchar *next = src.ptr&lt;uchar&gt;(row+1);</div><div class="line">       uchar *output = dst.ptr&lt;uchar&gt;(row);</div><div class="line">       for (int col = offsetx; col &lt; cols; col++) &#123;</div><div class="line">         output[col] = saturate_cast&lt;uchar&gt;(5*current[col] - (current[col-offsetx] + current[col+offsetx] + previous[col] + next[col]));</div><div class="line">       &#125;</div><div class="line">     &#125;</div><div class="line"></div><div class="line">    //显示</div><div class="line">    namedWindow(&quot;contrast Image&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">    imshow(&quot;contrast Image&quot;, dst);</div><div class="line">    </div><div class="line">    waitKey(0);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>那么每次处理图片我们都需要把上面一长串代码拷贝到工程里面去吗，上述代码太多，其实opencv已经实现了上面功能。<br>filter2D函数可以实现上面效果，在第四个参数添加掩膜矩阵就可以实现相同效果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//定义掩膜</div><div class="line">Mat kern = (Mat_&lt;char&gt;(3,3) &lt;&lt;  0, -1,  0,</div><div class="line">                               -1,  5, -1,</div><div class="line">                                0, -1,  0);</div></pre></td></tr></table></figure></p>
+<p>上面代码可以用下面代码替代<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">double t = getTickCount();  //获得当前时间</div><div class="line">Mat kernel = (Mat_&lt;char&gt;(3, 3) &lt;&lt; 0, -1, 0, -1, 5, -1, 0, -1 ,0);</div><div class="line">//src.depth() 表示与原图深度一样，-1也表示一样</div><div class="line">filter2D(src, dst, src.depth(), kernel);</div><div class="line">double time = (getTickCount() - t) / getTickFrequency();</div><div class="line">printf(&quot;time consume %.5f&quot;, time);</div><div class="line">namedWindow(&quot;contrast Image&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">imshow(&quot;contrast Image&quot;, dst);</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/OpenCV/">OpenCV</a>
+  </div>
+
+        
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2018/02/01/Mat基本操作/" data-title="Mat基本操作" data-url="http://samychen.com/2018/02/01/Mat基本操作/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，主要分享安卓开发技术以及前沿技术。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2018 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
