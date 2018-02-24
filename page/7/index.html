@@ -88,6 +88,100 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2016-05-21T10:43:00.000Z"><a href="/2016/05/21/通过ViewTreeObserver测量View的高度/">2016-05-21</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/05/21/通过ViewTreeObserver测量View的高度/">通过ViewTreeObserver测量View的高度</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>&emsp;&emsp;ViewTreeObserver用于注册可以通知视图树中的全局变化的监听器。这样的全局事件包括但不限于整个树的布局，绘制路径的开始，触摸模式改变等。ViewTreeObserver不应该由应用程序实例化，因为它是由视图层次结构提供的。</p>
+<p>&emsp;&emsp;在oncreate中View.getWidth和View.getHeight无法获得一个view的高度和宽度，这是因为View组件布局要在onResume回调后完成，只会得到0。所以现在需要使用getViewTreeObserver().addOnGlobalLayoutListener()来获得宽度或者高度。这是获得一个view的宽度和高度的方法之一。</p>
+<p>&emsp;&emsp;ViewTreeObserver有很多内部类，每个触发条件都不同<br>&emsp;&emsp;interface ViewTreeObserver.OnGlobalLayoutListener：当在一个视图树中全局布局发生改变或者视图树中的某个视图的可视状态发生改变时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnPreDrawListener：当一个视图树将要绘制时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnScrollChangedListener：当一个视图树中的一些组件发生滚动时，所要调用的回调函数的接口类</p>
+<p>&emsp;&emsp;interface ViewTreeObserver.OnTouchModeChangeListener：当一个视图树的触摸模式发生改变时，所要调用的回调函数的接口类</p>
+<p>我们利用OnGlobalLayoutListener可以获取View的高度<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">Java代码  final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;  </div><div class="line">            boolean isFirst = true;//默认调用两次，这里只让它执行一次回调  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (isFirst) &#123;  </div><div class="line">                    isFirst = false;  </div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p><strong>注意：</strong>OnGlobalLayoutListener可能会被多次触发，因此在得到了高度之后，要将OnGlobalLayoutListener注销掉<br>因此代码改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">final LinearLayout imageViewContainer = (LinearLayout)findViewById(R.id.crop_photo_image_view_container);  </div><div class="line">        imageViewContainer.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() &#123;    </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;</div><div class="line">                   //直接移除</div><div class="line">                    imageViewContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);</div><div class="line">                    //现在布局全部完成，可以获取到任何View组件的宽度、高度、左边、右边等信息  </div><div class="line">                    Log.i(&quot;CDH&quot;, &quot;Global W:&quot;+imageViewContainer.getMeasuredWidth()+&quot;  H:&quot;+imageViewContainer.getMeasuredHeight());</div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p>类似的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">mGridView.getViewTreeObserver().addOnGlobalLayoutListener( </div><div class="line">         //view 布局完成时调用，每次view改变时都会调用  </div><div class="line">        new ViewTreeObserver.OnGlobalLayoutListener() &#123;  </div><div class="line">            @Override  </div><div class="line">            public void onGlobalLayout() &#123;  </div><div class="line">                if (mAdapter.getNumColumns() == 0) &#123;  </div><div class="line">                        final int numColumns = (int) Math.floor(  </div><div class="line">                                 mGridView.getWidth() / (mImageThumbSize + mImageThumbSpacing));  </div><div class="line">                    if (numColumns &gt; 0) &#123;  </div><div class="line">                        final int columnWidth =  </div><div class="line">                            (mGridView.getWidth() / numColumns) - mImageThumbSpacing;  </div><div class="line">                        mAdapter.setNumColumns(numColumns);   //设置 列数  </div><div class="line">                            mAdapter.setItemHeight(columnWidth);  //设置 高度  </div><div class="line">                    &#125;  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">        &#125;);</div></pre></td></tr></table></figure></p>
+<p>在gridview布局完成后，根据girdview的宽和高设置adapter列数和每个item高度</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/05/21/通过ViewTreeObserver测量View的高度/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2016-05-12T06:08:57.000Z"><a href="/2016/05/12/一个可以进页面自动显示刷新效果的SwipeRefreshLayout/">2016-05-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2016/05/12/一个可以进页面自动显示刷新效果的SwipeRefreshLayout/">一个可以进页面自动显示刷新效果的SwipeRefreshLayout</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>SwipeRefreshLayout出来已经有一段时间了，先后换过两种刷新效果，都在V4包下面，新的刷新效果还是很赞的，很多app都采用了这种刷新效果，我最近也在往这边靠，在研究的时候发现，原始的SwipeRefreshLayout只支持手势下拉才能出现刷新效果，看到《简书》安卓客户端每次都有那种切换页面就自动出来刷新效果，自己也试了下，直接设置setRefreshing(true)这个方法是不能看到效果的，于是对<a href="http://www.2cto.com/ym" target="_blank" rel="external">源码</a>进行了改造，不说多了，直接上代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">public class AutoSwipeRefreshLayout extends SwipeRefreshLayout &#123;</div><div class="line"> </div><div class="line">    public AutoSwipeRefreshLayout(Context context) &#123;</div><div class="line">        super(context);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    public AutoSwipeRefreshLayout(Context context, AttributeSet attrs) &#123;</div><div class="line">        super(context, attrs);</div><div class="line">    &#125;</div><div class="line"> </div><div class="line">    /**</div><div class="line">     * 自动刷新</div><div class="line">     */</div><div class="line">    public void autoRefresh() &#123;</div><div class="line">        try &#123;</div><div class="line">            Field mCircleView = SwipeRefreshLayout.class.getDeclaredField(mCircleView);</div><div class="line">            mCircleView.setAccessible(true);</div><div class="line">            View progress = (View) mCircleView.get(this);</div><div class="line">            progress.setVisibility(VISIBLE);</div><div class="line"> </div><div class="line">            Method setRefreshing = SwipeRefreshLayout.class.getDeclaredMethod(setRefreshing, boolean.class, boolean.class);</div><div class="line">            setRefreshing.setAccessible(true);</div><div class="line">            setRefreshing.invoke(this, true, true);</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码看起来比较简单，确实花了不少功夫去<a href="http://book.2cto.com/" target="_blank" rel="external">阅读</a>源码，除了添加了一个可以自动刷新的方法，没有修改其他的，用法也是和普通SwipeRefreshLayout一样，只不过可以在第一次加载数据的时候调用autoRefresh（）就可以看到刷新效果了，看效果图：<img src="http://upload-images.jianshu.io/upload_images/4398977-2e0a409c5f5f970d.gif?imageMogr2/auto-orient/strip" alt="alt=这里写图片描述"></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2016/05/12/一个可以进页面自动显示刷新效果的SwipeRefreshLayout/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2016-05-11T06:06:15.000Z"><a href="/2016/05/11/android之View坐标系（view获取自身坐标的方法和点击事件中坐标的获取）/">2016-05-11</a></time>
         
   
@@ -327,110 +421,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-04-12T06:06:15.000Z"><a href="/2016/04/12/Invalid-double崩溃分析/">2016-04-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/04/12/Invalid-double崩溃分析/">Invalid double崩溃分析</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>第一次遇到</p>
-<p>java.lang.NumberFormatException: Invalid double: “0,3”<br>这样包含逗号的浮点数异常，第一感觉就是服务器给的数据错误，但前段时间复现了这个异常，才发现是代码不规范导致了这样的异常： 崩溃的详细log如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">E/AndroidRuntime: FATAL EXCEPTION: mainProcess: com.frank.lollipopdemo, PID: </div><div class="line">10898java.lang.RuntimeException: Unable to start activity </div><div class="line">ComponentInfo&#123;com.frank.lollipopdemo/com.frank.lollipopdemo.MainActivity&#125;: </div><div class="line">java.lang.NumberFormatException: Invalid double: &quot;0,3&quot; at </div><div class="line">android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2325) at </div><div class="line">android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2387) at </div><div class="line">android.app.ActivityThread.access$800(ActivityThread.java:151) at </div><div class="line">android.app.ActivityThread$H.handleMessage(ActivityThread.java:1303) at </div><div class="line">android.os.Handler.dispatchMessage(Handler.java:102) at android.os.Looper.loop(Looper.java:135) at </div><div class="line">android.app.ActivityThread.main(ActivityThread.java:5254) at java.lang.reflect.Method.invoke(Native </div><div class="line">Method) at java.lang.reflect.Method.invoke(Method.java:372) at </div><div class="line">com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:903) at </div><div class="line">com.android.internal.os.ZygoteInit.main(ZygoteInit.java:698) Caused by: </div><div class="line">java.lang.NumberFormatException: Invalid double: &quot;0,3&quot; at </div><div class="line">java.lang.StringToReal.invalidReal(StringToReal.java:63) at </div><div class="line">java.lang.StringToReal.initialParse(StringToReal.java:164) at </div><div class="line">java.lang.StringToReal.parseDouble(StringToReal.java:282) at </div><div class="line">java.lang.Double.parseDouble(Double.java:301) at </div><div class="line">com.frank.lollipopdemo.MainActivity.onCreate(MainActivity.java:43) at </div><div class="line">android.app.Activity.performCreate(Activity.java:5990) at </div><div class="line">android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1106) at </div><div class="line">android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2278) at </div><div class="line">android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2387) at </div><div class="line">android.app.ActivityThread.access$800(ActivityThread.java:151) at </div><div class="line">android.app.ActivityThread$H.handleMessage(ActivityThread.java:1303) at </div><div class="line">android.os.Handler.dispatchMessage(Handler.java:102) at android.os.Looper.loop(Looper.java:135) at </div><div class="line">android.app.ActivityThread.main(ActivityThread.java:5254) at java.lang.reflect.Method.invoke(Native </div><div class="line">Method) at java.lang.reflect.Method.invoke(Method.java:372) at </div><div class="line">com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:903) at</div><div class="line">com.android.internal.os.ZygoteInit.main(ZygoteInit.java:698)</div></pre></td></tr></table></figure></p>
-<p>而出错的代码是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        tv_title = (TextView) findViewById(R.id.tv_title);</div><div class="line">        tv_content = (TextView) findViewById(R.id.tv_content);</div><div class="line">        String jsonVal = &quot;0.31415926&quot;;</div><div class="line">        String title = remain1Places(jsonVal);// -&gt; 0.3</div><div class="line">        tv_title.setText(title);</div><div class="line">        tv_content.setText(getPercent(Double.parseDouble(title)));// -&gt; ##.##%</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static String remain1Places(String string) &#123;</div><div class="line">        if (TextUtils.isEmpty(string)) &#123;</div><div class="line">            return &quot;&quot;;</div><div class="line">        &#125;</div><div class="line">        return String.format(&quot;%.1f&quot;, Double.parseDouble(string));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static String getPercent(double value) &#123;</div><div class="line">        NumberFormat numberFormat = NumberFormat.getPercentInstance();</div><div class="line">        numberFormat.setMinimumFractionDigits(1);</div><div class="line">        numberFormat.setMaximumFractionDigits(2);</div><div class="line">        return numberFormat.format(value);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>想把浮点数”0.31415926”保留一位小数，就使用了String.format()<br>方法完成，而且完全不顾编译器对我们的建议： <img src="http://upload-images.jianshu.io/upload_images/4398977-6b4a754e0cd9d8cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述">之后，我们想把保留了一位小数后的浮点数”0.3”转成百分比的形式”30.0%”，当然先转成double，然后利用NumberFormat<br>格式化成百分比。 看似没有问题，但是当我们把系统语言换成法语(France)之后，程序直接Crash，而且当我们只显示remain1Places()<br>后的title时，发现”0.31415926”变成了”0,3”，而不是”0.3”，这就直接导致了Double.parseDouble(“0,3”)抛出一个数据格式异常。 那为什么String.format()<br>会将小数点的”句点(.)“换成了”逗号(,)“呢？<br>摘自<a href="https://en.wikipedia.org/wiki/Decimal_mark" target="_blank" rel="external">维基百科</a>： A decimal mark is a symbol used to separate the integer part from the fractional part of a number written in decimal form. Different countries officially designate different symbols for the decimal mark. The choice of symbol for the decimal mark also affects the choice of symbol for the thousands separator used in digit grouping, so the latter is also treated in this article. <img src="http://upload-images.jianshu.io/upload_images/4398977-562e843356d6da5e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里写图片描述"></p>
-<p>可以看到，有很多地区都是用<strong>逗号(,)</strong>作为<strong>小数点</strong>的，如19,90€表示19.9欧元；但计算机程序中的浮点数必须用<strong>句点(.)</strong>作为小数点，如double price = 19.90;<br>表示浮点数19.9。所以在使用double的包装类Double<br>的parseDouble(String)<br>或valueOf(String)<br>方法将字符串表示的double值转成double时，字符串所表示的double值必须是用<strong>句点(.)</strong>分隔的浮点数，也就是计算机的浮点数表示形式。<br>Double.valueOf(String)<br>方法仅仅调用了Double.parseDouble(String)<br>并返回Double<br>对象。 Double.parseDouble(String)<br>方法返回原语类型的double<br>变量。</p>
-<p>因此，我们就可以断定这是一个本地化（Locale）的问题了。现在再来看一下编译器(lint)给我们String.format()<br>方法的建议：<br>Implicitly using the default locale is a common source of bugs: Use String.format(Locale, …) instead. 隐式地使用默认的区域设置是常见Bug源，请使用String.format(Locale, …)等方法替换它。</p>
-<p>也就是说，String.format(String format, Object… args)<br>会调用format(Locale.getDefault(), format, args)<br>使用<strong>用户默认的区域设置</strong>返回格式化好且本地化好的字符串，因用户设置的不同而返回不同的字符串，进而出现Bug。如果你只是想格式化字符串而不是人为干预，应该用</p>
-<p><code>String.format(Locale locale, String format, Object... args)</code><br>方法，Locale参数用Locale.US<br>就可以了。<br>因此，我们应该重视本地化问题：<br>将字符串所有字符转为大/小写的方法String.toLowerCase()<br>/String.toUpperCase()<br>并不一定能将字符真正的大/小写（如区域设置为土耳其时，i大写后还是i），因此应该指定要使用的区域设置String.toLowerCase(Locale locale)<br>/String.toUpperCase(Locale locale)<br>。<br>格式化字符串的方法String.format(String format, Object… args)<br>应该指定区域设置，以避免区域设置变化导致的Bug。<br><strong>千万不要将数字format()<br>成字符串后再将该字符串转回原语类型</strong>，因为format()<br>后的字符串可能不是合法的原语类型的数字了。即永远不要出现类似这样</p>
-<p>Double.parseDouble(new DecimalFormat(“#.##”).format(doubleValue))<br>的代码。<br>建议使用NumberFormat<br>，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static String remain1Places(String str) &#123;</div><div class="line">    NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());</div><div class="line">    numberFormat.setMinimumFractionDigits(1);</div><div class="line">    numberFormat.setMaximumFractionDigits(1);</div><div class="line">    return numberFormat.format(Double.parseDouble(str));</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static String getPercent(String str) &#123;</div><div class="line">    NumberFormat numberFormat = NumberFormat.getPercentInstance(Locale.getDefault());</div><div class="line">    numberFormat.setMinimumFractionDigits(1);</div><div class="line">    numberFormat.setMaximumFractionDigits(2);</div><div class="line">    return numberFormat.format(Double.parseDouble(str));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/04/12/Invalid-double崩溃分析/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-04-03T06:21:44.000Z"><a href="/2016/04/03/Android动态添加权限/">2016-04-03</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/04/03/Android动态添加权限/">Android动态添加权限</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>一、工具</p>
-<p>权限适配工具 PermissionsDispatcher</p>
-<p>使用注解</p>
-<p>@RuntimePermissions 是必须的注册当前activity或fragment</p>
-<p>@NeedsPermission 是必须要有的，在需要权限的方法上添加</p>
-<p>@OnShowRationale 注释一个方法解释为什么需要这个(个)权限并提示用户判断是否允许</p>
-<p>@OnPermissionDenied 当权限被拒绝时调用</p>
-<p>@OnNeverAskAgain 当用户勾选了不再提示时调用</p>
-<p>使用方法：</p>
-<p>注意：同一组内的任何一个权限被授权了，其他权限也自动被授权。例如，一旦READ_CALENDAR被授权了，应用也有WRITE_CALENDAR权限了。</p>
-<p>参考文档</p>
-<p>Demo<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div></pre></td><td class="code"><pre><div class="line">@RuntimePermissions</div><div class="line"></div><div class="line">public class MainActivity extends AppCompatActivity implements View.OnClickListener &#123;</div><div class="line"></div><div class="line">@Override</div><div class="line"></div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line"></div><div class="line">super.onCreate(savedInstanceState);</div><div class="line"></div><div class="line">setContentView(R.layout.activity_main);</div><div class="line"></div><div class="line">findViewById(R.id.button_camera).setOnClickListener(this);</div><div class="line"></div><div class="line">findViewById(R.id.button_contacts).setOnClickListener(this);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line"></div><div class="line">public void onClick(@NonNull View v) &#123;</div><div class="line"></div><div class="line">switch (v.getId()) &#123;</div><div class="line"></div><div class="line">case R.id.button_camera:</div><div class="line"></div><div class="line">// NOTE: delegate the permission handling to generated method</div><div class="line"></div><div class="line">MainActivityPermissionsDispatcher.showCameraWithCheck(this);</div><div class="line"></div><div class="line">break;</div><div class="line"></div><div class="line">case R.id.button_contacts:</div><div class="line"></div><div class="line">// NOTE: delegate the permission handling to generated method</div><div class="line"></div><div class="line">MainActivityPermissionsDispatcher.showContactsWithCheck(this);</div><div class="line"></div><div class="line">break;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line"></div><div class="line">public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) &#123;</div><div class="line"></div><div class="line">super.onRequestPermissionsResult(requestCode, permissions, grantResults);</div><div class="line"></div><div class="line">// NOTE: delegate the permission handling to generated method</div><div class="line"></div><div class="line">MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@NeedsPermission(Manifest.permission.CAMERA)</div><div class="line"></div><div class="line">void showCamera() &#123;</div><div class="line"></div><div class="line">// NOTE: Perform action that requires the permission. If this is run by PermissionsDispatcher, the permission will have been granted</div><div class="line"></div><div class="line">getSupportFragmentManager().beginTransaction()</div><div class="line"></div><div class="line">.replace(R.id.sample_content_fragment, CameraPreviewFragment.newInstance())</div><div class="line"></div><div class="line">.addToBackStack(&quot;camera&quot;)</div><div class="line"></div><div class="line">.commitAllowingStateLoss();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@NeedsPermission(&#123;Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS&#125;)</div><div class="line"></div><div class="line">void showContacts() &#123;</div><div class="line"></div><div class="line">// NOTE: Perform action that requires the permission.</div><div class="line"></div><div class="line">// If this is run by PermissionsDispatcher, the permission will have been granted</div><div class="line"></div><div class="line">getSupportFragmentManager().beginTransaction()</div><div class="line"></div><div class="line">.replace(R.id.sample_content_fragment, ContactsFragment.newInstance())</div><div class="line"></div><div class="line">.addToBackStack(&quot;contacts&quot;)</div><div class="line"></div><div class="line">.commitAllowingStateLoss();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@OnShowRationale(Manifest.permission.CAMERA)</div><div class="line"></div><div class="line">void showRationaleForCamera(PermissionRequest request) &#123;</div><div class="line"></div><div class="line">// NOTE: Show a rationale to explain why the permission is needed, e.g. with a dialog.</div><div class="line"></div><div class="line">// Call proceed() or cancel() on the provided PermissionRequest to continue or abort</div><div class="line"></div><div class="line">showRationaleDialog(R.string.permission_camera_rationale, request);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@OnShowRationale(&#123;Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS&#125;)</div><div class="line"></div><div class="line">void showRationaleForContact(PermissionRequest request) &#123;</div><div class="line"></div><div class="line">// NOTE: Show a rationale to explain why the permission is needed, e.g. with a dialog.</div><div class="line"></div><div class="line">// Call proceed() or cancel() on the provided PermissionRequest to continue or abort</div><div class="line"></div><div class="line">showRationaleDialog(R.string.permission_contacts_rationale, request);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@OnPermissionDenied(Manifest.permission.CAMERA)</div><div class="line"></div><div class="line">void onCameraDenied() &#123;</div><div class="line"></div><div class="line">// NOTE: Deal with a denied permission, e.g. by showing specific UI</div><div class="line"></div><div class="line">// or disabling certain functionality</div><div class="line"></div><div class="line">Toast.makeText(this, R.string.permission_camera_denied, Toast.LENGTH_SHORT).show();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@OnNeverAskAgain(Manifest.permission.CAMERA)</div><div class="line"></div><div class="line">void onCameraNeverAskAgain() &#123;</div><div class="line"></div><div class="line">Toast.makeText(this, R.string.permission_camera_never_askagain, Toast.LENGTH_SHORT).show();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">public void onBackClick(View view) &#123;</div><div class="line"></div><div class="line">getSupportFragmentManager().popBackStack();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) &#123;</div><div class="line"></div><div class="line">new AlertDialog.Builder(this)</div><div class="line"></div><div class="line">.setPositiveButton(R.string.button_allow, new DialogInterface.OnClickListener() &#123;</div><div class="line"></div><div class="line">@Override</div><div class="line"></div><div class="line">public void onClick(@NonNull DialogInterface dialog, int which) &#123;</div><div class="line"></div><div class="line">request.proceed();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;)</div><div class="line"></div><div class="line">.setNegativeButton(R.string.button_deny, new DialogInterface.OnClickListener() &#123;</div><div class="line"></div><div class="line">@Override</div><div class="line"></div><div class="line">public void onClick(@NonNull DialogInterface dialog, int which) &#123;</div><div class="line"></div><div class="line">request.cancel();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;)</div><div class="line"></div><div class="line">.setCancelable(false)</div><div class="line"></div><div class="line">.setMessage(messageResId)</div><div class="line"></div><div class="line">.show();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>权限适配工具 PermissionCompat</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/04/03/Android动态添加权限/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -446,7 +436,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -502,7 +492,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>

@@ -88,6 +88,120 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2018-02-21T06:33:20.000Z"><a href="/2018/02/21/霍夫变换/">2018-02-21</a></time>
+        
+  
+    <h1 class="title"><a href="/2018/02/21/霍夫变换/">霍夫变换</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#霍夫变换——直线"><span class="toc-text">霍夫变换——直线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#霍夫变换——圆检测"><span class="toc-text">霍夫变换——圆检测</span></a></li></ol>
+    </div>
+
+        <h2 id="霍夫变换——直线"><a href="#霍夫变换——直线" class="headerlink" title="霍夫变换——直线"></a>霍夫变换——直线</h2><p>&emsp;&emsp;Hough Line Transform用来做直线检测，前提是已经做了边缘检测。<br>&emsp;&emsp;霍夫变换是平面空间到极坐标空间的转换，具有以下特点：</p>
+<ul>
+<li>对于任意一条直线上的所有点来说，变换到极坐标中，根据theta值可以得到r值</li>
+<li>属于同一条直线上的点在极坐标(r,theta)必然在一个点上有最强的信号出现，因此根据最强信号的极坐标反算到平面坐标中就可以得到直线上各个点的像素坐标，从而得到直线。</li>
+</ul>
+<p>相关API：</p>
+<ul>
+<li>标准的霍夫变换cv::HoughLines从平面坐标转换到霍夫空间，最终输出是(theta,r)，表示极坐标空间</li>
+<li>霍夫变换直线概率cv::HoughLinesP最终输出是直线的两个点</li>
+</ul>
+<p>先进行边缘检测，在进行霍夫直线检测<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;vector&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line">using namespace cv;</div><div class="line">using namespace std;</div><div class="line">int main(int argc, int ** argv)</div><div class="line">&#123;</div><div class="line">	src = imread(&quot;F:/linedec.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	namedWindow(&quot;output img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	Canny(src, gray, 150, 200);</div><div class="line">	cvtColor(gray, dst, CV_GRAY2BGR);</div><div class="line">	imshow(&quot;edge img&quot;, gray);</div><div class="line">	vector&lt;Vec4f&gt; plines;</div><div class="line">	HoughLinesP(gray, plines, 1, CV_PI / 180.0, 10, 0, 10);</div><div class="line">	Scalar color = Scalar(0, 0, 255);</div><div class="line">	for (size_t i = 0; i &lt; plines.size(); i++)</div><div class="line">	&#123;</div><div class="line">		Vec4f hlines = plines[i];</div><div class="line">		line(dst, Point(hlines[0], hlines[1]), Point(hlines[2], hlines[3]), color, 3, LINE_AA);</div><div class="line">	&#125;</div><div class="line">	imshow(&quot;output img&quot;, dst);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>演示效果<br><img src="http://upload-images.jianshu.io/upload_images/4398977-3047b6b1499e4cfc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="霍夫变换——圆检测"><a href="#霍夫变换——圆检测" class="headerlink" title="霍夫变换——圆检测"></a>霍夫变换——圆检测</h2><p>&emsp;&emsp;从平面坐标到极坐标转换三个参数C(x0,y0,r)其中x0与y0是圆心坐标<br>&emsp;&emsp;假设平面坐标的任意一个圆上的点，转换到极坐标中：C(x0,y0,r)处有最大值，霍夫变换正是利用这个原理实现圆的检测。</p>
+<p>相关API：<br>cv::HoughCircles<br>&emsp;&emsp;因为霍夫圆检测对噪声比较敏感，所有先对图像做中值滤波。<br>&emsp;&emsp;基于效率考虑，opencv中实现的霍夫变换圆检测是基于图像梯度的实现，分为两步：</p>
+<ol>
+<li>检测边缘，发现可能的圆心</li>
+<li>基于第一步的基础上从候选圆心开始计数最佳半径大小</li>
+</ol>
+<p>HoughCircles参数说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;vector&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line">using namespace cv;</div><div class="line">using namespace std;</div><div class="line">int main(int argc, int ** argv)</div><div class="line">&#123;</div><div class="line">	src = imread(&quot;F:/circle.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	namedWindow(&quot;output img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;input img&quot;, src);</div><div class="line">	//中值滤波</div><div class="line">	Mat output;</div><div class="line">	medianBlur(src, output, 3);</div><div class="line">	cvtColor(output, output, CV_BGR2GRAY);</div><div class="line">	//霍夫圆检测</div><div class="line">	vector&lt;Vec3f&gt; pcircles;</div><div class="line">	HoughCircles(output, pcircles, CV_HOUGH_GRADIENT, 1, 10, 100, 30, 5, 50);</div><div class="line">	src.copyTo(dst);</div><div class="line">	for (size_t i = 0; i &lt; pcircles.size(); i++)</div><div class="line">	&#123;</div><div class="line">		Vec3f cc = pcircles[i];</div><div class="line">		circle(dst, Point(cc[0], cc[1]), cc[2], Scalar(0, 0, 255), 2, LINE_AA);</div><div class="line">		circle(dst, Point(cc[0], cc[1]), 2, Scalar(0, 255, 0), 2, LINE_AA);</div><div class="line">	&#125;</div><div class="line">	imshow(&quot;output img&quot;, dst);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>演示效果<br><img src="http://upload-images.jianshu.io/upload_images/4398977-e145efe71b57b399.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>cc[0]cc[1]代表圆心的x和y的像素值，cc[2]代表半径</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2018/02/21/霍夫变换/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2018-02-20T06:34:37.000Z"><a href="/2018/02/20/轮廓发现/">2018-02-20</a></time>
+        
+  
+    <h1 class="title"><a href="/2018/02/20/轮廓发现/">轮廓发现</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#轮廓发现"><span class="toc-text">轮廓发现</span></a></li></ol>
+    </div>
+
+        <h2 id="轮廓发现"><a href="#轮廓发现" class="headerlink" title="轮廓发现"></a>轮廓发现</h2><p>&emsp;&emsp;轮廓发现是基于图像边缘提取的基础寻找对象轮廓的方法，所以边缘提取的阈值选定会影响最终轮廓发现结果。<br>相关API：<br><code>findContours发现轮廓</code><br><code>drawContours绘制轮廓</code></p>
+<p>操作步骤:</p>
+<ul>
+<li>输入图像转为灰度图像</li>
+<li>使用Canny进行边缘提取，得到二值图像</li>
+<li>使用findContours寻找轮廓</li>
+<li>使用drawContours绘制轮廓<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;vector&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line">using namespace cv;</div><div class="line">using namespace std;</div><div class="line">void contours(int, void *);</div><div class="line">int thread_value = 100;</div><div class="line">int thread_max = 255;</div><div class="line">RNG rng;</div><div class="line">int main(int argc, int ** argv)</div><div class="line">&#123;</div><div class="line">	src = imread(&quot;F:/circle.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	namedWindow(&quot;output img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	</div><div class="line">	cvtColor(src, src, CV_BGR2GRAY);</div><div class="line">	imshow(&quot;input img&quot;, src);</div><div class="line">	const char* title = &quot;thread value&quot;;</div><div class="line">	createTrackbar(title, &quot;output img&quot;, &amp;thread_value, thread_max, contours);</div><div class="line">	contours(0, 0);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div><div class="line">void contours(int, void *)</div><div class="line">&#123;</div><div class="line">	vector&lt;vector&lt;Point&gt;&gt; contours;</div><div class="line">	vector&lt;Vec4i&gt; hierarchy;</div><div class="line">	Canny(src, dst, thread_value, thread_value * 2, 3, false);</div><div class="line">	findContours(dst, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));</div><div class="line">	Mat drawImg = Mat::zeros(dst.size(), CV_8UC3);</div><div class="line">	for (size_t i = 0; i &lt; contours.size(); i++)</div><div class="line">	&#123;</div><div class="line">		Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));</div><div class="line">		drawContours(drawImg, contours, i, color, 2, LINE_8, hierarchy, 0, Point(0, 0));</div><div class="line">	&#125;</div><div class="line">	imshow(&quot;output img&quot;, drawImg);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-959dae316bdf9c6a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="阈值100.png"><br><img src="http://upload-images.jianshu.io/upload_images/4398977-60f32f372de501c7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="阈值204.png"></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2018/02/20/轮廓发现/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2018-02-09T06:18:57.000Z"><a href="/2018/02/09/边缘处理/">2018-02-09</a></time>
         
   
@@ -271,128 +385,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2018-02-04T06:17:39.000Z"><a href="/2018/02/04/模糊图像——线性滤波/">2018-02-04</a></time>
-        
-  
-    <h1 class="title"><a href="/2018/02/04/模糊图像——线性滤波/">模糊图像——线性滤波</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#中值滤波"><span class="toc-text">中值滤波</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#双边滤波"><span class="toc-text">双边滤波</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#自定义线性滤波"><span class="toc-text">自定义线性滤波</span></a></li></ol>
-    </div>
-
-        <p>&emsp;&emsp;模糊图像是opencv常见的操作，使用模糊操作的原因是为了给图像预处理时降低噪声影响，Smooth和Blur是opencv图像模糊的API，其背后的原理其实是数学的卷积操作，而卷积算子计算通常是线性计算，所以也可以称为线性滤波。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-ca27910845d5e18d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="卷积.png"></p>
-<p>&emsp;&emsp;卷积是图像处理的一个操作，是kernel在图像上的每个像素上的操作。kernel本质是一个固定大小的矩阵数组，中心点称为锚点（anchor point）。<br>&emsp;&emsp;把kernel放到像素数组上，求锚点周围覆盖的像素乘积之和（包括锚点），用来替换锚点覆盖下像素点值称为卷积处理。</p>
-<p>&emsp;&emsp;上面的卷积过程是一个3x3的窗口从左到右，从上到下平移过程。黄色的每个像素点之和取平均值赋值给中心的红色点作为卷积处理后的像素值。这是一种均值滤波。<br>opencv提供了均值滤波（模糊）的API <code>blur(Mat src,Mat dst,Size(xradius,yradius),Point(-1,-1))</code><br>&emsp;&emsp;当然还有其他模糊的方式，如高斯模糊 <code>GaussianBlur(Mat src,Mat dst,Size(x,y),sigmax,sigmay)</code> 其中Size(x,y)的x和y必须为正基数，且一般x=y</p>
-<p>&emsp;&emsp;不同卷积算子可以看做不同的滤波结果：<br><img src="http://upload-images.jianshu.io/upload_images/4398977-ea34e661d7992c05.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="卷积.png"></p>
-<h4 id="中值滤波"><a href="#中值滤波" class="headerlink" title="中值滤波"></a>中值滤波</h4><p>中值滤波的应用medianBlur(Mat src,Mat dst,ksize)</p>
-<ul>
-<li>统计排序滤波器</li>
-<li>中值滤波对椒盐噪声有很好的抑制作用</li>
-</ul>
-<p>&emsp;&emsp;椒盐噪声一般是作为最值对信号产生影响，中值滤波对最值有很好的抑制作用。<br>那么是否均值滤波能做为生产环境的滤波处理，均值滤波有什么缺陷呢？</p>
-<p>均值模糊无法克服边缘信息丢失缺陷，因为均值滤波是基于平均权重处理。而高斯模糊部分克服了改缺陷，但是无法完全避免，因为高斯模糊没有考虑像素值不同的影响。</p>
-<h4 id="双边滤波"><a href="#双边滤波" class="headerlink" title="双边滤波"></a>双边滤波</h4><p>&emsp;&emsp;双边滤波也可以称为高斯双边模糊，是边缘保留的滤波方法，避免了边缘信息的丢失，保留了图像轮廓不变。</p>
-<p>&emsp;&emsp;考虑像素值的处理，如果有1和255两个像素值，那么在各自的像素值处离的比较远，可以不做处理</p>
-<p>bilateralFilter(Mat src,Mat dst,d=15,150,3) </p>
-<ul>
-<li>15表示计算的半径，半径之内像素全部纳入计算，如果是-1，那么根据sigma space参数取值</li>
-<li>150 sigma color 决定多少差值之内的像素会被计算</li>
-<li>3 sigma space 如果d的值大于0则声明无效，否则根据它来计算d值</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">using namespace cv;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">	Mat src, dst;</div><div class="line">	src = imread(&quot;F:/cat.jpg&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return - 1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;show img&quot;, src);</div><div class="line">	dst = Mat::zeros(src.size(),src.type());</div><div class="line">	//medianBlur(src, dst, 3);</div><div class="line">	bilateralFilter(src, dst, 15, 100, 5);</div><div class="line">	namedWindow(&quot;bilateralFilter&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;bilateralFilter result&quot;, dst);</div><div class="line"></div><div class="line">	//Mat bgblur(src.size(), src.type());</div><div class="line">	//GaussianBlur(src, bgblur, Size(15, 15), 3, 3);</div><div class="line">	//imshow(&quot;GaussianBlur result&quot;, bgblur);</div><div class="line">	//可以在双边滤波后做对比度增强</div><div class="line">	Mat resultImg(src.size(), src.type());</div><div class="line">	Mat kernel = (Mat_&lt;int&gt;(3, 3) &lt;&lt; 0, -1, 0, -1, 5, -1, 0, -1, 0);</div><div class="line">	filter2D(src, resultImg, -1, kernel, Point(-1, -1), 0);</div><div class="line">	imshow(&quot;result&quot;, resultImg);</div><div class="line">	waitKey(0);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>输出结果演示<br><img src="http://upload-images.jianshu.io/upload_images/4398977-7850d49ec36abfe9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
-<h4 id="自定义线性滤波"><a href="#自定义线性滤波" class="headerlink" title="自定义线性滤波"></a>自定义线性滤波</h4><p>&emsp;&emsp;线性滤波常用的算子有Sobel算子，Laplance算子，当然我们可以自己定义算子然后通过opencv提供的filter2D来实现自己的滤波器。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">using namespace cv;</div><div class="line">int main(int argc,int ** argv)</div><div class="line">&#123;</div><div class="line">	Mat src, dst;</div><div class="line">	int ksize = 0;</div><div class="line">	src = imread(&quot;F:/cat.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;show img&quot;, src);</div><div class="line">	dst = Mat::zeros(src.size(), src.type());</div><div class="line">	namedWindow(&quot;bilateralFilter&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	//Robert X方向</div><div class="line">	//Mat kernelx = (Mat_&lt;int&gt;(2, 2) &lt;&lt; 1, 0, 0, -1);</div><div class="line">	//filter2D(src, dst, -1, kernelx, Point(-1, -1), 0.0);</div><div class="line">	//Robert Y方向</div><div class="line">	//Mat result = Mat::zeros(src.size(), src.type());</div><div class="line">	//Mat kernely = (Mat_&lt;int&gt;(2, 2) &lt;&lt; 0, 1, -1, 0);</div><div class="line">	//filter2D(src, result, -1, kernely, Point(-1, -1), 0.0);</div><div class="line">	</div><div class="line">	//Sobel X方向</div><div class="line">	Mat kernelx = (Mat_&lt;int&gt;(3, 3) &lt;&lt; -1, 0, 1, -2, 0, 2, -1, 0, 1);</div><div class="line">	filter2D(src, dst, -1, kernelx, Point(-1, -1), 0.0);</div><div class="line">	//Sobel Y方向</div><div class="line">	Mat result = Mat::zeros(src.size(), src.type());</div><div class="line">	Mat kernely = (Mat_&lt;int&gt;(3, 3) &lt;&lt; -1, -2, -1, 0, 0, 0, 1, 2, 1);</div><div class="line">	filter2D(src, result, -1, kernely, Point(-1, -1), 0.0);</div><div class="line">	//拉普拉斯算子</div><div class="line">	Mat result_ = Mat::zeros(src.size(), src.type());</div><div class="line">	Mat kernel_ = (Mat_&lt;int&gt;(3, 3) &lt;&lt; 0, -1, 0, -1, 4, -1, 0, -1, 0);</div><div class="line">	filter2D(src, result_, -1, kernel_, Point(-1, -1), 0.0);</div><div class="line">	imshow(&quot;Sobel X result&quot;, dst);</div><div class="line">	imshow(&quot;Sobel Y result&quot;, result);</div><div class="line">	imshow(&quot;laplance result&quot;, result_);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>输出结果演示<br><img src="http://upload-images.jianshu.io/upload_images/4398977-3fdac31efef3a3ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
-<p>可以看出，针对不同卷积算子，得到不同的结果，其中沿X方向的算子和沿Y方向的算子得到的结果都只有部分原图像的特征，使用高斯算子得到的特征比较符合原图像的要求。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2018/02/04/模糊图像——线性滤波/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2018-02-01T06:17:12.000Z"><a href="/2018/02/01/Mat基本操作/">2018-02-01</a></time>
-        
-  
-    <h1 class="title"><a href="/2018/02/01/Mat基本操作/">Mat基本操作</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#矩阵基本操作"><span class="toc-text">矩阵基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#获取图像像素指针"><span class="toc-text">获取图像像素指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#像素范围处理saturate-cast"><span class="toc-text">像素范围处理saturate_cast</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#矩阵掩膜操作-对比度提高，立体感增强"><span class="toc-text">矩阵掩膜操作(对比度提高，立体感增强)</span></a></li></ol>
-    </div>
-
-        <h4 id="矩阵基本操作"><a href="#矩阵基本操作" class="headerlink" title="矩阵基本操作"></a>矩阵基本操作</h4><p>opencv最基本的结构体是Mat，opencv提供了一系列Mat基本操作<br>加载图片cv::imgread<br>修改图片(色彩变化)cv::cvtColor 第三个参数表示从源色彩空间转换到目的色彩空间<br>保存图片cv::imgwrite<br>显示图像cv::namedWindows cv::imshow<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">using namespace cv;</div><div class="line"></div><div class="line">int main()</div><div class="line">&#123;</div><div class="line">	Mat src = imread(&quot;F:/build_android.png&quot;,IMREAD_GRAYSCALE);</div><div class="line">	Mat output_img = Mat::zeros(src.size(),src.type());</div><div class="line">	namedWindow(&quot;test opencv&quot;, CV_WINDOW_AUTOSIZE);//CV_WINDOW_AUTOSIZE不允许任务修改窗口大小</div><div class="line">	imshow(&quot;show img&quot;, src);</div><div class="line"></div><div class="line">	namedWindow(&quot;test opencv2&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	</div><div class="line">	cvtColor(src, output_img, COLOR_BGR2HLS);</div><div class="line">	imshow(&quot;show img2&quot;, output_img);</div><div class="line"></div><div class="line">	int cols = src.cols*src.channels();//图像宽度等于图像的cols乘以图像的通道数</div><div class="line">	int rows = src.rows;//图像高度等于图像的rows</div><div class="line">	for (int row = 1; row &lt; rows-1; row++) &#123;</div><div class="line"></div><div class="line">	&#125;</div><div class="line">	//imwrite(&quot;F:/hlstest.png&quot;,output_img);</div><div class="line">	waitKey(0);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="获取图像像素指针"><a href="#获取图像像素指针" class="headerlink" title="获取图像像素指针"></a>获取图像像素指针</h4><p>CV_Assert(myImage.depth()==CV_8U)<br>Mat.ptr<uchar>(int i=0)获取像素矩阵的指针，索引i表示第几行，从0开始计数<br>获取当前行指针const uchar* current = myImage.ptr<uchar>(row);<br>获取当前像素点P(row,col)的像素值p(row,col) = current[col]</uchar></uchar></p>
-<h4 id="像素范围处理saturate-cast"><a href="#像素范围处理saturate-cast" class="headerlink" title="像素范围处理saturate_cast"></a>像素范围处理saturate_cast<uchar></uchar></h4><p>saturate_cast<uchar>(-100)，返回0<br>saturate_cast<uchar>(2888)，返回255<br>小于0返回0，大于255返回255 这个函数确保像素值在0到255之间</uchar></uchar></p>
-<h4 id="矩阵掩膜操作-对比度提高，立体感增强"><a href="#矩阵掩膜操作-对比度提高，立体感增强" class="headerlink" title="矩阵掩膜操作(对比度提高，立体感增强)"></a>矩阵掩膜操作(对比度提高，立体感增强)</h4><p>数字图像处理中,掩模为二维矩阵数组,有时也用多值图像。数字图像处理中,图像掩模主要用于：</p>
-<ul>
-<li>提取感兴趣区,用预先制作的感兴趣区掩模与待处理图像相乘,得到感兴趣区图像,感兴趣区内图像值保持不变,而区外图像值都为0。</li>
-<li>屏蔽作用,用掩模对图像上某些区域作屏蔽,使其不参加处理或不参加处理参数的计算,或仅对屏蔽区作处理或统计。</li>
-<li>结构特征提取,用相似性变量或图像匹配方法检测和提取图像中与掩模相似的结构特征。</li>
-<li>特殊形状图像的制作。</li>
-</ul>
-<p>掩膜操作实现图像对比度调整，根据掩膜来重新计算每个像素的像素值，掩膜(mask)也被称为 kernel。<br>通过掩膜操作实现图像对比度提高。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-222e88ac7a2228da.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="mask.png"></p>
-<p>上面矩阵像素操作可以用下面公式来表示<br><code>I(i,j) = 5*I(i,j) - [I(i-1,j) + I(i+1,j) + I(i,j-1) + I(i,j+1)]</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line"></div><div class="line">using namespace cv;</div><div class="line"></div><div class="line">int main(int argc, const char * argv[]) &#123;</div><div class="line">    Mat src, dst;</div><div class="line">    //加载图像</div><div class="line">    src = imread(&quot;F:/build_android.jpg&quot;);</div><div class="line">    </div><div class="line">    if (!src.data) &#123;</div><div class="line">        printf(&quot;could not load image\n&quot;);</div><div class="line">        return -1;</div><div class="line">    &#125;</div><div class="line">    //显示</div><div class="line">    namedWindow(&quot;input Image&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">    imshow(&quot;input Image&quot;, src);</div><div class="line"></div><div class="line">     //掩膜操作</div><div class="line">     int cols = (src.cols-1) * src.channels();//图像宽度等于图像的cols乘以图像的通道数</div><div class="line">     int offsetx = src.channels();</div><div class="line">     int rows = src.rows;//图像高度等于图像的rows</div><div class="line">     dst = Mat::zeros(src.size(), src.type());</div><div class="line"></div><div class="line">     for (int row = 1; row &lt; rows-1; row++) &#123;</div><div class="line">       const uchar *previous = src.ptr&lt;uchar&gt;(row-1);</div><div class="line">       const uchar *current = src.ptr&lt;uchar&gt;(row);</div><div class="line">       const uchar *next = src.ptr&lt;uchar&gt;(row+1);</div><div class="line">       uchar *output = dst.ptr&lt;uchar&gt;(row);</div><div class="line">       for (int col = offsetx; col &lt; cols; col++) &#123;</div><div class="line">         output[col] = saturate_cast&lt;uchar&gt;(5*current[col] - (current[col-offsetx] + current[col+offsetx] + previous[col] + next[col]));</div><div class="line">       &#125;</div><div class="line">     &#125;</div><div class="line"></div><div class="line">    //显示</div><div class="line">    namedWindow(&quot;contrast Image&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">    imshow(&quot;contrast Image&quot;, dst);</div><div class="line">    </div><div class="line">    waitKey(0);</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>那么每次处理图片我们都需要把上面一长串代码拷贝到工程里面去吗，上述代码太多，其实opencv已经实现了上面功能。<br>filter2D函数可以实现上面效果，在第四个参数添加掩膜矩阵就可以实现相同效果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//定义掩膜</div><div class="line">Mat kern = (Mat_&lt;char&gt;(3,3) &lt;&lt;  0, -1,  0,</div><div class="line">                               -1,  5, -1,</div><div class="line">                                0, -1,  0);</div></pre></td></tr></table></figure></p>
-<p>上面代码可以用下面代码替代<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">double t = getTickCount();  //获得当前时间</div><div class="line">Mat kernel = (Mat_&lt;char&gt;(3, 3) &lt;&lt; 0, -1, 0, -1, 5, -1, 0, -1 ,0);</div><div class="line">//src.depth() 表示与原图深度一样，-1也表示一样</div><div class="line">filter2D(src, dst, src.depth(), kernel);</div><div class="line">double time = (getTickCount() - t) / getTickFrequency();</div><div class="line">printf(&quot;time consume %.5f&quot;, time);</div><div class="line">namedWindow(&quot;contrast Image&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">imshow(&quot;contrast Image&quot;, dst);</div></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2018/02/01/Mat基本操作/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -406,7 +398,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -462,7 +454,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>

@@ -88,6 +88,105 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2017-09-01T08:15:00.000Z"><a href="/2017/09/01/视频编解码学习三-播放yuv格式视频/">2017-09-01</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/09/01/视频编解码学习三-播放yuv格式视频/">视频编解码学习三 播放yuv格式视频</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#SDL"><span class="toc-text">SDL</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#源码"><span class="toc-text">源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#下载"><span class="toc-text">下载</span></a></li></ol>
+    </div>
+
+        <p>&emsp;&emsp;今天的主题是播放yuv格式视频。<br>在上两篇博客里面介绍过了如何将视频解码为单独的视频和音频，但是如果播放这些格式的文件呢，安卓原生是没有这些控件来直播播放yuv格式视频的，必须通过借助其他方式来播放，今天就介绍SDL2来解码播放yuv文件。</p>
+<h4 id="SDL"><a href="#SDL" class="headerlink" title="SDL"></a>SDL</h4><p>&emsp;&emsp;什么是SDL？SDL（Simple DirectMedia Layer）是一套开放源代码的跨平台多媒体开发库，专门用来开发多媒体，游戏等。详细想了解的可以去<a href="https://wiki.libsdl.org/" target="_blank" rel="external">SDL</a>官方文档查看</p>
+<p>下面是FFmpeg官方给出的播放流程<br><img src="http://upload-images.jianshu.io/upload_images/4398977-b6aa3b7ee5e0791e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>根据上面的流程，在得到yuv像素数据的时候就可以渲染了</p>
+<p>采用SDL播放yuv文件播放流程:<br>               &emsp;&emsp; 第一步：初始化SDL多媒体框架-&gt;SDL_Init<br>        &emsp;&emsp;第二步：初始化SDL窗口<br>        &emsp;&emsp;第三步：创建渲染器-&gt;渲染窗口(OpenGL ES)<br>        &emsp;&emsp;第四步：设置纹理数据-&gt;播放YUV视频<br>        &emsp;&emsp;第五步：将纹理数据拷贝到渲染器<br>        &emsp;&emsp;第六步：显示帧画面<br>        &emsp;&emsp;第七步：退出SDL释放内存</p>
+<h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div></pre></td><td class="code"><pre><div class="line">#include &lt;jni.h&gt;</div><div class="line">#include &lt;android/log.h&gt;</div><div class="line"></div><div class="line">#define LOG_I(...) __android_log_print(ANDROID_LOG_ERROR , &quot;main&quot;, __VA_ARGS__)</div><div class="line"></div><div class="line">#include &quot;SDL.h&quot;</div><div class="line">#include &quot;SDL_log.h&quot;</div><div class="line">#include &quot;SDL_main.h&quot;</div><div class="line"></div><div class="line">////avcodec:编解码(最重要的库)</div><div class="line">//#include &quot;libavcodec/avcodec.h&quot;</div><div class="line">////avformat:封装格式处理</div><div class="line">//#include &quot;libavformat/avformat.h&quot;</div><div class="line">////avutil:工具库(大部分库都需要这个库的支持)</div><div class="line">//#include &quot;libavutil/imgutils.h&quot;</div><div class="line">////swscale:视频像素数据格式转换</div><div class="line">//#include &quot;libswscale/swscale.h&quot;</div><div class="line">////导入音频采样数据格式转换库</div><div class="line">//#include &quot;libswresample/swresample.h&quot;</div><div class="line"></div><div class="line">extern &quot;C&quot; &#123;</div><div class="line">#include &quot;libavcodec/avcodec.h&quot;</div><div class="line">#include &quot;libavformat/avformat.h&quot;</div><div class="line">#include &quot;libavutil/imgutils.h&quot;</div><div class="line">#include &quot;libswscale/swscale.h&quot;</div><div class="line">&#125;</div><div class="line">int main(int argc, char *argv[]) &#123;</div><div class="line">    //第一步：初始化SDL多媒体框架-&gt;SDL_Init</div><div class="line">    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == -1) &#123;</div><div class="line">        LOG_I(&quot;SDL_Init failed %s&quot;, SDL_GetError());</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">    LOG_I(&quot;SDL_Init Success!&quot;);</div><div class="line"></div><div class="line">    //第二步：初始化SDL窗口</div><div class="line">    //参数一：窗口名称-&gt;要求必需是UTF-8编码</div><div class="line">    //参数二：窗口在屏幕上面X坐标</div><div class="line">    //参数三：窗口在屏幕上面Y坐标</div><div class="line">    //参数四：窗口在屏幕上面宽</div><div class="line">    int width = 640;</div><div class="line">    //参数五：窗口在屏幕上面高</div><div class="line">    int height = 352;</div><div class="line">    //参数六：窗口状态(打开的状态:SDL_WINDOW_OPENGL)</div><div class="line">    SDL_Window* sdl_window = SDL_CreateWindow(&quot;SDL播放器&quot;,</div><div class="line">                                              SDL_WINDOWPOS_CENTERED,</div><div class="line">                                              SDL_WINDOWPOS_CENTERED,</div><div class="line">                                              width ,</div><div class="line">                                              height,</div><div class="line">                                              SDL_WINDOW_OPENGL);</div><div class="line">    if (sdl_window == NULL)&#123;</div><div class="line">        LOG_I(&quot;窗口创建失败&quot;);</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第三步：创建渲染器-&gt;渲染窗口(OpenGL ES)</div><div class="line">    //最新一期VIP课程</div><div class="line">    //参数一：渲染目标窗口</div><div class="line">    //参数二：从哪里开始渲染(-1:默认从第一个为止开始)</div><div class="line">    //参数三：渲染类型</div><div class="line">    //SDL_RENDERER_SOFTWARE:软件渲染</div><div class="line">    //...</div><div class="line">    SDL_Renderer* sdl_renderer = SDL_CreateRenderer(sdl_window, -1, 0);</div><div class="line"></div><div class="line">    //第四步：创建纹理</div><div class="line">    //参数一：纹理目标渲染器</div><div class="line">    //参数二：渲染格式</div><div class="line">    //参数三：绘制方式(SDL_TEXTUREACCESS_STREAMING:频繁绘制)</div><div class="line">    //参数四：纹理宽</div><div class="line">    //参数五：纹理高</div><div class="line">    SDL_Texture * sdl_texture = SDL_CreateTexture(sdl_renderer,</div><div class="line">                                                  SDL_PIXELFORMAT_IYUV,</div><div class="line">                                                  SDL_TEXTUREACCESS_STREAMING,</div><div class="line">                                                  width,</div><div class="line">                                                  height);</div><div class="line"></div><div class="line">    //第五步：设置纹理数据-&gt;播放YUV视频</div><div class="line">    //着色器语言(着色器)、渲染器、纹理等等...</div><div class="line">    //第一点：打开YUV文件(手机：)</div><div class="line">    FILE* yuv_file = fopen(&quot;/storage/emulated/0/DreamTestFile/Test.yuv&quot;,&quot;rb+&quot;);</div><div class="line">    if (yuv_file == NULL)&#123;</div><div class="line">        LOG_I(&quot;文件打开失败&quot;);</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第二点：循环读取YUV视频像素数据格式每一帧画面-&gt;渲染-&gt;设置纹理数据</div><div class="line">    //定义缓冲区(内存空间开辟多大?)</div><div class="line">    //Y:U:V = 4 : 1 : 1</div><div class="line">    //假设：Y = 1.0  U = 0.25  V = 0.25</div><div class="line">    //宽度：Y + U + V = 1.5</div><div class="line">    //换算：Y + U + V = width * height * 1.5</div><div class="line">    char buffer_pix[width * height * 3 / 2];</div><div class="line"></div><div class="line">    //定义渲染器区域</div><div class="line">    SDL_Rect sdl_rect;</div><div class="line">    while (true)&#123;</div><div class="line">        //一行一行的读取</div><div class="line">        fread(buffer_pix, 1, width * height * 3 / 2, yuv_file);</div><div class="line">        //判定是否读取完毕</div><div class="line">        if (feof(yuv_file))&#123;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //设置纹理数据</div><div class="line">        //参数一：目标纹理对象</div><div class="line">        //参数二：渲染区域(NULL:表示默认屏幕窗口宽高)</div><div class="line">        //参数三：视频像素数据</div><div class="line">        //参数四：帧画面宽</div><div class="line">        SDL_UpdateTexture(sdl_texture, NULL, buffer_pix, width);</div><div class="line"></div><div class="line">        //第六步：将纹理数据拷贝到渲染器</div><div class="line">        sdl_rect.x = 0;</div><div class="line">        sdl_rect.y = 0;</div><div class="line">        sdl_rect.w = width;</div><div class="line">        sdl_rect.h = height;</div><div class="line"></div><div class="line">        //先清空</div><div class="line">        SDL_RenderClear(sdl_renderer);</div><div class="line">        //再渲染</div><div class="line">        SDL_RenderCopy(sdl_renderer,sdl_texture,NULL,&amp;sdl_rect);</div><div class="line"></div><div class="line">        //第七步：显示帧画面</div><div class="line">        SDL_RenderPresent(sdl_renderer);</div><div class="line"></div><div class="line">        //第八步：延时渲染(没渲染一帧间隔时间)</div><div class="line">        SDL_Delay(20);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    //第九步：是否内存</div><div class="line">    fclose(yuv_file);</div><div class="line"></div><div class="line">    SDL_DestroyTexture(sdl_texture);</div><div class="line"></div><div class="line">    SDL_DestroyRenderer(sdl_renderer);</div><div class="line"></div><div class="line"></div><div class="line">    //第十步：推出SDL程序</div><div class="line">    SDL_Quit();</div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的源码只是演示如何播放yuv格式视频，当然在实际项目中还需要根据具体业务加入具体业务逻辑，在播放网络流的情况下还需要处理音频和视频间的同步和时间戳问题。这里推荐一个<a href="http://dranger.com/ffmpeg/ffmpeg.html" target="_blank" rel="external">SDL和FFmpeg的国外教程</a>，很实用的一个教程。</p>
+<h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><p><a href="https://github.com/samychen/SDL_FFmpeg_Tutorial" target="_blank" rel="external">https://github.com/samychen/SDL_FFmpeg_Tutorial</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/09/01/视频编解码学习三-播放yuv格式视频/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2017-08-29T12:13:48.000Z"><a href="/2017/08/29/视频编解码学习二-pcm/">2017-08-29</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/08/29/视频编解码学习二-pcm/">视频编解码学习二 pcm</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#源码"><span class="toc-text">源码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#下载"><span class="toc-text">下载</span></a></li></ol>
+    </div>
+
+        <p>&emsp;&emsp;今天的主题是音频解码，主要实现将视频中的音频解码为音频采用格式pcm。<br>首先在文章开头给出两个问题</p>
+<p>第一个问题：音频解码和视频解码目的是什么？为什么要进行音频压缩或者是视频压缩？<br>目的：压缩音频流、视频流、字幕流等等…（减小数据量）</p>
+<p>第二个问题：音频采样数据作用？<br>保存音频中每一个采样点的值</p>
+<p>我们来计算2分钟pcm音频的大小:<br>规定：采样率:44100HZ<br>在图像学中：每8位 = 1字节<br>编码（采样精度）：16位 = 2字节<br>声道数量：2个<br>pcm格式体积 = 2 <em> 60 </em> 44100 <em> 2 </em> 2 = 21MB<br>mp3 = 2MB</p>
+<p>从计算过程就可以看出，实际情况必须采用压缩来存储音频。</p>
+<p>那么pcm有哪些格式，我们平常说的单声道，双声道又是什么回事？这里又分两种情况<br>第一种:单声道(左右声道)<br>第二种:双声道(排版顺序”左右”,”左右”)<br>二者都是采样点顺序排版存储<br><img src="http://upload-images.jianshu.io/upload_images/4398977-95a2b92724521c87.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>那么音频解码的环节又是怎样的过程呢，参照官方给出的流程图<br><img src="http://upload-images.jianshu.io/upload_images/4398977-33571f7eaa809c60.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="FFmpeg解码"><br>从上图我们可以看出音频解码流程<br>        第一步：注册所有的组件（编解码、滤镜特效处理库、封装格式处理库、工具库、音频采样数据格式转换库、视频像素数据格式转换等等…）<br>        第二步：获取音频封装格式信息<br>        第三步：查找音频流<br>        第四步：查找音频解码器<br>        第五步：打开音频解码器<br>        第六步：读取音频压缩数据进行解码（循环解码）<br>        第七步：关闭音频解码器释放内存</p>
+<h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div></pre></td><td class="code"><pre><div class="line">#include &lt;jni.h&gt;</div><div class="line">#include &lt;string&gt;</div><div class="line">//导入android-log日志</div><div class="line">#include &lt;android/log.h&gt;</div><div class="line"></div><div class="line">//当前C++兼容C语言</div><div class="line">extern &quot;C&quot;&#123;</div><div class="line">//avcodec:编解码(最重要的库)</div><div class="line">#include &quot;libavcodec/avcodec.h&quot;</div><div class="line">//avformat:封装格式处理</div><div class="line">#include &quot;libavformat/avformat.h&quot;</div><div class="line">//avutil:工具库(大部分库都需要这个库的支持)</div><div class="line">#include &quot;libavutil/imgutils.h&quot;</div><div class="line">//swscale:视频像素数据格式转换</div><div class="line">#include &quot;libswscale/swscale.h&quot;</div><div class="line">//导入音频采样数据格式转换库</div><div class="line">#include &quot;libswresample/swresample.h&quot;</div><div class="line"></div><div class="line">JNIEXPORT void JNICALL Java_com_samychen_ffmpeg_FFmpegTest_ffmpegTest</div><div class="line">        (JNIEnv *, jobject);</div><div class="line">JNIEXPORT void JNICALL Java_com_samychen_ffmpeg_FFmpegTest_ffmpegDecoder</div><div class="line">        (JNIEnv *env, jobject jobj,jstring jInFilePath,jstring jOutFilePath);</div><div class="line">JNIEXPORT void JNICALL Java_com_samychen_ffmpeg_FFmpegTest_ffmpegDecoderAudio</div><div class="line">        (JNIEnv *env, jobject jobj,jstring jInFilePath,jstring jOutFilePath);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//1、NDK音视频编解码：FFmpeg-测试配置</div><div class="line">JNIEXPORT void JNICALL Java_com_samychen_ffmpeg_FFmpegTest_ffmpegTest(</div><div class="line">        JNIEnv *env, jobject jobj) &#123;</div><div class="line">    //(char *)表示C语言字符串</div><div class="line">    const char *configuration = avcodec_configuration();</div><div class="line">    __android_log_print(ANDROID_LOG_INFO,&quot;main&quot;,&quot;%s&quot;,configuration);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//NDK音视频编解码：FFmpeg-音频解码-音频采样数据pcm格式</div><div class="line">JNIEXPORT void JNICALL Java_com_samychen_ffmpeg_FFmpegTest_ffmpegDecoderAudio</div><div class="line">        (JNIEnv *env, jobject jobj,jstring jInFilePath,jstring jOutFilePath) &#123;</div><div class="line"></div><div class="line">    //第一步：注册所有的组件</div><div class="line">    // （编解码、滤镜特效处理库、封装格式处理库、工具库、音频采样数据格式转换库、视频像素数据格式转换等等...）</div><div class="line">    av_register_all();</div><div class="line">    avcodec_register_all();</div><div class="line">    //第二步：获取音频封装格式信息</div><div class="line">    AVFormatContext *avformat_context = avformat_alloc_context();</div><div class="line">    //参数一：封装格式上下文-&gt;保存了音频信息</div><div class="line">    //参数二：输入文件(你要对那一个文件进行解封装)</div><div class="line">    //普及知识：env是JNI环境指针(作用：专门用于管理对象创建和销毁)</div><div class="line">    const char *cInFilePath = env-&gt;GetStringUTFChars(jInFilePath, NULL);</div><div class="line">    //参数三：封装格式类型(NULL：表示系统自动获取格式类型)</div><div class="line">    //返回值：avformat_open_input_result = 0表示成功，否则失败</div><div class="line">    int avformat_open_input_result = avformat_open_input(&amp;avformat_context, cInFilePath, NULL,</div><div class="line">                                                         NULL);</div><div class="line">    if (avformat_open_input_result != 0) &#123;</div><div class="line">        char *error_info;</div><div class="line">        av_strerror(avformat_open_input_result, error_info, 1024);</div><div class="line">        __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;获取失败，错误信息：%s&quot;, error_info);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第三步：查找音频流</div><div class="line">    //返回值：&gt;=0 if OK, AVERROR_xxx on error(&gt;=0表示成功，否则失败)</div><div class="line">    int avformat_find_stream_info_result = avformat_find_stream_info(avformat_context, NULL);</div><div class="line">    if (avformat_find_stream_info_result &lt; 0) &#123;</div><div class="line">        char *error_info;</div><div class="line">        av_strerror(avformat_find_stream_info_result, error_info, 1024);</div><div class="line">        __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;查找失败，错误信息：%s&quot;, error_info);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    //第四步：查找音频解码器</div><div class="line">    //第一点：查找音频流索引位置</div><div class="line">    int av_stream_index_audio = -1;</div><div class="line">    for (int i = 0; i &lt; avformat_context-&gt;nb_streams; ++i) &#123;</div><div class="line">        if (avformat_context-&gt;streams[i]-&gt;codecpar-&gt;codec_type == AVMEDIA_TYPE_AUDIO) &#123;</div><div class="line">            av_stream_index_audio = i;</div><div class="line">            break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    if (av_stream_index_audio == -1) &#123;</div><div class="line">        __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;没有找到音频流&quot;);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第二点：查找音频解码器上下文(根据流索引位置-&gt;获取音频解码买上下文)</div><div class="line">    //新的API</div><div class="line">//    AVCodecParameters *avcodec_parameters = avformat_context-&gt;streams[av_stream_index_audio]-&gt;codecpar;</div><div class="line">//    avcodec_parameters-&gt;codec_id;</div><div class="line"></div><div class="line">    //老的API</div><div class="line">    AVCodecContext *avcodec_context = avformat_context-&gt;streams[av_stream_index_audio]-&gt;codec;</div><div class="line"></div><div class="line"></div><div class="line">    //第三点：根据音频解码器上下文-&gt;获取到-&gt;音频解码器</div><div class="line">    AVCodec *avcodec = avcodec_find_decoder(avcodec_context-&gt;codec_id);</div><div class="line">    if (avcodec == NULL) &#123;</div><div class="line">        __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;找不到这个音频解码器&quot;);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第五步：打开音频解码器(调试运行-&gt;观察锁定C/C++基于NDK开发异常-&gt;便于调试运行)</div><div class="line">    int avcodec_open2_result = avcodec_open2(avcodec_context, avcodec, NULL);</div><div class="line">    if (avcodec_open2_result != 0) &#123;</div><div class="line">        char *error_info;</div><div class="line">        av_strerror(avcodec_open2_result, error_info, 1024);</div><div class="line">        __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;打开音频解码器失败，错误信息：%s&quot;, error_info);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    //打印音频信息</div><div class="line">    //输出视频信息</div><div class="line">    //输出：文件格式</div><div class="line">    __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;文件格式：%s&quot;, avformat_context-&gt;iformat-&gt;name);</div><div class="line">    //输出：解码器名称</div><div class="line">    __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;解码器名称：%s&quot;, avcodec-&gt;name);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    //第六步：读取音频压缩数据进行解码（循环解码）</div><div class="line"></div><div class="line">    //读取一帧音频压缩数据(缓冲区)</div><div class="line">    AVPacket *av_packet = (AVPacket *) av_malloc(sizeof(AVPacket));</div><div class="line"></div><div class="line">    //接收一帧音频采样数据(缓冲区)</div><div class="line">    AVFrame *av_frame_in = av_frame_alloc();</div><div class="line"></div><div class="line">    //音频解码返回结果</div><div class="line">    int avcodec_receive_frame_result;</div><div class="line"></div><div class="line">    //音频采样数据上下文-&gt;SwrContext</div><div class="line">    //第一点：创建上下文-&gt;开辟内存空间(声明)</div><div class="line">    SwrContext *swr_context = swr_alloc();</div><div class="line">    //第二点：给我们的音频采样数据上下文-&gt;绑定数据</div><div class="line">    //参数一：音频采样数据上下文</div><div class="line">    //参数二：输出声道布局类型(立体声、环绕、室内等等...)</div><div class="line">    //立体声</div><div class="line">    int out_ch_layout = AV_CH_LAYOUT_STEREO;</div><div class="line">    //参数三：输出音频采样数据格式(说白了：采样精度)</div><div class="line">    AVSampleFormat av_sample_format = AV_SAMPLE_FMT_S16;</div><div class="line">    //参数四：输出音频采样数据-&gt;采样率</div><div class="line">    int out_sample_rate = avcodec_context-&gt;sample_rate;</div><div class="line">    //参数五：输入声道布局类型(立体声、环绕、室内等等...)-&gt;默认格式</div><div class="line">    int in_ch_layout = av_get_default_channel_layout(avcodec_context-&gt;channels);</div><div class="line">    //参数六：输入音频采样数据格式(说白了：采样精度)</div><div class="line">    AVSampleFormat in_sample_fmt = avcodec_context-&gt;sample_fmt;</div><div class="line">    //参数七：输入音频采样数据-&gt;采样率</div><div class="line">    int in_sample_rate = avcodec_context-&gt;sample_rate;</div><div class="line">    //参数八：Log日志偏移量</div><div class="line">    //参数九：Log日志统计上下文</div><div class="line">    swr_alloc_set_opts(swr_context,</div><div class="line">                       out_ch_layout,</div><div class="line">                       av_sample_format,</div><div class="line">                       out_sample_rate,</div><div class="line">                       in_ch_layout,</div><div class="line">                       in_sample_fmt,</div><div class="line">                       in_sample_rate,</div><div class="line">                       0, NULL);</div><div class="line"></div><div class="line">    //输出音频采样数据缓冲区(目标)-&gt;人的耳朵最大采样率-&gt;44100HZ</div><div class="line">    int out_count = 16000;</div><div class="line">    uint8_t *out_buffer = (uint8_t *) av_malloc(out_count);</div><div class="line">    int pktsize, flush_complete = 0;</div><div class="line">    //获取声道数量</div><div class="line">    int out_nb_layout = av_get_channel_layout_nb_channels(out_ch_layout);</div><div class="line"></div><div class="line">    //打开文件</div><div class="line">    const char *coutputFilePath = env-&gt;GetStringUTFChars(jOutFilePath, NULL);</div><div class="line">    FILE *out_file_pcm = fopen(coutputFilePath, &quot;wb+&quot;);</div><div class="line">    if (out_file_pcm == NULL) &#123;</div><div class="line">        __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;文件不存在&quot;);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    int frame_index = 0;</div><div class="line">//    while (av_read_frame(avformat_context, av_packet) == 0) &#123;</div><div class="line">//        ++frame_index;</div><div class="line">//        if (av_packet-&gt;stream_index == av_stream_index_audio) &#123;</div><div class="line">//            out_buffer = av_packet-&gt;data;</div><div class="line">//            pktsize = av_packet-&gt;size;</div><div class="line">//            int frameFinished = 0;</div><div class="line">//            int len = avcodec_decode_audio4(avcodec_context, av_frame_in, &amp;frameFinished,</div><div class="line">//                                            av_packet);</div><div class="line">//            if (frameFinished) &#123;</div><div class="line">//                pktsize -= len;</div><div class="line">//                out_buffer += len;</div><div class="line">//                int data_size = av_samples_get_buffer_size(NULL,</div><div class="line">//                                                           out_nb_layout,</div><div class="line">//                                                           av_frame_in-&gt;nb_samples,</div><div class="line">//                                                           av_sample_format,</div><div class="line">//                                                           1);</div><div class="line">//                /*****************************************************</div><div class="line">//                以下代码使用swr_convert函数进行转换，但是转换后的文件连mp3到pcm文件都不能播放了，所以注释了</div><div class="line">//                const uint8_t *in[] = &#123;frame-&gt;data[0]&#125;;</div><div class="line">//</div><div class="line">//                int len=swr_convert(swrContext,out,sizeof(audio_buf)/codecContext-&gt;channels/av_get_bytes_per_sample(AV_SAMPLE_FMT_S16P),</div><div class="line">//                    in,frame-&gt;linesize[0]/codecContext-&gt;channels/av_get_bytes_per_sample(codecContext-&gt;sample_fmt));</div><div class="line">//</div><div class="line">//                len=len*codecContext-&gt;channels*av_get_bytes_per_sample(AV_SAMPLE_FMT_S16P);</div><div class="line">//</div><div class="line">//                if (len &lt; 0) &#123;</div><div class="line">//                    fprintf(stderr, &quot;audio_resample() failed\n&quot;);</div><div class="line">//                    break;</div><div class="line">//                &#125;</div><div class="line">//                if (len == sizeof(audio_buf) / codecContext-&gt;channels / av_get_bytes_per_sample(AV_SAMPLE_FMT_S16P)) &#123;</div><div class="line">//                    fprintf(stderr, &quot;warning: audio buffer is probably too small\n&quot;);</div><div class="line">//                    swr_init(swrContext);</div><div class="line">//                &#125;</div><div class="line">//                *****************************************************/</div><div class="line">//                char *data = (char *) malloc(data_size);</div><div class="line">//                short *sample_buffer = (short *) av_frame_in-&gt;data[0];</div><div class="line">//                for (int i = 0; i &lt; data_size / 2; i++) &#123;</div><div class="line">//                    data[i * 2] = (char) (sample_buffer[i / 2] &amp; 0xFF);</div><div class="line">//                    data[i * 2 + 1] = (char) ((sample_buffer[i / 2] &gt;&gt; 8) &amp; 0xFF);</div><div class="line">//</div><div class="line">//                &#125;</div><div class="line">//                fwrite(data, data_size, 1, out_file_pcm);</div><div class="line">//                fflush(out_file_pcm);</div><div class="line">//            &#125;</div><div class="line">//        &#125;</div><div class="line">        //返回值：&lt;0表示读取完毕，否则正在读取</div><div class="line">        while (av_read_frame(avformat_context, av_packet) &gt;= 0) &#123;</div><div class="line">            //判定当前帧是否是音频流-&gt;音频采样数据</div><div class="line">            if (av_packet-&gt;stream_index == av_stream_index_audio) &#123;</div><div class="line">                //确定是我们的音频流-&gt;解码</div><div class="line">                //解码一帧音频流数据</div><div class="line">                //老的API</div><div class="line">                //avcodec_decode_audio4();</div><div class="line">                //新的API(发送-&gt;接收)</div><div class="line">                //发送</div><div class="line">                avcodec_send_packet(avcodec_context, av_packet);</div><div class="line">                //接收</div><div class="line">                avcodec_receive_frame_result = avcodec_receive_frame(avcodec_context, av_frame_in);</div><div class="line"></div><div class="line">                if (avcodec_receive_frame_result == 0) &#123;</div><div class="line">                    //解码一帧音频压缩数据成功-&gt;得到了-&gt;一帧音频采样数据</div><div class="line">                    //音频采样数据-&gt;转成pcm格式</div><div class="line">                    //将输入-&gt;输出(pcm格式)</div><div class="line">                    //参数一：音频采样数据上下文-&gt;SwrContext</div><div class="line">                    //参数二：输出音频采样数据缓冲区(目标)</div><div class="line">                    //参数三：输出缓冲区大小</div><div class="line">                    //参数四：输入音频采样数据缓冲区</div><div class="line">                    //参数五：输入缓冲区大小</div><div class="line">                    swr_convert(swr_context,</div><div class="line">                                &amp;out_buffer,</div><div class="line">                                out_count,</div><div class="line">                                (const uint8_t **) av_frame_in-&gt;data,</div><div class="line">                                av_frame_in-&gt;nb_samples);</div><div class="line">                    //获取缓冲区实际数据大小</div><div class="line">                    //参数一：行大小</div><div class="line">                    //参数二：声道数量</div><div class="line">                    //参数三：输出大小</div><div class="line">                    //参数四：输出音频采样数据格式</div><div class="line">                    //参数五：字节对齐类型</div><div class="line">                    int out_buffer_size = av_samples_get_buffer_size(NULL,</div><div class="line">                                                                     out_nb_layout,</div><div class="line">                                                                     av_frame_in-&gt;nb_samples,</div><div class="line">                                                                     av_sample_format,</div><div class="line">                                                                     1);</div><div class="line">                    //写入文件</div><div class="line">                    fwrite(av_frame_in-&gt;data[0], 1, out_buffer_size, out_file_pcm);</div><div class="line">                    fflush(out_file_pcm);</div><div class="line">                    frame_index++;</div><div class="line">                    __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;当前是第%d帧&quot;, frame_index);</div><div class="line">                    __android_log_print(ANDROID_LOG_INFO, &quot;main&quot;, &quot;当前是第%d帧&quot;, out_buffer);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        //第七步：关闭音频解码器释放内存</div><div class="line">        av_packet_free(&amp;av_packet);</div><div class="line">        //关闭流</div><div class="line">        fclose(out_file_pcm);</div><div class="line"></div><div class="line">        swr_free(&amp;swr_context);</div><div class="line"></div><div class="line">        av_free(out_buffer);</div><div class="line"></div><div class="line">        avcodec_close(avcodec_context);</div><div class="line">        avformat_free_context(avformat_context);</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>是不是和视频解码大体流程完全一样，唯一的区别就是视频像素数据格式的转换和音频采样数据的重新采样了。<br>上述代码实现完成之后可以在pc端下载Adobe audition cs6来直接播放</p>
+<h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><p><a href="https://github.com/samychen/SDL_FFmpeg_Tutorial" target="_blank" rel="external">https://github.com/samychen/SDL_FFmpeg_Tutorial</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/08/29/视频编解码学习二-pcm/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2017-08-25T11:11:22.000Z"><a href="/2017/08/25/视频编解码学习一-yuv格式/">2017-08-25</a></time>
         
   
@@ -281,280 +380,6 @@ var age: String? = null
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2017-05-18T02:26:57.000Z"><a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/">2017-05-18</a></time>
-        
-  
-    <h1 class="title"><a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/">MQTT消息格式之SUBSCRIBE消息分析</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>  物联网最近曝光率越来越高。虽然HTTP是网页的事实标准，不过机器之间（Machine-to-Machine，M2M）的大规模沟通需要不同的模式：之前的请求/回答模式不再合适，取而代之的是发布/订阅（Publish/Subscribe）模式。这就是轻量级、可扩展的MQTT（Message Queuing Telemetry Transport）可以施展拳脚的舞台。</p>
-<p>MQTT协议文档<a href="https://www.gitbook.com/book/mcxiaoke/mqtt-cn/details" target="_blank" rel="external">https://www.gitbook.com/book/mcxiaoke/mqtt-cn/details</a></p>
-<p>  采用WireShark抓包工具分析MQTT消息，参考<a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718063分析协议包" target="_blank" rel="external">http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718063分析协议包</a></p>
-<p>首先运行工程</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">[java] view plain copy print?import org.eclipse.paho.client.mqttv3.MqttClient;  </div><div class="line">import org.eclipse.paho.client.mqttv3.MqttConnectOptions;  </div><div class="line">import org.eclipse.paho.client.mqttv3.MqttException;  </div><div class="line">import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;  </div><div class="line">  </div><div class="line">  </div><div class="line">public class SubScriberExample &#123;  </div><div class="line">  </div><div class="line">    /** </div><div class="line">     * @param args </div><div class="line">     */  </div><div class="line">    public static void main(String[] args) &#123;  </div><div class="line">         String[] topicFilters =&#123;&quot;topic1&quot;,&quot;topic2&quot;&#125; ;  </div><div class="line">         String broker = &quot;tcp://192.168.80.196:1883&quot; ;  </div><div class="line">         String clientId = &quot;paho-1&quot; ;  </div><div class="line">         MemoryPersistence persistence = new MemoryPersistence();  </div><div class="line">          try &#123;  </div><div class="line">                 MqttClient sampleClient = new MqttClient(broker, clientId,persistence);  </div><div class="line">                 MqttConnectOptions connOpts = new MqttConnectOptions();  </div><div class="line">                 connOpts.setCleanSession( false );  </div><div class="line">                 System. out .println( &quot;Connecting to broker: &quot; + broker);  </div><div class="line">                 sampleClient.connect(connOpts);  </div><div class="line">                 System. out .println( &quot;Connected&quot; );  </div><div class="line">                 sampleClient.setCallback(new CustomMQTTCallBack());  </div><div class="line">                 sampleClient.subscribe(topicFilters,new int[]&#123;1,1&#125;);  </div><div class="line">                 System. out .println( &quot;Subscribe success for: &quot;+topicFilters.toString());  </div><div class="line">         &#125; catch (MqttException me) &#123;  </div><div class="line">                 System. out .println( &quot;reason &quot; + me.getReasonCode());  </div><div class="line">                 System. out .println( &quot;msg &quot; + me.getMessage());  </div><div class="line">                 System. out .println( &quot;loc &quot; + me.getLocalizedMessage());  </div><div class="line">                 System. out .println( &quot;cause &quot; + me.getCause());  </div><div class="line">                 System. out .println( &quot;excep &quot; + me);  </div><div class="line">                 me.printStackTrace();  </div><div class="line">         &#125;  </div><div class="line">  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>当运行客户端之后通过抓取TCP数据包<br><img src="http://upload-images.jianshu.io/upload_images/4398977-0961315a087e8c62?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<ol>
-<li>固定头部<br>SUBSCRIBE 固定头部的消息格式见下表</li>
-</ol>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-9a31d63c14e39111.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
-<p>从上图的抓包程序得到的数据可知，固定头部的16进制为：82 14<br>结合上面的表1，我们可知其具体含义如下：<br>82—1000 0010 表示连接的请求是Subscribe<br>14–1*16+4=20 表示后面将会跟着20个字节</p>
-<p>2.可变头部</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-91b6849a0ff18fbc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，可变头部的16进制为：00 01<br>结合上面的表2，我们可知其具体含义如下：<br>00 01 —表示当前的Package的ID是1</p>
-<p>3.负载部分<br>SUBSCRIBE 负载部分的消息格式见下表,负载部分主要指定订阅的主题（Topic）的名称以及每个订阅的主题对应的QoS级别（总共三种类型的值：0,1,2）,需要注意的是，在负载部分，一次可以订阅多个主题。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-a40f92187e41129c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，负载部分实际捕获的数据为：00 06 74 6f 70 69 63 31 01 00 06 74 6f 70 69 63 32 01 因为总共有两个主题：topic1 和topic2，所以我们拿第一个主题(topic1)来分析就行了，后面的Topic类似.<br>00 06 代表这个topic的长度是6个字节<br>74 6f 70 69 63 31 代表 topic1<br>01 代表QoS为1</p>
-<p>从此看出MQTT数据包并不复杂，掌握了就能看懂。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2017-03-18T15:24:50.000Z"><a href="/2017/03/18/TCP-IP协议架构/">2017-03-18</a></time>
-        
-  
-    <h1 class="title"><a href="/2017/03/18/TCP-IP协议架构/">TCP/IP协议架构</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、概述"><span class="toc-text">一、概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#物理层"><span class="toc-text">物理层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、链接层"><span class="toc-text">三、链接层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#四、网络层"><span class="toc-text">四、网络层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五、传输层"><span class="toc-text">五、传输层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#六、应用层"><span class="toc-text">六、应用层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#七、一个小结"><span class="toc-text">七、一个小结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#八、用户的上网设置"><span class="toc-text">八、用户的上网设置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#九、一个实例：访问网页"><span class="toc-text">九、一个实例：访问网页</span></a></li></ol>
-    </div>
-
-        <h4 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h4><p>1.1 五层模型</p>
-<p>&emsp;&emsp;互联网的实现，分成好几层。每一层都有自己的功能，就像建筑物一样，每一层都靠下一层支持。</p>
-<p>&emsp;&emsp;用户接触到的，只是最上面的一层，根本没有感觉到下面的层。要理解互联网，必须从最下层开始，自下而上理解每一层的功能。</p>
-<p>&emsp;&emsp;如何分层有不同的模型，有的模型分七层（OSI），有的分四层。TCP/IP协议把互联网分成五层，从上到下分别是应用层，传输层，网络层，链路层，物理层。</p>
-<p>1.2 层与协议</p>
-<p>&emsp;&emsp;每一层都是为了完成一种功能。为了实现这些功能，就需要大家都遵守共同的规则。</p>
-<p>&emsp;&emsp;大家都遵守的规则，就叫做”协议”（protocol）。</p>
-<p>&emsp;&emsp;互联网的每一层，都定义了很多协议。这些协议的总称，就叫做”互联网协议”（Internet Protocol Suite）。它们是互联网的核心，下面介绍每一层的功能，主要就是介绍每一层的主要协议。</p>
-<h4 id="物理层"><a href="#物理层" class="headerlink" title="物理层"></a>物理层</h4><p>&emsp;&emsp;电脑要组网，第一件事要干什么？当然是先把电脑连起来，可以用光缆、电缆、双绞线、无线电波等方式。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-12030d41beda5bdc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;这就叫做”物理层”，它就是把电脑连接起来的物理手段。它主要规定了网络的一些电气特性，作用是负责传送0和1的电信号。</p>
-<h4 id="三、链接层"><a href="#三、链接层" class="headerlink" title="三、链接层"></a>三、链接层</h4><p>3.1 定义</p>
-<p>&emsp;&emsp;单纯的0和1没有任何意义，必须规定解读方式：多少个电信号算一组？每个信号位有何意义？这就是”链接层”的功能，它在”实体层”的上方，确定了0和1的分组方式。</p>
-<p>3.2 以太网协议</p>
-<p>&emsp;&emsp;早期的时候，每家公司都有自己的电信号分组方式。逐渐地，一种叫做”以太网”（Ethernet）的协议，占据了主导地位。</p>
-<blockquote>
-<p>以太网规定，一组电信号构成一个数据包，叫做”帧”（Frame）。每一帧分成两个部分：标头（Head）和数据（Data）。</p>
-</blockquote>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-3c046cb4b1f40846.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;”标头”包含数据包的一些说明项，比如发送者、接受者、数据类型等等；”数据”则是数据包的具体内容。</p>
-<p>&emsp;&emsp;”标头”的长度，固定为18字节。”数据”的长度，最短为46字节，最长为1500字节。因此，整个”帧”最短为64字节，最长为1518字节。如果数据很长，就必须分割成多个帧进行发送。</p>
-<p>3.3 MAC地址</p>
-<p>&emsp;&emsp;上面提到，以太网数据包的”标头”，包含了发送者和接受者的信息。那么，发送者和接受者是如何标识呢？</p>
-<p>&emsp;&emsp;以太网规定，连入网络的所有设备，都必须具有”网卡”接口。数据包必须是从一块网卡，传送到另一块网卡。网卡的地址，就是数据包的发送地址和接收地址，这叫做MAC地址。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-66a1563794237498.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>每块网卡出厂的时候，都有一个全世界独一无二的MAC地址，长度是48个二进制位，通常用12个十六进制数表示。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-05b34425d4da2359.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;前6个十六进制数是厂商编号，后6个是该厂商的网卡流水号。有了MAC地址，就可以定位网卡和数据包的路径了。</p>
-<p>3.4 广播</p>
-<p>&emsp;&emsp;定义地址只是第一步，后面还有更多的步骤。</p>
-<p>&emsp;&emsp;首先，一块网卡怎么会知道另一块网卡的MAC地址？</p>
-<p>&emsp;&emsp;回答是有一种ARP协议，可以解决这个问题。这个留到后面介绍，这里只需要知道，以太网数据包必须知道接收方的MAC地址，然后才能发送。</p>
-<p>&emsp;&emsp;其次，就算有了MAC地址，系统怎样才能把数据包准确送到接收方？</p>
-<p>&emsp;&emsp;回答是以太网采用了一种很”原始”的方式，它不是把数据包准确送到接收方，而是向本网络内所有计算机发送，让每台计算机自己判断，是否为接收方。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-626cd5d8b23c97ee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;上图中，1号计算机向2号计算机发送一个数据包，同一个子网络的3号、4号、5号计算机都会收到这个包。它们读取这个包的”标头”，找到接收方的MAC地址，然后与自身的MAC地址相比较，如果两者相同，就接受这个包，做进一步处理，否则就丢弃这个包。这种发送方式就叫做”广播”（broadcasting）。</p>
-<p>&emsp;&emsp;有了数据包的定义、网卡的MAC地址、广播的发送方式，”链接层”就可以在多台计算机之间传送数据了。</p>
-<h4 id="四、网络层"><a href="#四、网络层" class="headerlink" title="四、网络层"></a>四、网络层</h4><p>4.1 网络层的由来</p>
-<p>&emsp;&emsp;以太网协议，依靠MAC地址发送数据。理论上，单单依靠MAC地址，上海的网卡就可以找到洛杉矶的网卡了，技术上是可以实现的。</p>
-<p>&emsp;&emsp;但是，这样做有一个重大的缺点。以太网采用广播方式发送数据包，所有成员人手一”包”，不仅效率低，而且局限在发送者所在的子网络。也就是说，如果两台计算机不在同一个子网络，广播是传不过去的。这种设计是合理的，否则互联网上每一台计算机都会收到所有包，那会引起灾难。</p>
-<p>&emsp;&emsp;互联网是无数子网络共同组成的一个巨型网络，很像想象上海和洛杉矶的电脑会在同一个子网络，这几乎是不可能的。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-368084d8b45815f4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;因此，必须找到一种方法，能够区分哪些MAC地址属于同一个子网络，哪些不是。如果是同一个子网络，就采用广播方式发送，否则就采用”路由”方式发送。（”路由”的意思，就是指如何向不同的子网络分发数据包，这是一个很大的主题，本文不涉及。）遗憾的是，MAC地址本身无法做到这一点。它只与厂商有关，与所处网络无关。</p>
-<p>&emsp;&emsp;这就导致了”网络层”的诞生。它的作用是引进一套新的地址，使得我们能够区分不同的计算机是否属于同一个子网络。这套地址就叫做”网络地址”，简称”网址”。</p>
-<p>&emsp;&emsp;于是，”网络层”出现以后，每台计算机有了两种地址，一种是MAC地址，另一种是网络地址。两种地址之间没有任何联系，MAC地址是绑定在网卡上的，网络地址则是管理员分配的，它们只是随机组合在一起。</p>
-<p>&emsp;&emsp;网络地址帮助我们确定计算机所在的子网络，MAC地址则将数据包送到该子网络中的目标网卡。因此，从逻辑上可以推断，必定是先处理网络地址，然后再处理MAC地址。</p>
-<p>4.2 IP协议</p>
-<p>&emsp;&emsp;规定网络地址的协议，叫做IP协议。它所定义的地址，就被称为IP地址。</p>
-<p>&emsp;&emsp;目前，广泛采用的是IP协议第四版，简称IPv4。这个版本规定，网络地址由32个二进制位组成。</p>
-<p>&emsp;&emsp;习惯上，我们用分成四段的十进制数表示IP地址，从0.0.0.0一直到255.255.255.255。</p>
-<p>&emsp;&emsp;互联网上的每一台计算机，都会分配到一个IP地址。这个地址分成两个部分，前一部分代表网络，后一部分代表主机。比如，IP地址172.16.254.1，这是一个32位的地址，假定它的网络部分是前24位（172.16.254），那么主机部分就是后8位（最后的那个1）。处于同一个子网络的电脑，它们IP地址的网络部分必定是相同的，也就是说172.16.254.2应该与172.16.254.1处在同一个子网络。</p>
-<p>&emsp;&emsp;但是，问题在于单单从IP地址，我们无法判断网络部分。还是以172.16.254.1为例，它的网络部分，到底是前24位，还是前16位，甚至前28位，从IP地址上是看不出来的。</p>
-<p>&emsp;&emsp;那么，怎样才能从IP地址，判断两台计算机是否属于同一个子网络呢？这就要用到另一个参数”子网掩码”（subnet mask）。</p>
-<p>&emsp;&emsp;所谓”子网掩码”，就是表示子网络特征的一个参数。它在形式上等同于IP地址，也是一个32位二进制数字，它的网络部分全部为1，主机部分全部为0。比如，IP地址172.16.254.1，如果已知网络部分是前24位，主机部分是后8位，那么子网络掩码就是11111111.11111111.11111111.00000000，写成十进制就是255.255.255.0。</p>
-<p>&emsp;&emsp;知道”子网掩码”，我们就能判断，任意两个IP地址是否处在同一个子网络。方法是将两个IP地址与子网掩码分别进行AND运算（两个数位都为1，运算结果为1，否则为0），然后比较结果是否相同，如果是的话，就表明它们在同一个子网络中，否则就不是。</p>
-<p>&emsp;&emsp;比如，已知IP地址172.16.254.1和172.16.254.233的子网掩码都是255.255.255.0，请问它们是否在同一个子网络？两者与子网掩码分别进行AND运算，结果都是172.16.254.0，因此它们在同一个子网络。</p>
-<p>&emsp;&emsp;总结一下，IP协议的作用主要有两个，一个是为每一台计算机分配IP地址，另一个是确定哪些地址在同一个子网络。</p>
-<p>4.3 IP数据包</p>
-<p>&emsp;&emsp;根据IP协议发送的数据，就叫做IP数据包。不难想象，其中必定包括IP地址信息。</p>
-<p>&emsp;&emsp;但是前面说过，以太网数据包只包含MAC地址，并没有IP地址的栏位。那么是否需要修改数据定义，再添加一个栏位呢？</p>
-<p>&emsp;&emsp;回答是不需要，我们可以把IP数据包直接放进以太网数据包的”数据”部分，因此完全不用修改以太网的规格。这就是互联网分层结构的好处：上层的变动完全不涉及下层的结构。</p>
-<p>&emsp;&emsp;具体来说，IP数据包也分为”标头”和”数据”两个部分。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-a379261656d1e9b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;”标头”部分主要包括版本、长度、IP地址等信息，”数据”部分则是IP数据包的具体内容。它放进以太网数据包后，以太网数据包就变成了下面这样。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-bd92ed69f23b4332.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>4.4 ARP协议</p>
-<p>&emsp;&emsp;关于”网络层”，还有最后一点需要说明。</p>
-<p>&emsp;&emsp;因为IP数据包是放在以太网数据包里发送的，所以我们必须同时知道两个地址，一个是对方的MAC地址，另一个是对方的IP地址。通常情况下，对方的IP地址是已知的（后文会解释），但是我们不知道它的MAC地址。</p>
-<p>&emsp;&emsp;所以，我们需要一种机制，能够从IP地址得到MAC地址。</p>
-<p>&emsp;&emsp;这里又可以分成两种情况。第一种情况，如果两台主机不在同一个子网络，那么事实上没有办法得到对方的MAC地址，只能把数据包传送到两个子网络连接处的”网关”（gateway），让网关去处理。</p>
-<p>&emsp;&emsp;第二种情况，如果两台主机在同一个子网络，那么我们可以用ARP协议，得到对方的MAC地址。ARP协议也是发出一个数据包（包含在以太网数据包中），其中包含它所要查询主机的IP地址，在对方的MAC地址这一栏，填的是FF:FF:FF:FF:FF:FF，表示这是一个”广播”地址。它所在子网络的每一台主机，都会收到这个数据包，从中取出IP地址，与自身的IP地址进行比较。如果两者相同，都做出回复，向对方报告自己的MAC地址，否则就丢弃这个包。</p>
-<p>&emsp;&emsp;总之，有了ARP协议之后，我们就可以得到同一个子网络内的主机MAC地址，可以把数据包发送到任意一台主机之上了。</p>
-<h4 id="五、传输层"><a href="#五、传输层" class="headerlink" title="五、传输层"></a>五、传输层</h4><p>5.1 传输层的由来</p>
-<p>&emsp;&emsp;有了MAC地址和IP地址，我们已经可以在互联网上任意两台主机上建立通信。</p>
-<p>&emsp;&emsp;接下来的问题是，同一台主机上有许多程序都需要用到网络，比如，你一边浏览网页，一边与朋友在线聊天。当一个数据包从互联网上发来的时候，你怎么知道，它是表示网页的内容，还是表示在线聊天的内容？</p>
-<p>&emsp;&emsp;也就是说，我们还需要一个参数，表示这个数据包到底供哪个程序（进程）使用。这个参数就叫做”端口”（port），它其实是每一个使用网卡的程序的编号。每个数据包都发到主机的特定端口，所以不同的程序就能取到自己所需要的数据。</p>
-<p>&emsp;&emsp;”端口”是0到65535之间的一个整数，正好16个二进制位。0到1023的端口被系统占用，用户只能选用大于1023的端口。不管是浏览网页还是在线聊天，应用程序会随机选用一个端口，然后与服务器的相应端口联系。</p>
-<p>&emsp;&emsp;”传输层”的功能，就是建立”端口到端口”的通信。相比之下，”网络层”的功能是建立”主机到主机”的通信。只要确定主机和端口，我们就能实现程序之间的交流。因此，Unix系统就把主机+端口，叫做”套接字”（socket）。有了它，就可以进行网络应用程序开发了。</p>
-<p>5.2 UDP协议</p>
-<p>&emsp;&emsp;现在，我们必须在数据包中加入端口信息，这就需要新的协议。最简单的实现叫做UDP协议，它的格式几乎就是在数据前面，加上端口号。<br>UDP数据包，也是由”标头”和”数据”两部分组成。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-922bb6e832b3b811.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;”标头”部分主要定义了发出端口和接收端口，”数据”部分就是具体的内容。然后，把整个UDP数据包放入IP数据包的”数据”部分，而前面说过，IP数据包又是放在以太网数据包之中的，所以整个以太网数据包现在变成了下面这样：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-2a0413dc3f1ecb1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;UDP数据包非常简单，”标头”部分一共只有8个字节，总长度不超过65,535字节，正好放进一个IP数据包。</p>
-<p>5.3 TCP协议</p>
-<p>&emsp;&emsp;UDP协议的优点是比较简单，容易实现，但是缺点是可靠性较差，一旦数据包发出，无法知道对方是否收到。</p>
-<p>&emsp;&emsp;为了解决这个问题，提高网络可靠性，TCP协议就诞生了。这个协议非常复杂，但可以近似认为，它就是有确认机制的UDP协议，每发出一个数据包都要求确认。如果有一个数据包遗失，就收不到确认，发出方就知道有必要重发这个数据包了。</p>
-<p>&emsp;&emsp;因此，TCP协议能够确保数据不会遗失。它的缺点是过程复杂、实现困难、消耗较多的资源。</p>
-<p>&emsp;&emsp;TCP数据包和UDP数据包一样，都是内嵌在IP数据包的”数据”部分。TCP数据包没有长度限制，理论上可以无限长，但是为了保证网络的效率，通常TCP数据包的长度不会超过IP数据包的长度，以确保单个TCP数据包不必再分割。</p>
-<h4 id="六、应用层"><a href="#六、应用层" class="headerlink" title="六、应用层"></a>六、应用层</h4><p>&emsp;&emsp;应用程序收到”传输层”的数据，接下来就要进行解读。由于互联网是开放架构，数据来源五花八门，必须事先规定好格式，否则根本无法解读。</p>
-<p>&emsp;&emsp;”应用层”的作用，就是规定应用程序的数据格式。</p>
-<p>&emsp;&emsp;举例来说，TCP协议可以为各种各样的程序传递数据，比如Email、WWW、FTP等等。那么，必须有不同协议规定电子邮件、网页、FTP数据的格式，这些应用程序协议就构成了”应用层”。</p>
-<p>&emsp;&emsp;这是最高的一层，直接面对用户。它的数据就放在TCP数据包的”数据”部分。因此，现在的以太网的数据包就变成下面这样。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-5f0127aee01adb3e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<h4 id="七、一个小结"><a href="#七、一个小结" class="headerlink" title="七、一个小结"></a>七、一个小结</h4><p>&emsp;&emsp;先对前面的内容，做一个小结。</p>
-<p>&emsp;&emsp;我们已经知道，网络通信就是交换数据包。电脑A向电脑B发送一个数据包，后者收到了，回复一个数据包，从而实现两台电脑之间的通信。数据包的结构，基本上是下面这样：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-7347e9c34541edb4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;发送这个包，需要知道两个地址：对方的MAC地址和对方的IP地址。<br>&emsp;&emsp;有了这两个地址，数据包才能准确送到接收者手中。但是，前面说过，MAC地址有局限性，如果两台电脑不在同一个子网络，就无法知道对方的MAC地址，必须通过网关（gateway）转发。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-395607516976f5f1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;上图中，1号电脑要向4号电脑发送一个数据包。它先判断4号电脑是否在同一个子网络，结果发现不是（后文介绍判断方法），于是就把这个数据包发到网关A。网关A通过路由协议，发现4号电脑位于子网络B，又把数据包发给网关B，网关B再转发到4号电脑。</p>
-<p>&emsp;&emsp;1号电脑把数据包发到网关A，必须知道网关A的MAC地址。所以，数据包的目标地址，实际上分成两种情况：</p>
-<p>|  场景                      |  数据包地址<br>|  同一个子网络    |  对方的MAC地址，对方的IP地址<br>|  非同一个子网络    |  网关的MAC地址，对方的IP地址</p>
-<p>&emsp;&emsp;发送数据包之前，电脑必须判断对方是否在同一个子网络，然后选择相应的MAC地址。接下来，我们就来看，实际使用中，这个过程是怎么完成的。</p>
-<h4 id="八、用户的上网设置"><a href="#八、用户的上网设置" class="headerlink" title="八、用户的上网设置"></a>八、用户的上网设置</h4><p>8.1 静态IP地址</p>
-<p>&emsp;&emsp;你买了一台新电脑，插上网线，开机，这时电脑能够上网吗？</p>
-<p>&emsp;&emsp;通常你必须做一些设置。有时，管理员（或者ISP）会告诉你下面四个参数，你把它们填入操作系统，计算机就能连上网了：</p>
-<ul>
-<li>本机的IP地址</li>
-<li>子网掩码</li>
-<li>网关的IP地址</li>
-<li>DNS的IP地址</li>
-</ul>
-<p>下图是Windows系统的设置窗口。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-bc88618b29602fe1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;这四个参数缺一不可，后文会解释为什么需要知道它们才能上网。由于它们是给定的，计算机每次开机，都会分到同样的IP地址，所以这种情况被称作”静态IP地址上网”。</p>
-<p>&emsp;&emsp;但是，这样的设置很专业，普通用户望而生畏，而且如果一台电脑的IP地址保持不变，其他电脑就不能使用这个地址，不够灵活。出于这两个原因，大多数用户使用”动态IP地址上网”。</p>
-<p>8.2 动态IP地址</p>
-<p>&emsp;&emsp;所谓”动态IP地址”，指计算机开机后，会自动分配到一个IP地址，不用人为设定。它使用的协议叫做DHCP协议。</p>
-<p>&emsp;&emsp;这个协议规定，每一个子网络中，有一台计算机负责管理本网络的所有IP地址，它叫做”DHCP服务器”。新的计算机加入网络，必须向”DHCP服务器”发送一个”DHCP请求”数据包，申请IP地址和相关的网络参数。</p>
-<p>&emsp;&emsp;前面说过，如果两台计算机在同一个子网络，必须知道对方的MAC地址和IP地址，才能发送数据包。但是，新加入的计算机不知道这两个地址，怎么发送数据包呢？</p>
-<p>&emsp;&emsp;DHCP协议做了一些巧妙的规定。</p>
-<p>8.3 DHCP协议</p>
-<p>&emsp;&emsp;首先，它是一种应用层协议，建立在UDP协议之上，所以整个数据包是这样的:</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-f5c3bd9a1e40eaca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>（1）最前面的”以太网标头”，设置发出方（本机）的MAC地址和接收方（DHCP服务器）的MAC地址。前者就是本机网卡的MAC地址，后者这时不知道，就填入一个广播地址：FF-FF-FF-FF-FF-FF。</p>
-<p>（2）后面的”IP标头”，设置发出方的IP地址和接收方的IP地址。这时，对于这两者，本机都不知道。于是，发出方的IP地址就设为0.0.0.0，接收方的IP地址设为255.255.255.255。</p>
-<p>（3）最后的”UDP标头”，设置发出方的端口和接收方的端口。这一部分是DHCP协议规定好的，发出方是68端口，接收方是67端口。</p>
-<p>&emsp;&emsp;这个数据包构造完成后，就可以发出了。以太网是广播发送，同一个子网络的每台计算机都收到了这个包。因为接收方的MAC地址是FF-FF-FF-FF-FF-FF，看不出是发给谁的，所以每台收到这个包的计算机，还必须分析这个包的IP地址，才能确定是不是发给自己的。当看到发出方IP地址是0.0.0.0，接收方是255.255.255.255，于是DHCP服务器知道”这个包是发给我的”，而其他计算机就可以丢弃这个包。</p>
-<p>&emsp;&emsp;接下来，DHCP服务器读出这个包的数据内容，分配好IP地址，发送回去一个”DHCP响应”数据包。这个响应包的结构也是类似的，以太网标头的MAC地址是双方的网卡地址，IP标头的IP地址是DHCP服务器的IP地址（发出方）和255.255.255.255（接收方），UDP标头的端口是67（发出方）和68（接收方），分配给请求端的IP地址和本网络的具体参数则包含在Data部分。</p>
-<p>&emsp;&emsp;新加入的计算机收到这个响应包，于是就知道了自己的IP地址、子网掩码、网关地址、DNS服务器等等参数。</p>
-<p>8.4 上网设置：小结</p>
-<p>&emsp;&emsp;这个部分，需要记住的就是一点：不管是”静态IP地址”还是”动态IP地址”，电脑上网的首要步骤，是确定四个参数。这四个值很重要，值得重复一遍：</p>
-<ul>
-<li>本机的IP地址</li>
-<li>子网掩码</li>
-<li>网关的IP地址</li>
-<li>DNS的IP地址<br>&emsp;&emsp;有了这几个数值，电脑就可以上网”冲浪”了。接下来，我们来看一个实例，当用户访问网页的时候，互联网协议是怎么运作的。</li>
-</ul>
-<h4 id="九、一个实例：访问网页"><a href="#九、一个实例：访问网页" class="headerlink" title="九、一个实例：访问网页"></a>九、一个实例：访问网页</h4><p>9.1 本机参数</p>
-<p>&emsp;&emsp;我们假定，经过上一节的步骤，用户设置好了自己的网络参数：</p>
-<ul>
-<li>本机的IP地址：192.168.1.100</li>
-<li>子网掩码：255.255.255.0</li>
-<li>网关的IP地址：192.168.1.1</li>
-<li>DNS的IP地址：8.8.8.8<br>&emsp;&emsp;然后他打开浏览器，想要访问Google，在地址栏输入了网址：www.google.com。</li>
-</ul>
-<p>&emsp;&emsp;这意味着，浏览器要向Google发送一个网页请求的数据包。</p>
-<p>9.2 DNS协议</p>
-<p>&emsp;&emsp;我们知道，发送数据包，必须要知道对方的IP地址。但是，现在，我们只知道网址www.google.com，不知道它的IP地址。</p>
-<p>&emsp;&emsp;DNS协议可以帮助我们，将这个网址转换成IP地址。已知DNS服务器为8.8.8.8，于是我们向这个地址发送一个DNS数据包（53端口）。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-cd772c6c05b352b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>&emsp;&emsp;然后，DNS服务器做出响应，告诉我们Google的IP地址是172.194.72.105。于是，我们知道了对方的IP地址。</p>
-<p>9.3 子网掩码</p>
-<p>&emsp;&emsp;接下来，我们要判断，这个IP地址是不是在同一个子网络，这就要用到子网掩码。</p>
-<p>&emsp;&emsp;已知子网掩码是255.255.255.0，本机用它对自己的IP地址192.168.1.100，做一个二进制的AND运算（两个数位都为1，结果为1，否则为0），计算结果为192.168.1.0；然后对Google的IP地址172.194.72.105也做一个AND运算，计算结果为172.194.72.0。这两个结果不相等，所以结论是，Google与本机不在同一个子网络。</p>
-<p>&emsp;&emsp;因此，我们要向Google发送数据包，必须通过网关192.168.1.1转发，也就是说，接收方的MAC地址将是网关的MAC地址。</p>
-<p>9.4 应用层协议</p>
-<p>&emsp;&emsp;浏览网页用的是HTTP协议，它的整个数据包构造是这样的：</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-1a573347e6289f56.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>HTTP部分的内容，类似于下面这样：</p>
-<p>GET / HTTP/1.1<br>　　Host: www.google.com<br>　　Connection: keep-alive<br>　　User-Agent: Mozilla/5.0 (Windows NT 6.1) ……<br>　　Accept: text/html,application/xhtml+xml,application/xml;q=0.9,<em>/</em>;q=0.8<br>　　Accept-Encoding: gzip,deflate,sdch<br>　　Accept-Language: zh-CN,zh;q=0.8<br>　　Accept-Charset: GBK,utf-8;q=0.7,*;q=0.3<br>　　Cookie: … …</p>
-<p>&emsp;&emsp;我们假定这个部分的长度为4960字节，它会被嵌在TCP数据包之中。</p>
-<p>9.5 TCP协议</p>
-<p>&emsp;&emsp;TCP数据包需要设置端口，接收方（Google）的HTTP端口默认是80，发送方（本机）的端口是一个随机生成的1024-65535之间的整数，假定为51775。</p>
-<p>&emsp;&emsp;TCP数据包的标头长度为20字节，加上嵌入HTTP的数据包，总长度变为4980字节。</p>
-<p>9.6 IP协议</p>
-<p>&emsp;&emsp;然后，TCP数据包再嵌入IP数据包。IP数据包需要设置双方的IP地址，这是已知的，发送方是192.168.1.100（本机），接收方是172.194.72.105（Google）。</p>
-<p>&emsp;&emsp;IP数据包的标头长度为20字节，加上嵌入的TCP数据包，总长度变为5000字节。</p>
-<p>9.7 以太网协议</p>
-<p>&emsp;&emsp;最后，IP数据包嵌入以太网数据包。以太网数据包需要设置双方的MAC地址，发送方为本机的网卡MAC地址，接收方为网关192.168.1.1的MAC地址（通过ARP协议得到）。</p>
-<p>&emsp;&emsp;以太网数据包的数据部分，最大长度为1500字节，而现在的IP数据包长度为5000字节。因此，IP数据包必须分割成四个包。因为每个包都有自己的IP标头（20字节），所以四个包的IP数据包的长度分别为1500、1500、1500、560。</p>
-<p><img src="http://upload-images.jianshu.io/upload_images/4398977-348189e13ddbf234.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<p>9.8 服务器端响应</p>
-<p>&emsp;&emsp;经过多个网关的转发，Google的服务器172.194.72.105，收到了这四个以太网数据包。</p>
-<p>&emsp;&emsp;根据IP标头的序号，Google将四个包拼起来，取出完整的TCP数据包，然后读出里面的”HTTP请求”，接着做出”HTTP响应”，再用TCP协议发回来。</p>
-<p>&emsp;&emsp;本机收到HTTP响应以后，就可以将网页显示出来，完成一次网络通信。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2017/03/18/TCP-IP协议架构/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -570,7 +395,7 @@ var age: String? = null
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -626,7 +451,7 @@ var age: String? = null
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>

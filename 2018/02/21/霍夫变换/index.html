@@ -1,0 +1,339 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>霍夫变换 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="霍夫变换"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href=""><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="https://github.com/samychen"><i class="fa fa-"></i>github</a>
+		    
+		      <a href="https://plus.google.com/u/0/103829504368344048794"><i class="fa fa-"></i>google</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2018-02-21T06:33:20.000Z"><a href="/2018/02/21/霍夫变换/">2018-02-21</a></time>
+        
+  
+    <h1 class="title">霍夫变换</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#霍夫变换——直线"><span class="toc-text">霍夫变换——直线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#霍夫变换——圆检测"><span class="toc-text">霍夫变换——圆检测</span></a></li></ol>
+    </div>
+
+        <h2 id="霍夫变换——直线"><a href="#霍夫变换——直线" class="headerlink" title="霍夫变换——直线"></a>霍夫变换——直线</h2><p>&emsp;&emsp;Hough Line Transform用来做直线检测，前提是已经做了边缘检测。<br>&emsp;&emsp;霍夫变换是平面空间到极坐标空间的转换，具有以下特点：</p>
+<ul>
+<li>对于任意一条直线上的所有点来说，变换到极坐标中，根据theta值可以得到r值</li>
+<li>属于同一条直线上的点在极坐标(r,theta)必然在一个点上有最强的信号出现，因此根据最强信号的极坐标反算到平面坐标中就可以得到直线上各个点的像素坐标，从而得到直线。</li>
+</ul>
+<p>相关API：</p>
+<ul>
+<li>标准的霍夫变换cv::HoughLines从平面坐标转换到霍夫空间，最终输出是(theta,r)，表示极坐标空间</li>
+<li>霍夫变换直线概率cv::HoughLinesP最终输出是直线的两个点</li>
+</ul>
+<p>先进行边缘检测，在进行霍夫直线检测<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;vector&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line">using namespace cv;</div><div class="line">using namespace std;</div><div class="line">int main(int argc, int ** argv)</div><div class="line">&#123;</div><div class="line">	src = imread(&quot;F:/linedec.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	namedWindow(&quot;output img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	Canny(src, gray, 150, 200);</div><div class="line">	cvtColor(gray, dst, CV_GRAY2BGR);</div><div class="line">	imshow(&quot;edge img&quot;, gray);</div><div class="line">	vector&lt;Vec4f&gt; plines;</div><div class="line">	HoughLinesP(gray, plines, 1, CV_PI / 180.0, 10, 0, 10);</div><div class="line">	Scalar color = Scalar(0, 0, 255);</div><div class="line">	for (size_t i = 0; i &lt; plines.size(); i++)</div><div class="line">	&#123;</div><div class="line">		Vec4f hlines = plines[i];</div><div class="line">		line(dst, Point(hlines[0], hlines[1]), Point(hlines[2], hlines[3]), color, 3, LINE_AA);</div><div class="line">	&#125;</div><div class="line">	imshow(&quot;output img&quot;, dst);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>演示效果<br><img src="http://upload-images.jianshu.io/upload_images/4398977-3047b6b1499e4cfc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h2 id="霍夫变换——圆检测"><a href="#霍夫变换——圆检测" class="headerlink" title="霍夫变换——圆检测"></a>霍夫变换——圆检测</h2><p>&emsp;&emsp;从平面坐标到极坐标转换三个参数C(x0,y0,r)其中x0与y0是圆心坐标<br>&emsp;&emsp;假设平面坐标的任意一个圆上的点，转换到极坐标中：C(x0,y0,r)处有最大值，霍夫变换正是利用这个原理实现圆的检测。</p>
+<p>相关API：<br>cv::HoughCircles<br>&emsp;&emsp;因为霍夫圆检测对噪声比较敏感，所有先对图像做中值滤波。<br>&emsp;&emsp;基于效率考虑，opencv中实现的霍夫变换圆检测是基于图像梯度的实现，分为两步：</p>
+<ol>
+<li>检测边缘，发现可能的圆心</li>
+<li>基于第一步的基础上从候选圆心开始计数最佳半径大小</li>
+</ol>
+<p>HoughCircles参数说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">#include &quot;stdafx.h&quot;</div><div class="line">#include &lt;opencv2/opencv.hpp&gt;</div><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;vector&gt;</div><div class="line">#include &lt;math.h&gt;</div><div class="line">using namespace cv;</div><div class="line">using namespace std;</div><div class="line">int main(int argc, int ** argv)</div><div class="line">&#123;</div><div class="line">	src = imread(&quot;F:/circle.png&quot;);</div><div class="line">	if (!src.data) &#123;</div><div class="line">		printf(&quot;无法加载图片\n&quot;);</div><div class="line">		return -1;</div><div class="line">	&#125;</div><div class="line">	namedWindow(&quot;input img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	namedWindow(&quot;output img&quot;, CV_WINDOW_AUTOSIZE);</div><div class="line">	imshow(&quot;input img&quot;, src);</div><div class="line">	//中值滤波</div><div class="line">	Mat output;</div><div class="line">	medianBlur(src, output, 3);</div><div class="line">	cvtColor(output, output, CV_BGR2GRAY);</div><div class="line">	//霍夫圆检测</div><div class="line">	vector&lt;Vec3f&gt; pcircles;</div><div class="line">	HoughCircles(output, pcircles, CV_HOUGH_GRADIENT, 1, 10, 100, 30, 5, 50);</div><div class="line">	src.copyTo(dst);</div><div class="line">	for (size_t i = 0; i &lt; pcircles.size(); i++)</div><div class="line">	&#123;</div><div class="line">		Vec3f cc = pcircles[i];</div><div class="line">		circle(dst, Point(cc[0], cc[1]), cc[2], Scalar(0, 0, 255), 2, LINE_AA);</div><div class="line">		circle(dst, Point(cc[0], cc[1]), 2, Scalar(0, 255, 0), 2, LINE_AA);</div><div class="line">	&#125;</div><div class="line">	imshow(&quot;output img&quot;, dst);</div><div class="line">	waitKey(0);</div><div class="line">	return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>演示效果<br><img src="http://upload-images.jianshu.io/upload_images/4398977-e145efe71b57b399.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>cc[0]cc[1]代表圆心的x和y的像素值，cc[2]代表半径</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/OpenCV/">OpenCV</a>
+  </div>
+
+        
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2018/02/21/霍夫变换/" data-title="霍夫变换" data-url="http://samychen.com/2018/02/21/霍夫变换/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，主要分享安卓开发技术以及前沿技术。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2018 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
