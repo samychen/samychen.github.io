@@ -1,0 +1,333 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>身份证识别 | SamyChen</title>
+  <meta name="author" content="SamyChen">
+  
+  <meta name="description" content="学习总结 思考感悟">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="身份证识别"/>
+  <meta property="og:site_name" content="SamyChen"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link rel="alternate" href="/atom.xml" title="SamyChen" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <!-- wumiiVerification -->
+  <meta name="wumiiVerification" content="fb50a101-84fe-4ca2-91a7-ae8cf792978b" />
+  <meta name="wumiiVerification" content="d73b5866-c390-4156-a4dd-51b526b5335e" />
+  <!-- favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <header id="header"><div class= "header-content inner">
+	<div class = "alignleft col-one">
+		
+			<div class='avatar'>
+				<img src = "/img/default/head.jpg">
+              </div>
+		
+		<div class="header-div">
+		    <h1><a href="/">SamyChen</a></h1>
+		    <h2><a href="/">SamyChen的博客</a></h2>
+		</div>
+	</div>
+	<div class = "alignright col-two">
+		
+            <div class="ad">
+			<img src = "/img/default/head.jpg">
+            </div>
+		
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class= "header-nav">
+	<div class='header-nav-content inner'>
+		<div id="main-nav" class="alignleft">
+		    		
+		    		  <a href="/"><i class="fa fa-home"></i>首页</a>
+		    		
+		    		  <a href="/archives"><i class="fa fa-archive"></i>归档</a>
+		    		
+		    		  <a href=""><i class="fa fa-book"></i>电子书</a>
+		    		
+		    		  <a href="/about"><i class="fa fa-user"></i>关于我</a>
+		    		
+		</div>
+		<div id="sub-nav" class="alignright">
+		    
+		      <a href="https://github.com/samychen"><i class="fa fa-"></i>github</a>
+		    
+		      <a href="https://plus.google.com/u/0/103829504368344048794"><i class="fa fa-"></i>google</a>
+		    
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+</header>
+  
+    <div id="content" class="inner">
+      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2018-02-21T09:39:45.000Z"><a href="/2018/02/21/身份证识别/">2018-02-21</a></time>
+        
+  
+    <h1 class="title">身份证识别</h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p>&emsp;&emsp;前面介绍了好些OpenCV基本知识之后，现在我们小试牛刀，稍微写个身份证识别功能出来，这里我们就把工程移植到安卓平台，其实核心业务逻辑是完全一样的。<br>项目地址：<a href="https://github.com/samychen/IDcardRecognization.git" target="_blank" rel="external">https://github.com/samychen/IDcardRecognization.git</a><br>&emsp;&emsp;我们知道身份证上那么多文字，我们怎么知道去哪拿身份证号码？</p>
+<p>&emsp;&emsp;居民二代身份证除了基本信息不同，其他地方都是模板样式，那么我们可以先把敏感信息找到，也就是把身份证号码那一块区域先找到，我们可以把公民身份证那块区别作为匹配模板，找到整张图片的模板所在的区域，而OpenCV刚好提供了模板匹配的方法<code>matchTemplate( InputArray image, InputArray templ,OutputArray result, int method, InputArray mask = noArray() )</code><br><img src="http://upload-images.jianshu.io/upload_images/4398977-5ac71527080936b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="身份证样板.png"></p>
+<p>&emsp;&emsp;通过这个方法我们就找到了模板所在的区域，这下子是不是与想法了，我们拿到模板矩阵像素坐标后，是不是可以根据身份证像素坐标的宽度进行一定计算来确定真实身份证号码所在的区域范围了。</p>
+<p>接下来我们可以确定真实号码所在区域的结构体范围</p>
+<ul>
+<li>X：模板的左上角像素坐标x加上模板的宽</li>
+<li>Y：模板的y</li>
+<li>W：全图宽-(身份证(模版)X+身份证(模版)宽) - n(给个大概值)</li>
+<li>H：模板的高</li>
+</ul>
+<p>&emsp;&emsp;有了以上参数我们就可以把号码所在的区域专门截取出来，是不是已经实现了最重要的功能了。</p>
+<p>&emsp;&emsp;当然，拿到号码之后我们还需要对号码去进行识别，这里我们采用tesseract-ocr训练的模型来识别具体号码，关于tesseract-ocr的使用可以自行去谷歌。</p>
+<p>&emsp;&emsp;这里还有许多需要优化的地方，身份证原图是彩色图片，考虑到OpenCV计算多通道图片需要耗费性能，在预处理阶段需要先转换为灰度图，之后还需要进行高斯边界模糊处理消除噪声的影响。</p>
+<p>核心代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div></pre></td><td class="code"><pre><div class="line">#include &quot;common.h&quot;</div><div class="line"></div><div class="line"></div><div class="line">#define DEFAULT_IDCARD_WIDTH  640</div><div class="line">#define DEFAULT_IDCARD_HEIGHT  320</div><div class="line"></div><div class="line">#define DEFAULT_IDNUMBER_WIDTH  240</div><div class="line">#define DEFAULT_IDNUMBER_HEIGHT  120</div><div class="line"></div><div class="line">#define  FIX_IDCARD_SIZE Size(DEFAULT_IDCARD_WIDTH,DEFAULT_IDCARD_HEIGHT)</div><div class="line">#define  FIX_IDNUMBER_SIZE  Size(DEFAULT_IDNUMBER_WIDTH,DEFAULT_IDNUMBER_HEIGHT)</div><div class="line"></div><div class="line">#define FIX_TEMPLATE_SIZE  Size(150, 26)</div><div class="line"></div><div class="line">extern &quot;C&quot;</div><div class="line">JNIEXPORT jobject JNICALL</div><div class="line">Java_com_samychen_gracefulwrapper_idcardrecognization_ImageUtils_findIdNumber(JNIEnv *env,</div><div class="line">                                                                              jclass type,</div><div class="line">                                                                              jobject src,</div><div class="line">                                                                              jobject out,</div><div class="line">                                                                              jobject tpl,</div><div class="line">                                                                              jobject config) &#123;</div><div class="line"></div><div class="line">    //原始图</div><div class="line">    Mat img_src;</div><div class="line">    //灰度图 需要拿去模版匹配</div><div class="line">    Mat img_gray;</div><div class="line">    //二值图 进行轮廓检测</div><div class="line">    Mat img_threshold;</div><div class="line">    //高斯图 进行边界模糊</div><div class="line">    Mat img_gaussian;</div><div class="line">    //边界图</div><div class="line">    Mat img_canny;</div><div class="line">    //模版</div><div class="line">    Mat img_tpl;</div><div class="line">    //获得的身份证图</div><div class="line">    Mat img_idCard;</div><div class="line">    //获得的身份证号码图</div><div class="line">    Mat img_idNumber;</div><div class="line">    bitmap2Mat(env, src, img_src);</div><div class="line">    bitmap2Mat(env, tpl, img_tpl);</div><div class="line">    //灰度化</div><div class="line">    cvtColor(img_src, img_gray, COLOR_BGRA2GRAY);</div><div class="line">    //二值化</div><div class="line">    threshold(img_gray, img_threshold, 100, 255, THRESH_BINARY);</div><div class="line">    GaussianBlur(img_threshold,img_gaussian,Size(3,3),0);</div><div class="line">    Canny(img_gaussian,img_canny,180,255);</div><div class="line">    vector&lt;vector&lt;Point&gt;&gt; contours;</div><div class="line">    vector&lt;Vec4i&gt; hierachy;//每个边界轮廓都由上下左右4个坐标组成，所以需要vector数据结构</div><div class="line">    //轮廓检测 只检测外轮廓 并压缩水平方向，垂直方向，对角线方向的元素，只保留该方向的终点坐标，比如矩形就是存储四个点</div><div class="line">    //findContours(img_threshold, contours, hierachy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);</div><div class="line">    findContours(img_canny, contours, hierachy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);</div><div class="line">    int width = img_src.cols &gt;&gt; 1;//图片宽的一半</div><div class="line">    int height = img_src.rows &gt;&gt; 1;//图片高的一半</div><div class="line">    if (contours.empty()) &#123;</div><div class="line">        //可能整张图就是身份证</div><div class="line">        img_idCard = img_gray;</div><div class="line">    &#125; else &#123;</div><div class="line">        Rect roiArea;</div><div class="line">        vector&lt;Rect&gt; roiAreas;</div><div class="line">        Rect rectMin;</div><div class="line">        for (auto points : contours) &#123;</div><div class="line">            //根据4个顶点获得区域</div><div class="line">            Rect rect = boundingRect(points);</div><div class="line">            //身份证轮廓的宽必须大于图片宽的一半</div><div class="line">            //高必须大于图片高的一半</div><div class="line">            if (rect.width &gt;= width &amp;&amp; rect.height &gt;= height) &#123;</div><div class="line">                roiArea = rect;</div><div class="line">                roiAreas.push_back(rect);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        if (roiAreas.size()&gt;0)&#123;</div><div class="line">            rectMin = roiAreas.at(0);//找出满足条件的所有轮廓中最小的就是正好身份证的轮廓</div><div class="line">            for(int i=0;i&lt;roiAreas.size();i++)&#123;</div><div class="line">                Rect temp = roiAreas.at(i);</div><div class="line">                if (temp.area()&lt;rectMin.area())&#123;</div><div class="line">                    rectMin = temp;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; else&#123;</div><div class="line">            rectMin = Rect(0,0,img_gray.cols,img_gray.rows);</div><div class="line">        &#125;</div><div class="line">        img_idCard = img_gray(rectMin);</div><div class="line">        //roiarea有面积</div><div class="line">//        if (roiArea.area())</div><div class="line">//            img_idCard = img_gray(roiArea);</div><div class="line">    &#125;</div><div class="line">    resize(img_idCard, img_idCard, FIX_IDCARD_SIZE);//身份证大小640 x 400</div><div class="line">    resize(img_tpl, img_tpl, FIX_TEMPLATE_SIZE);</div><div class="line">    cvtColor(img_tpl, img_tpl, COLOR_BGRA2GRAY);//使用灰度图进行匹配，彩色图计算量太大</div><div class="line">    int cols = img_idCard.cols - img_tpl.cols + 1;</div><div class="line">    int rows = img_idCard.rows - img_tpl.rows + 1;</div><div class="line">    //创建输出图像，输出图像的宽度 = 被查找图像的宽度 - 模版图像的宽度 + 1</div><div class="line">    Mat match(rows, cols, CV_32F);</div><div class="line">    //Mat match;</div><div class="line">//        TM_SQDIFF 平方差匹配法</div><div class="line">//        TM_CCORR 相关匹配法</div><div class="line">//        TM_CCOEFF 相关系数匹配法</div><div class="line">//        TM_SQDIFF_NORMED</div><div class="line">//        TM_CCORR_NORMED</div><div class="line">//        TM_CCOEFF_NORMED</div><div class="line">    // 对于方法 SQDIFF 和 SQDIFF_NORMED, 越小的数值代表更高的匹配结果. 而对于其他方法, 数值越大匹配越好</div><div class="line">    matchTemplate(img_idCard, img_tpl, match, TM_CCORR_NORMED);</div><div class="line">    //归一化</div><div class="line">    normalize(match, match, 0, 1, NORM_MINMAX, -1);</div><div class="line">    Point maxLoc;</div><div class="line">    minMaxLoc(match, 0, 0, 0, &amp;maxLoc);</div><div class="line">    //计算 [身份证(模版):号码区域]</div><div class="line">    //号码区域:</div><div class="line">    //x: 身份证(模版)的X+宽</div><div class="line">    //y: 身份证(模版)Y</div><div class="line">    //w: 全图宽-(身份证(模版)X+身份证(模版)宽) - n(给个大概值)</div><div class="line">    //h: 身份证(模版)高</div><div class="line">    Rect rect(maxLoc.x + img_tpl.cols, maxLoc.y, img_idCard.cols - (maxLoc.x + img_tpl.cols) - 40,</div><div class="line">              img_tpl.rows);</div><div class="line">    //拿二值的号码</div><div class="line">    resize(img_threshold, img_threshold, FIX_IDCARD_SIZE);</div><div class="line">    img_idNumber = img_threshold(rect);</div><div class="line">    jobject obj=createBitmap(env,img_idNumber,config);</div><div class="line">//    resize(img_idNumber, img_idNumber, FIX_IDNUMBER_SIZE);</div><div class="line">//    mat2Bitmap(env, img_idNumber, out);</div><div class="line"></div><div class="line"></div><div class="line">    img_src.release();</div><div class="line">    img_gray.release();</div><div class="line">    img_threshold.release();</div><div class="line">    img_idCard.release();</div><div class="line">    img_idNumber.release();</div><div class="line">    img_tpl.release();</div><div class="line">    match.release();</div><div class="line">    return obj;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>演示结果：<br><img src="http://upload-images.jianshu.io/upload_images/4398977-f2370bb06d5b80f1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="身份证原图.jpg"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-8801d35753e6a224.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="识别结果.jpg"></p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/OpenCV/">OpenCV</a>
+  </div>
+
+        
+        <div class = "counter">
+  <span id="busuanzi_container_page_pv" style="display:none">
+      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
+  </span>
+</div>
+        
+  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+  
+<section id = "relate">
+	
+                <div id="null"></div>
+	
+</section>
+
+
+  
+    <section id="comment">
+    <!--   <h1 class="title">留言</h1> -->
+    
+    
+        <!-- 多说评论框 start -->
+        <div class="ds-thread" data-thread-key="2018/02/21/身份证识别/" data-title="身份证识别" data-url="http://samychen.com/2018/02/21/身份证识别/"></div>
+        <!-- 多说评论框 end -->
+        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"samychen"};
+          (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0] 
+             || document.getElementsByTagName('body')[0]).appendChild(ds);
+          })();
+          </script>
+        <!-- 多说公共JS代码 end -->
+
+      
+    </section>
+
+
+
+
+</div></div>
+      <aside id="sidebar" class="alignright">
+  
+<div class="widget tag">
+  <h3 class="title" id="categories">分类</h3>
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+</div>
+ 
+
+
+  <div class="widget tag">
+  <h3 class="title">微信公众账号</h3>
+    <ul class="entry">
+      <img src="/img/default/wx.png" alt="欢迎关注，该账号供个人学习使用，主要分享安卓开发技术以及前沿技术。" style= "width: 100%">
+    </ul>
+</div>
+
+  <div class="widget tag">
+  <h3 class="title">日历云</h3>
+  <div id="calendar"></div>
+</div>
+
+
+  
+<div class="widget">
+  <h3 class="title">最新评论</h3>
+  	<!-- 多说最新评论 start -->
+	<div class="ds-recent-comments ds-recent-user" data-num-items="5" data-show-avatars="1" data-show-time="1" data-show-title="1" data-show-admin="1" data-excerpt-length="70"></div>
+	<!-- 多说最新评论 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"samychen"};
+		(function() {
+			var ds = document.createElement('script');
+			ds.type = 'text/javascript';ds.async = true;
+			ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+			ds.charset = 'UTF-8';
+			(document.getElementsByTagName('head')[0] 
+			 || document.getElementsByTagName('body')[0]).appendChild(ds);
+		})();
+		</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+  
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/Cordova/" style="font-size: 15px;">Cordova</a> <a href="/tags/Java/" style="font-size: 20px;">Java</a> <a href="/tags/MQTT/" style="font-size: 11.67px;">MQTT</a> <a href="/tags/SSL/" style="font-size: 10px;">SSL</a> <a href="/tags/SSL，Https/" style="font-size: 13.33px;">SSL，Https</a> <a href="/tags/SSL，Https，安卓/" style="font-size: 10px;">SSL，Https，安卓</a> <a href="/tags/单例模式/" style="font-size: 11.67px;">单例模式</a> <a href="/tags/安卓/" style="font-size: 16.67px;">安卓</a> <a href="/tags/安卓，Java/" style="font-size: 18.33px;">安卓，Java</a> <a href="/tags/工厂模式/" style="font-size: 10px;">工厂模式</a> <a href="/tags/生产者消费者模式/" style="font-size: 11.67px;">生产者消费者模式</a> <a href="/tags/网络协议/" style="font-size: 10px;">网络协议</a> <a href="/tags/装饰者模式/" style="font-size: 11.67px;">装饰者模式</a>
+  </div>
+</div>
+
+
+  
+  <div class="widget tag">
+    <h3 class="title">归档</h3>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+  </div>
+
+</aside>
+      <div class="clearfix"></div>
+    </div>
+  
+  <footer id="footer"><div class="footer-content inner">
+  <div class="alignleft">
+  
+    &copy; 2018 SamyChen
+    
+  </div>
+  <div class="alignright">
+    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
+    <a href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
+  </div>
+  
+  <div class="visit">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </div>
+  
+  <div class="clearfix"></div>
+</div></footer>
+  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+<!-- calendar widget -->
+
+  <script src="/js/calendar.js"></script>
+  <script src="/js/languages.js"></script>
+  <script type="text/javascript">
+    $(function() {
+    
+      $('#calendar').aCalendar('zh-CN',{single:undefined, root:'calendar'});
+    
+    });
+  </script>
+
+
+<!-- 『不蒜子』计数服务 -->
+<script async src="http://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- wumii关联推荐 -->
+<script type="text/javascript" src="http://widget.wumii.cn/ext/relatedItemsWidget"></script>
+
+<!-- 百度推荐 -->
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+<!-- 返回顶部 -->
+<div id="toTop">
+	<a href="#">▲</a>
+	<a href="#footer">▼</a>
+</div>
+
+<!-- 站内搜索-Swiftype -->
+<!-- <script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+  (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+  e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+  
+  _st('install','sC-iNFrvTTNtiXEVNwo1','2.0.0');
+</script> -->
+
+<!-- fancybox -->
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>

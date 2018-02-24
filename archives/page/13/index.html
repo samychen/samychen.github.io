@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java中的常用集合类 | SamyChen</title>
+  <title>第 13 页 | 归档 | SamyChen</title>
   <meta name="author" content="SamyChen">
   
   <meta name="description" content="学习总结 思考感悟">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Java中的常用集合类"/>
+  
   <meta property="og:site_name" content="SamyChen"/>
 
   
@@ -81,104 +81,38 @@
 </header>
   
     <div id="content" class="inner">
-      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-05-23T05:24:37.000Z"><a href="/2014/05/23/Java中的常用集合类/">2014-05-23</a></time>
-        
-  
-    <h1 class="title">Java中的常用集合类</h1>
-  
+      <div id="main-col" class="alignleft"><div id="wrapper">
 
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>java中的常用集合类</p>
-<p>1、ArrayList：ArrayList 里面的数据都是有序的，并且可以重复<br>ArayList 缺点：删除慢，随机插入慢<br>举例：如何将数组中的元素变为集合</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">String name[] = &#123;&quot;Tom&quot;,&quot;jack&quot;&#125;;</div><div class="line">List&lt;String &gt;list = Arrays.asList(name);</div></pre></td></tr></table></figure>
-<p>2、LinkedList<br>共性：有序 可以重复（里面的元素）<br>区别：数据的存储方式不同<br>        ArrayList本质：数组<br>        LinkedList本质：链表<br>优点：随机插入快，随机删除快<br>缺点：随机获取元素慢，逐个遍历每个元素，而ArrayList是通过下标获取元素</p>
-<p>3、HashSet<br>共性：持有对象，全部放到[ ]中<br>区别：1.存入的对象是无序的（相对无序）<br>                    HashSet 的排序规则是根据hashCode产生的<br>           2.存入HashSet容器的对象不能重复<br>                    HashSet先判断两个对象的hashCode是否相同，再判断                               两个对象的Equals是否相同<br>            注意：放入HashSe中的对象类型，必须覆盖hashCode()方法和Equals方法<br>                        放入Se中的对象类型，必须覆盖hashCode()方法和Equals方法，严格的还需要覆盖toString方法，Set无序，没有get方法</p>
-<p>4、HashMap<br>特点：Map以键值对（key：value）的形式存储数据，Map中的键可以是int，也可以是其他任意数据类型<br>键必须唯一，值可以相同<br>放入Map中的键必须要覆盖Object类hashCode和Equals，toString方法<br>HashMap常用方法：</p>
-<p>containsKey(Object key)<br>containsValue(Object value) </p>
-<p>map.values()返回Map中的所有值<br>map.keySet()返回Map中所有的键</p>
-<p>Map的迭代方法entrySet<br>使用：如何打印系统的所有环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Map&lt;String,String&gt;envMap = System.getenv();</div><div class="line">    for(Map.Entry&lt;String,String&gt;entry:envMap.entrySet())&#123;</div><div class="line">      String key = entry.getKey();</div><div class="line">      String value = entry.getValue();</div><div class="line">      System.out.println(&quot;key = &quot;+key,&quot;value = &quot;+vaule);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-      
-    </div>
-    <footer>
-      
-        
-  
-  <div class="categories">
-    <a href="/categories/Java/">Java</a>
-  </div>
-
-        
+<h2 class="archive-title fa-calendar">归档</h2>
+<div class="archive">
+   
+    <article class="post">
+      <div class="post-content">
+        <header>
+          <div class="icon"></div>
+          <time datetime="2014-03-12T05:32:22.000Z"><a href="/2014/03/12/Java中为什么要单继承，多实现/">2014-03-12</a></time>
+          
+            <h1 class="title"><a href="/2014/03/12/Java中为什么要单继承，多实现/">Java中为什么要单继承，多实现</a></h1>
+          
+        </header>
+        <div class='archive-tags'>
+          
   <div class="tags">
     <a href="/tags/Java/">Java</a>
   </div>
 
-        <div class = "counter">
-  <span id="busuanzi_container_page_pv" style="display:none">
-      总访问&nbsp<span id="busuanzi_value_page_pv"></span>&nbsp次
-  </span>
+        </div>
+      </div>
+    </article>
+    
 </div>
-        
-  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
-  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
-
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
+<nav id="pagination">
   
-<section id = "relate">
-	
-                <div id="null"></div>
-	
-</section>
-
-
+    <a href="/archives/page/12/" class="alignleft prev">上一页</a>
   
-    <section id="comment">
-    <!--   <h1 class="title">留言</h1> -->
-    
-    
-        <!-- 多说评论框 start -->
-        <div class="ds-thread" data-thread-key="2014/05/23/Java中的常用集合类/" data-title="Java中的常用集合类" data-url="http://samychen.com/2014/05/23/Java中的常用集合类/"></div>
-        <!-- 多说评论框 end -->
-        <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-        <script type="text/javascript">
-        var duoshuoQuery = {short_name:"samychen"};
-          (function() {
-            var ds = document.createElement('script');
-            ds.type = 'text/javascript';ds.async = true;
-            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-            ds.charset = 'UTF-8';
-            (document.getElementsByTagName('head')[0] 
-             || document.getElementsByTagName('body')[0]).appendChild(ds);
-          })();
-          </script>
-        <!-- 多说公共JS代码 end -->
-
-      
-    </section>
-
-
-
-
-</div></div>
+  
+  <div class="clearfix"></div>
+</nav></div></div>
       <aside id="sidebar" class="alignright">
   
 <div class="widget tag">

@@ -88,6 +88,152 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2017-03-12T10:24:19.000Z"><a href="/2017/03/12/Cordova手动导入第三方插件/">2017-03-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/03/12/Cordova手动导入第三方插件/">Cordova手动导入第三方插件</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#手动导入第三方插件到Cordova项目中"><span class="toc-text">手动导入第三方插件到Cordova项目中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+        <h4 id="手动导入第三方插件到Cordova项目中"><a href="#手动导入第三方插件到Cordova项目中" class="headerlink" title="手动导入第三方插件到Cordova项目中"></a>手动导入第三方插件到Cordova项目中</h4><p>&emsp;&emsp;Cordova项目中可以自定义插件，也可以从官方和其他渠道通过命令行导入工程中，因为需求总是在变，有时候第三方插件里面还包含不需要用到的功能，所有我们需要手动导入。</p>
+<p>&emsp;&emsp;采用github中的ImagePicker插件来说明手动导入过程。首先从guihub上查看plugin.xml的内容，我们需要实现图库选择图片的功能只需要ImagePicker这个类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;config-file target=&quot;res/xml/config.xml&quot; parent=&quot;/*&quot;&gt;</div><div class="line">                        &lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div><div class="line">                &lt;/config-file&gt;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;source-file src=&quot;src/android/com/synconset/ImagePicker/ImagePicker.java&quot; target-dir=&quot;src/com/synconset&quot; /&gt;</div></pre></td></tr></table></figure>
+<p>初步看出需要在config.xml中配置如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div></pre></td></tr></table></figure></p>
+<p>然后把ImagePicker.java拷贝到工程中，目录结构为/ser/com/synconset/ImagePicker.java。<br>&emsp;&emsp;接着我们需要在把github中的www目录结构中的imagepicker.js文件复制到我们的工程中，目录结构是assets/www/plugins/..，我的目录结构是assets/www/plugins/imagepicker/www/imagepicker.js</p>
+<p><strong>注意：</strong>直接拷贝js文件还需要配置js文件，最外围默认是没有cordova定义语句的，在js文件最外围拷贝如下代码，第三方js文件不知道我们定义的插件ID，需要我们自己配置，我的项目中的ID就是com.synconset.ImagePicker，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cordova.define(&quot;com.synconset.ImagePicker&quot;, function(require, exports, module) &#123;</div><div class="line"></div><div class="line">module.exports = new ImagePicker()</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>默认创建插件对象的语句是window.imagePicker = new ImagePicker();window.imagePicker 就是我在注册插件时配置好了的，当然也可以用上面的<code>module.exports = new ImagePicker()</code>来创建</p>
+</blockquote>
+<p>&emsp;&emsp;最后我们需要在assets/www/cordova_plugins.js中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">             &quot;id&quot;: &quot;com.synconset.ImagePicker&quot;,</div><div class="line">             &quot;file&quot;: &quot;plugins/imagepicker/www/imagepicker.js&quot;,</div><div class="line">             &quot;merges&quot;: [</div><div class="line">                 &quot;window.imagePicker&quot;</div><div class="line">             ]</div><div class="line">         &#125;</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;然后这时候ImagePicker.java报找不到MultiImageChooserActivity类，把需要的类一并拷贝到项目中，导入的Activity需要在清单文件中注册</p>
+<p>&emsp;&emsp;运行到模拟器上，在<br><code>setContentView(fakeR.getId(&quot;layout&quot;, &quot;multiselectorgrid&quot;));</code>出错，因为项目中没有找到multiselectrgrid.xml文件，在res中新建layout文件夹把需要的文件拷贝进去，之后在<br><code>BitmapFactory.decodeResource(getResources(), fakeR.getId(&quot;drawable&quot;, &quot;loading_icon&quot;));</code>报找不到图片，将需要的图片也拷贝进去。</p>
+<blockquote>
+<p>使用getIdentifier()方法可以方便的获各应用包下的指定资源ID。<br>方式一<br>int indentify = getResources().getIdentifier(“com.test.demo:drawable/icon”,null,null);<br>第一个参数格式是：包名 + : +资源文件夹名 + / +资源名；是这种格式 然后其他的可以为null<br>方式二<br>intindentify= getResources().getIdentifier(“icon”, “drawable”, “com.test.demo”);<br>第一个参数为ID名，第二个为资源属性是ID或者是Drawable，第三个为包名。</p>
+</blockquote>
+<pre><code>import java.lang.reflect.Field;
+import android.content.Context;
+
+public class ResourceUtil {
+    private static Context sContext;
+
+    public static void init(Context context) {
+        if (context != null)
+            sContext = context;
+    }
+
+    public static int getLayoutId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;layout&quot;, sContext.getPackageName());
+    }
+
+    public static int getStringId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;string&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getDrawableId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;drawable&quot;, sContext.getPackageName());
+    }
+
+    public static int getStyleId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;style&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;id&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getColorId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;color&quot;, sContext.getPackageName());
+    }
+
+    public static int getDimenId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;dimen&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getAnimId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;anim&quot;, sContext.getPackageName());
+    }
+
+    // 通过反射实现
+    public static final int[] getStyleableIntArray(String name) {
+        try {
+            if (sContext == null)
+                return null;
+            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
+            int[] ret = (int[]) field.get(null);
+            return ret;
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
+    public static final int getStyleableIntArrayIndex(String name) {
+        try {
+            if (sContext == null)
+                return 0;
+            // use reflection to access the resource class
+            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
+            int ret = (Integer) field.get(null);
+            return ret;
+        } catch (Throwable t) {
+        }
+        return 0;
+    }
+}
+</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;总之，Cordova手动导入第三方插件过程就是这个过程，我们需要的就是拷贝文件然后配置好需要配置的地方就行，项目报找不到插件的方法就一定是配置出了问题，其他大多数问题就是所需要的资源文件问题。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/03/12/Cordova手动导入第三方插件/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2017-03-08T07:18:38.000Z"><a href="/2017/03/08/Cordova-HelloWorld/">2017-03-08</a></time>
         
   
@@ -325,61 +471,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-07-12T06:17:02.000Z"><a href="/2016/07/12/https加密过程/">2016-07-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/07/12/https加密过程/">https加密过程</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>HTTPS其实是有两部分组成：HTTP + SSL / TLS，也就是在HTTP上又加了一层处理加密信息的模块。服务端和客户端的信息传输都会通过TLS进行加密，所以传输的数据都是加密后的数据。具体是如何进行加密，解密，验证的，且看下图。<br><img src="http://files.jb51.net/file_images/article/201212/2012121714270132.png" alt=""></p>
-<ul>
-<li><ol>
-<li>客户端发起HTTPS请求<br>　　这个没什么好说的，就是用户在浏览器里输入一个https网址，然后连接到server的443端口。</li>
-</ol>
-</li>
-<li>2.务端的配置<br>　　采用HTTPS协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问，而使用受信任的公司申请的证书则不会弹出提示页面(startssl就是个不错的选择，有1年的免费服务)。这套证书其实就是一对公钥和私钥。如果对公钥和私钥不太理解，可以想象成一把钥匙和一个锁头，只是全世界只有你一个人有这把钥匙，你可以把锁头给别人，别人可以用这个锁把重要的东西锁起来，然后发给你，因为只有你一个人有这把钥匙，所以只有你才能看到被这把锁锁起来的东西。</li>
-<li>3.传送证书<br>　　这个证书其实就是公钥，只是包含了很多信息，如证书的颁发机构，过期时间等等。</li>
-<li>4.客户端解析证书<br>　　这部分工作是有客户端的TLS来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个随机值。然后用证书对该随机值进行加密。就好像上面说的，把随机值用锁头锁起来，这样除非有钥匙，不然看不到被锁住的内容。</li>
-<li>5.传送加密信息<br>　　这部分传送的是用证书加密后的随机值，目的就是让服务端得到这个随机值，以后客户端和服务端的通信就可以通过这个随机值来进行加密解密了。</li>
-<li>6.服务段解密信息<br>　　服务端用私钥解密后，得到了客户端传过来的随机值(私钥)，然后把内容通过该值进行对称加密。所谓对称加密就是，将信息和私钥通过某种算法混合在一起，这样除非知道私钥，不然无法获取内容，而正好客户端和服务端都知道这个私钥，所以只要加密算法够彪悍，私钥够复杂，数据就够安全。</li>
-<li>7.传输加密后的信息<br>　　这部分信息是服务段用私钥加密后的信息，可以在客户端被还原。</li>
-<li>8.客户端解密信息<br>　　客户端用之前生成的私钥解密服务段传过来的信息，于是获取了解密后的内容。整个过程第三方即使监听到了数据，也束手无策。</li>
-</ul>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/07/12/https加密过程/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -395,7 +486,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -451,7 +542,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>

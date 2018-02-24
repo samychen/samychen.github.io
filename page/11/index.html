@@ -88,6 +88,122 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2015-02-12T05:19:39.000Z"><a href="/2015/02/12/APP开发屏幕适配/">2015-02-12</a></time>
+        
+  
+    <h1 class="title"><a href="/2015/02/12/APP开发屏幕适配/">APP开发屏幕适配</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        
+    </div>
+
+        <p><strong>支持不同屏幕尺寸</strong><br>通过下列方法支持不同的屏幕尺寸：</p>
+<ul>
+<li>确保您的布局能够根据屏幕适当地调整大小</li>
+<li>根据屏幕配置提供合适的 UI 布局</li>
+<li>确保对正确的屏幕应用正确的布局</li>
+<li>提供可正常缩放的位图<br><strong>具体适配方案：</strong><br>1、使用“wrap_content”和“match_parent”<br>&emsp;&emsp;为确保您的布局能够灵活地适应不同的屏幕尺寸，您应该为某些视图组件的宽度和高度使用 “wrap_content” 和 “match_parent”，代替硬编码。<br>2、使用 RelativeLayout<br>&emsp;&emsp;RelativeLayout允许您根据组件之间的<strong>空间关系</strong>指定布局。<br>3、使用尺寸限定符<br>&emsp;&emsp; 上述两种方案无法为每一种屏幕尺寸提供最佳用户体验。 因此，您的应用不仅应实现灵活布局，还应针对不同的屏幕配置提供多种备选布局；可以利用<strong>配置限定符</strong>来实现此目的，它允许运行组件<strong>根据当前设备配置（如针对不同屏幕尺寸的不同布局设计）自动选择合适的资源。</strong><br>&emsp;&emsp; 例如，许多应用都针对大屏幕实现了“双窗格”模式（应用可以在一个窗格中显示项目列表，在另一个窗格中显示项目内容）。 平板电脑和 TV 足够大，可在一个屏幕上同时容纳两个窗格，但手机屏幕只能独立显示它们。 因此，如需实现这些布局，您可以建立以下文件：<br>res/layout/main.xml，单窗格（默认）布局：<figure class="highlight plain"><figcaption><span>xmlns:android="http://schemas.android.com/apk/res/android"</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>res/layout-large/main.xml，双窗格布局：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure></p>
+<p>注意第二个布局目录名称中的 large 限定符。在屏幕归类为大屏幕的设备（例如，7 英寸及更大尺寸的平板电脑）上，将选择此布局。 对于小型设备，将选择另一个布局（无限定符）。<br>4、使用最小宽度限定符<br>&emsp;&emsp;Android 在 Android 3.2 中引入了“最小宽度”限定符。允许您将目标锁定在具有特定最小宽度（单位：dp）的屏幕。<br>&emsp;&emsp; 例如，典型的 7 英寸平板电脑最小宽度为 600dp，因此，如果您希望您的 UI 在这些屏幕上显示两个窗格（但在较小屏幕上显示单个列表），您同样可以为单窗格布局和双窗格布局使用前文中的两种布局，但不使用 large 尺寸限定符，而是使用 sw600dp 为最小宽度是 600dp 的屏幕指定双窗格布局：</p>
+<ul>
+<li>res/layout/main.xml，单窗格（默认）布局：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+<ul>
+<li>res/layout-sw600dp/main.xml，双窗格布局：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这意味着，最小宽度大于或等于 600dp 的设备将选择 layout-sw600dp/main.xml（双窗格）布局，而屏幕较小的设备将选择 layout/main.xml（单窗格）布局。</p>
+<p>不过，这种方法在低于 3.2 版本的设备上不太奏效，因为它们无法将 sw600dp 识别为尺寸限定符，所以您仍需使用 large 限定符。因此，您应该建立一个与 res/layout-sw600dp/main.xml 完全相同的、名为 res/layout-large/main.xml 的文件。下文介绍的技巧可让您避免因此而产生重复的布局文件<br>5、使用布局别名<br>&emsp;&emsp;最小宽度限定符仅在 Android 3.2 及更高版本上提供。因此，您仍应使用兼容早期版本的抽象尺寸容器（小、正常、大和超大）。 例如，如果您想让自己设计的 UI 在手机上显示单窗格 UI，但在 7 英寸平板电脑、TV 及其他大屏设备上显示多窗格 UI，则需要提供下列文件：</p>
+<ul>
+<li>res/layout/main.xml: 单窗格布局</li>
+<li>res/layout-large: 多窗格布局</li>
+<li>res/layout-sw600dp: 多窗格布局</li>
+</ul>
+<p>后两个文件完全相同，因为其中一个将由 Android 3.2 设备匹配，另一个是为了照顾使用早期版本 Android 的平板电脑和 TV 的需要。</p>
+<p>为避免为平板电脑和 TV 产生相同的重复文件（以及由此带来的维护难题），您可以使用别名文件。 例如，您可以定义下列布局:</p>
+<ul>
+<li>res/layout/main.xml，单窗格布局</li>
+<li>res/layout/main_twopanes.xml，双窗格布局</li>
+</ul>
+<p>并添加以下两个文件：</p>
+<ul>
+<li><p>res/values-large/layout.xml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main&quot; type=&quot;layout&quot;&gt;@layout/main_twopanes&lt;/item&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-sw600dp/layout.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main&quot; type=&quot;layout&quot;&gt;@layout/main_twopanes&lt;/item&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>后两个文件内容完全相同，但它们实际上并未定义布局， 而只是<strong>将 main 设置为 main_twopanes 的别名</strong>。由于这些文件具有 large 和 sw600dp 选择器，因此它们适用于任何 Android 版本的平板电脑和电视（低于 3.2 版本的平板电脑和电视匹配 large，高于 3.2 版本者将匹配 sw600dp）<br>6、使用屏幕方向限定符<br>&emsp;&emsp;某些布局在横向和纵向屏幕方向下都表现不错，但其中大多数布局均可通过调整做进一步优化。 在 News Reader 示例应用中，以下是布局在各种屏幕尺寸和屏幕方向下的行为：</p>
+<p>小屏幕，纵向：单窗格，带徽标<br>小屏幕，横向：单窗格，带徽标<br>7 英寸平板电脑，纵向：单窗格，带操作栏<br>7 英寸平板电脑，横向：双窗格，宽，带操作栏<br>10 英寸平板电脑，纵向：双窗格，窄，带操作栏<br>10 英寸平板电脑，横向：双窗格，宽，带操作栏<br>TV，横向：双窗格，宽，带操作栏<br>&emsp;&emsp;因此，以上每一种布局都在 res/layout/ 目录下的某个 XML 文件中定义。如果之后需要将每一种布局分配给各种屏幕配置，应用会使用布局别名将它们与每一种配置进行匹配：</p>
+<ul>
+<li><p>res/layout/onepane.xml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/layout/onepane_with_bar.xml:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;&gt;</div><div class="line">    &lt;LinearLayout android:layout_width=&quot;match_parent&quot; </div><div class="line">                  android:id=&quot;@+id/linearLayout1&quot;  </div><div class="line">                  android:gravity=&quot;center&quot;</div><div class="line">                  android:layout_height=&quot;50dp&quot;&gt;</div><div class="line">        &lt;ImageView android:id=&quot;@+id/imageView1&quot; </div><div class="line">                   android:layout_height=&quot;wrap_content&quot;</div><div class="line">                   android:layout_width=&quot;wrap_content&quot;</div><div class="line">                   android:src=&quot;@drawable/logo&quot;</div><div class="line">                   android:paddingRight=&quot;30dp&quot;</div><div class="line">                   android:layout_gravity=&quot;left&quot;</div><div class="line">                   android:layout_weight=&quot;0&quot; /&gt;</div><div class="line">        &lt;View android:layout_height=&quot;wrap_content&quot; </div><div class="line">              android:id=&quot;@+id/view1&quot;</div><div class="line">              android:layout_width=&quot;wrap_content&quot;</div><div class="line">              android:layout_weight=&quot;1&quot; /&gt;</div><div class="line">        &lt;Button android:id=&quot;@+id/categorybutton&quot;</div><div class="line">                android:background=&quot;@drawable/button_bg&quot;</div><div class="line">                android:layout_height=&quot;match_parent&quot;</div><div class="line">                android:layout_weight=&quot;0&quot;</div><div class="line">                android:layout_width=&quot;120dp&quot;</div><div class="line">                style=&quot;@style/CategoryButtonStyle&quot;/&gt;</div><div class="line">    &lt;/LinearLayout&gt;</div><div class="line"></div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot; </div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;match_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/layout/twopanes.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;400dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/layout/twopanes_narrow.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    android:layout_width=&quot;fill_parent&quot;</div><div class="line">    android:layout_height=&quot;fill_parent&quot;</div><div class="line">    android:orientation=&quot;horizontal&quot;&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/headlines&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.HeadlinesFragment&quot;</div><div class="line">              android:layout_width=&quot;200dp&quot;</div><div class="line">              android:layout_marginRight=&quot;10dp&quot;/&gt;</div><div class="line">    &lt;fragment android:id=&quot;@+id/article&quot;</div><div class="line">              android:layout_height=&quot;fill_parent&quot;</div><div class="line">              android:name=&quot;com.example.android.newsreader.ArticleFragment&quot;</div><div class="line">              android:layout_width=&quot;fill_parent&quot; /&gt;</div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>至此所有可能的布局均已定义，现在只需使用配置限定符将正确的布局映射到每一种配置。 现在您可以使用布局别名技巧来完成这项工作：</p>
+<ul>
+<li><p>res/values/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/onepane_with_bar&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;false&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-sw600dp-land/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-sw600dp-port/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/onepane&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;false&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-large-land/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>res/values-large-port/layouts.xml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;resources&gt;</div><div class="line">    &lt;item name=&quot;main_layout&quot; type=&quot;layout&quot;&gt;@layout/twopanes_narrow&lt;/item&gt;</div><div class="line">    &lt;bool name=&quot;has_two_panes&quot;&gt;true&lt;/bool&gt;</div><div class="line">&lt;/resources&gt;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>7、使用九宫格位图（.9.png）</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2015/02/12/APP开发屏幕适配/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2014-11-14T06:32:57.000Z"><a href="/2014/11/14/生产者-消费者问题的多种Java实现方式/">2014-11-14</a></time>
         
   
@@ -336,55 +452,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2014-09-16T06:32:57.000Z"><a href="/2014/09/16/java-IO流设计模式之装饰模式/">2014-09-16</a></time>
-        
-  
-    <h1 class="title"><a href="/2014/09/16/java-IO流设计模式之装饰模式/">java IO流设计模式之装饰模式</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        
-    </div>
-
-        <p>&emsp;&emsp;装饰模式是Java I/O库的基本模式。在这里我想再用&lt;<head first="" design="" pattern="">&gt;中讲到装饰模式时候的一个例子，看看装饰模式是怎么达到不仅类的数目大减少了，性能的重复也可以减至到最少：<br><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/3e004875-427a-409f-9780-b890f627b52f.png" alt=""> </head></p>
-<p>&emsp;&emsp;看到了上面的类图了吗，我们不禁会说这就是“类爆炸”。如果是按装饰模式的设计思路我们可以得出下面的设计类图：<br><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/6ee0971c-e805-465f-8d60-515389840b10.png" alt=""></p>
-<p>&emsp;&emsp;再回到Java I/O库，由于装饰模式的引用，造成了灵活性和复杂都大大增加了，我们在使用Java I/O库时，必须理解Java &emsp;&emsp;I/O库是由一些基本的原始流处理器和围绕它们的装饰流处理器所组成的，这样可以在学习和使用Java I/O库时达到事半功倍的效果。<br>&emsp;&emsp;首先是InputStream类型中的装饰模式：<br><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/b5870751-3c90-4c03-a299-c3e76f52a7f2.png" alt=""><br>&emsp;&emsp;上图中所有的类都叫做流处理器，这个图就叫做（InputStream类型的）流处理器图。<br>　　&emsp;&emsp;书中提到根据输入流的源的类型，可以将这些流类分成两种，即原始流类（Original Stream）和链接流处理器（Wrapper Stream）。<br>　　<strong>原始流处理器</strong><br>　　&emsp;&emsp;原始流处理器接收一个Byte数组对象，String对象，FileDiscriptor对象或者不同类型的流源对象，根据上面的图，原始流处理器包括以下四种：<br>　　ByteArrayInputStream：为多线程的通信提供缓冲区操作功能，接收一个Byte数组作为流的源。<br>　　FileInputStream:建立一个与文件有关的输入流。接收一个File对象作为流的源。<br>　　PipedInputStream：可以与PipedOutputStream配合使用，用于读入一个数据管道的数据，接收一个PipedOutputStream作为源。<br>　　StringBufferInputStream：将一个字符串缓冲区转换为一个输入流。接收一个String对象作为流的源。（ＪＤＫ帮助文档上说明：已过时。此类未能正确地将字符转换为字节。从&emsp;&emsp;ＪＤＫ1.1开始，从字符串创建流的首选方法是通过StringReader类进行创建。只有字符串中每个字符的低八位可以由此类使用。）<br>       <strong>链接流处理器</strong><br>　　&emsp;&emsp;所谓链接流处理器，就是可以接收另一个流对象作为源，并对之进行功能扩展的类。InputStream类型的链接处理器包括以下几种，它们都接收另一个InputStream对象作为流源。<br>　　（１）FilterInputStream称为过滤输入流，它将另一个输入流作为流源。这个类的子类包括以下几种：<br>　　BufferedInputStream：用来从硬盘将数据读入到一个内存缓冲区中，并从缓冲区提供数据。<br>　　DataInputStream：提供基于多字节的读取方法，可以读取原始类型的数据。<br>　　LineNumberInputStream：提供带有行计数功能的过滤输入流。<br>　　PushbackInputStream：提供特殊的功能，可以将已经读取的字节“推回”到输入流中。<br>　　（２）ObjectInputStream可以将使用ObjectInputStream串行化的原始数据类型和对象重新并行化。<br>　　（３）SeqcueneInputStream可以将两个已有的输入流连接起来，形成一个输入流，从而将多个输入流排列构成一个输入流序列。<br>　<strong>抽象结构图</strong><br>　　&emsp;&emsp;按照上面的这种原始流处理器和链接流处理器的划分，可以用下面的结构图来描述它们之间的关系。<br><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/5b66d0fa-7430-47d1-ada8-d8f4e0659521.png" alt=""></p>
-<p>&emsp;&emsp;上面的流处理器图跟装饰模式的结构图有着显而易见的相同之处。实际上InputStream类型的流处理器结构确实符合装饰模式。　<br>　<strong>装饰模式结构图</strong><br><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/3d7c2914-4e65-4d3b-b1bb-c9b2fab57ca6.png" alt=""></p>
-<p>&emsp;&emsp;FilterInputStream继承了InputStream,也引用了InputStream,而它有四个子类,这就是所谓的Decorator模式<br>&emsp;&emsp;上面这个图向我们传达了这个信息：链接流链接流对象接收一个原始流对象或者另外一个链接流对象作为流源；另一方面他们对流源的内部工作方法做了相应的改变，这种改变是装饰模式所要达到的目的。比如：<br>　　&emsp;&emsp;BufferedInputStream“装饰”了InputStream的内部工作方式，使得流的读入操作使用了缓冲机制。在使用了缓冲机制后，不会对每一次的流读入操作都产生一个物理的读盘动作，从而提高了程序的效率，在汲及到物理流的读入时，都应当使用这个装饰流类。<br>　　&emsp;&emsp;LineNumberInputStream和PushbackInputStream也同样“装饰”了InputStream的内部工作方式，前者使得程序能够按照行号读入数据；后者能够使程序读入的过程中，退后一个字符。<br>　　&emsp;&emsp;DataInputStream子类读入各种不同的原始数据类型以及String类型的数据，这一点可以从它提供的各种read方法看出来，如：readByte(),readInt(),readFloat()等。</p>
-<p> &emsp;&emsp;Java语言的I/O库提供了四大等级结构:InputStream,OutputStream,Reader,Writer四个系列的类。InputStream和OutputStream处理8位字节流数据, Reader和Writer处理16位的字符流数据。InputStream和Reader处理输入, OutputStream和Writer处理输出，所以OutputStream,Reader,Writer这三类的装饰模式跟前面详细介绍的InputStream装饰模式大同小异，大家可以看书中其它部分对这三类的详细描述或者从网上也能找到有关资料。为了方便比较这几种类型，顺便附上Java语言的I/O层次结构图：<br>　下面的图表示:以InputStream和OutputStream形成的层次关系<br><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/ea0eab15-b242-4bd4-97ce-34d542ab2395.png" alt=""></p>
-<p>&emsp;&emsp;下面的图表示:以Reader和Writer形成的层次关系 </p>
-<p><img src="https://note.wiz.cn/api/document/files/unzip/eb3eff32-254c-4783-ad5b-3204cdd5bf82/4d607112-bdb0-47ca-99ef-704d6d3dbd2e.348/index_files/5080179c-4f17-41ef-a22e-165bf786f816.png" alt=""></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2014/09/16/java-IO流设计模式之装饰模式/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -400,7 +467,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -456,7 +523,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>

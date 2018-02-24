@@ -88,6 +88,63 @@
     <header>
         <div class="icon"></div>
         
+        <time datetime="2017-05-18T05:26:57.000Z"><a href="/2017/05/18/MQTT消息格式之SUBACK消息分析/">2017-05-18</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/05/18/MQTT消息格式之SUBACK消息分析/">MQTT消息格式之SUBACK消息分析</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-运行java工程"><span class="toc-text">1.运行java工程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-协议分析"><span class="toc-text">2.协议分析</span></a></li></ol>
+    </div>
+
+        <p>在上一节中（<a href="http://www.jianshu.com/p/363044e62afd" target="_blank" rel="external">MQTT消息格式之SUBSCRIBE(消息订阅)消息分析</a>），客户端发送了订阅的消息，这个时候，服务器端收到订阅主题的MQTT消息之后，肯定需要给一个应答，这个应答信息就是SUBACK(消息订阅应答)。消息订阅应答相对来说比较简单。</p>
+<h4 id="1-运行java工程"><a href="#1-运行java工程" class="headerlink" title="1.运行java工程"></a>1.运行java工程</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">import org.eclipse.paho.client.mqttv3.MqttClient;  </div><div class="line"></div><div class="line">import org.eclipse.paho.client.mqttv3.MqttConnectOptions;  </div><div class="line"></div><div class="line">import org.eclipse.paho.client.mqttv3.MqttException;  </div><div class="line"></div><div class="line">import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;  </div><div class="line"></div><div class="line">import com.tibco.mqtt.test.CustomMQTTCallBack;  </div><div class="line"></div><div class="line"> </div><div class="line">public class SubScriberExample &#123;  </div><div class="line"></div><div class="line">  </div><div class="line">    /** </div><div class="line"></div><div class="line">     * @param args </div><div class="line"></div><div class="line">     */  </div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;  </div><div class="line"></div><div class="line">         String topicFilter =&quot;test&quot;;  </div><div class="line"></div><div class="line">         String broker = &quot;tcp://192.168.80.196:1883&quot; ;  </div><div class="line"></div><div class="line">         String clientId = &quot;paho-1&quot; ;  </div><div class="line"></div><div class="line">         MemoryPersistence persistence = new MemoryPersistence();  </div><div class="line"></div><div class="line">          try &#123;  </div><div class="line"></div><div class="line">                 MqttClient sampleClient = new MqttClient(broker, clientId,persistence);  </div><div class="line"></div><div class="line">                 MqttConnectOptions connOpts = new MqttConnectOptions();  </div><div class="line"></div><div class="line">                 connOpts.setCleanSession( false );  </div><div class="line"></div><div class="line">                 System. out .println( &quot;Connecting to broker: &quot; + broker);  </div><div class="line"></div><div class="line">                 sampleClient.connect(connOpts);  </div><div class="line"></div><div class="line">                 System. out .println( &quot;Connected&quot; );  </div><div class="line"></div><div class="line">                 sampleClient.setCallback(new CustomMQTTCallBack());  </div><div class="line"></div><div class="line">                 sampleClient.subscribe(topicFilter,0);  </div><div class="line"></div><div class="line">                 System. out .println( &quot;Subscribe success for: &quot;+topicFilters.toString());  </div><div class="line"></div><div class="line">         &#125; catch (MqttException me) &#123;  </div><div class="line"></div><div class="line">                 System. out .println( &quot;reason &quot; + me.getReasonCode());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;msg &quot; + me.getMessage());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;loc &quot; + me.getLocalizedMessage());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;cause &quot; + me.getCause());  </div><div class="line"></div><div class="line">                 System. out .println( &quot;excep &quot; + me);  </div><div class="line"></div><div class="line">                 me.printStackTrace();  </div><div class="line"></div><div class="line">         &#125;  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>抓包结果如下：<br><img src="http://upload-images.jianshu.io/upload_images/4398977-cbdeba532e9fed6d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h4 id="2-协议分析"><a href="#2-协议分析" class="headerlink" title="2.协议分析"></a>2.协议分析</h4><p>协议的地址(<a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718068" target="_blank" rel="external">http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718068</a>)</p>
+<ol>
+<li>固定头部</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-f4b7853b0f2fe7ff.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，固定头部的16进制为：90 04<br>结合上面的表1，我们可知其具体含义如下：<br>90—1001 0000 表示连接的请求是SUBACK<br>04–  表示后面将会跟着4个字节</p>
+<ol>
+<li>可变头部</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-942c17dd742db174.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>从上图的抓包程序得到的数据可知，可变头部的16进制为：00 01<br>结合上面的表2，我们可知其具体含义如下：<br>00 01 —表示当前的SUBACK的消息ID是1,这个和上节中的SUBSCRIBE（消息订阅）的消息ID的值必须保持一致。</p>
+<p>3.负载部分<br>SUBACK负载部分的消息格式见下表,负载部分主要返回订阅的结果。其返回的值下面4中类型，其他的都是没有意义的。<br>允许返回的值<br>0x00 - 表示成功- 最大的QoS 0<br>0x01 - 表示成功- 最大的 QoS 1<br>0x02 - 表示成功- 最大的 QoS 2<br>0x80 - 表示订阅失败。 </p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-c12c5e1371568645.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p>从上图的抓包程序得到的数据可知，负载部分实际捕获的数据为：00 00<br>其表示消息订阅成功，且以后收到得到订阅的消息的QoS的值只能够为0.</p>
+<p>发送确认不需要额外部分，因此负载部分长度只有两个字节。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/05/18/MQTT消息格式之SUBACK消息分析/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
         <time datetime="2017-05-18T02:26:57.000Z"><a href="/2017/05/18/MQTT消息格式之SUBSCRIBE消息分析/">2017-05-18</a></time>
         
   
@@ -479,152 +536,6 @@
 
 
 
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2017-03-12T10:24:19.000Z"><a href="/2017/03/12/Cordova手动导入第三方插件/">2017-03-12</a></time>
-        
-  
-    <h1 class="title"><a href="/2017/03/12/Cordova手动导入第三方插件/">Cordova手动导入第三方插件</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#手动导入第三方插件到Cordova项目中"><span class="toc-text">手动导入第三方插件到Cordova项目中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
-    </div>
-
-        <h4 id="手动导入第三方插件到Cordova项目中"><a href="#手动导入第三方插件到Cordova项目中" class="headerlink" title="手动导入第三方插件到Cordova项目中"></a>手动导入第三方插件到Cordova项目中</h4><p>&emsp;&emsp;Cordova项目中可以自定义插件，也可以从官方和其他渠道通过命令行导入工程中，因为需求总是在变，有时候第三方插件里面还包含不需要用到的功能，所有我们需要手动导入。</p>
-<p>&emsp;&emsp;采用github中的ImagePicker插件来说明手动导入过程。首先从guihub上查看plugin.xml的内容，我们需要实现图库选择图片的功能只需要ImagePicker这个类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;config-file target=&quot;res/xml/config.xml&quot; parent=&quot;/*&quot;&gt;</div><div class="line">                        &lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div><div class="line">                &lt;/config-file&gt;</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;source-file src=&quot;src/android/com/synconset/ImagePicker/ImagePicker.java&quot; target-dir=&quot;src/com/synconset&quot; /&gt;</div></pre></td></tr></table></figure>
-<p>初步看出需要在config.xml中配置如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div></pre></td></tr></table></figure></p>
-<p>然后把ImagePicker.java拷贝到工程中，目录结构为/ser/com/synconset/ImagePicker.java。<br>&emsp;&emsp;接着我们需要在把github中的www目录结构中的imagepicker.js文件复制到我们的工程中，目录结构是assets/www/plugins/..，我的目录结构是assets/www/plugins/imagepicker/www/imagepicker.js</p>
-<p><strong>注意：</strong>直接拷贝js文件还需要配置js文件，最外围默认是没有cordova定义语句的，在js文件最外围拷贝如下代码，第三方js文件不知道我们定义的插件ID，需要我们自己配置，我的项目中的ID就是com.synconset.ImagePicker，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cordova.define(&quot;com.synconset.ImagePicker&quot;, function(require, exports, module) &#123;</div><div class="line"></div><div class="line">module.exports = new ImagePicker()</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
-<blockquote>
-<p>默认创建插件对象的语句是window.imagePicker = new ImagePicker();window.imagePicker 就是我在注册插件时配置好了的，当然也可以用上面的<code>module.exports = new ImagePicker()</code>来创建</p>
-</blockquote>
-<p>&emsp;&emsp;最后我们需要在assets/www/cordova_plugins.js中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">             &quot;id&quot;: &quot;com.synconset.ImagePicker&quot;,</div><div class="line">             &quot;file&quot;: &quot;plugins/imagepicker/www/imagepicker.js&quot;,</div><div class="line">             &quot;merges&quot;: [</div><div class="line">                 &quot;window.imagePicker&quot;</div><div class="line">             ]</div><div class="line">         &#125;</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;然后这时候ImagePicker.java报找不到MultiImageChooserActivity类，把需要的类一并拷贝到项目中，导入的Activity需要在清单文件中注册</p>
-<p>&emsp;&emsp;运行到模拟器上，在<br><code>setContentView(fakeR.getId(&quot;layout&quot;, &quot;multiselectorgrid&quot;));</code>出错，因为项目中没有找到multiselectrgrid.xml文件，在res中新建layout文件夹把需要的文件拷贝进去，之后在<br><code>BitmapFactory.decodeResource(getResources(), fakeR.getId(&quot;drawable&quot;, &quot;loading_icon&quot;));</code>报找不到图片，将需要的图片也拷贝进去。</p>
-<blockquote>
-<p>使用getIdentifier()方法可以方便的获各应用包下的指定资源ID。<br>方式一<br>int indentify = getResources().getIdentifier(“com.test.demo:drawable/icon”,null,null);<br>第一个参数格式是：包名 + : +资源文件夹名 + / +资源名；是这种格式 然后其他的可以为null<br>方式二<br>intindentify= getResources().getIdentifier(“icon”, “drawable”, “com.test.demo”);<br>第一个参数为ID名，第二个为资源属性是ID或者是Drawable，第三个为包名。</p>
-</blockquote>
-<pre><code>import java.lang.reflect.Field;
-import android.content.Context;
-
-public class ResourceUtil {
-    private static Context sContext;
-
-    public static void init(Context context) {
-        if (context != null)
-            sContext = context;
-    }
-
-    public static int getLayoutId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;layout&quot;, sContext.getPackageName());
-    }
-
-    public static int getStringId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;string&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getDrawableId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;drawable&quot;, sContext.getPackageName());
-    }
-
-    public static int getStyleId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;style&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;id&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getColorId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;color&quot;, sContext.getPackageName());
-    }
-
-    public static int getDimenId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;dimen&quot;,
-                sContext.getPackageName());
-    }
-
-    public static int getAnimId(String paramString) {
-        if (sContext == null)
-            return 0;
-        return sContext.getResources().getIdentifier(paramString, &quot;anim&quot;, sContext.getPackageName());
-    }
-
-    // 通过反射实现
-    public static final int[] getStyleableIntArray(String name) {
-        try {
-            if (sContext == null)
-                return null;
-            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
-            int[] ret = (int[]) field.get(null);
-            return ret;
-        } catch (Throwable t) {
-        }
-        return null;
-    }
-
-    public static final int getStyleableIntArrayIndex(String name) {
-        try {
-            if (sContext == null)
-                return 0;
-            // use reflection to access the resource class
-            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
-            int ret = (Integer) field.get(null);
-            return ret;
-        } catch (Throwable t) {
-        }
-        return 0;
-    }
-}
-</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;总之，Cordova手动导入第三方插件过程就是这个过程，我们需要的就是拷贝文件然后配置好需要配置的地方就行，项目报找不到插件的方法就一定是配置出了问题，其他大多数问题就是所需要的资源文件问题。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2017/03/12/Cordova手动导入第三方插件/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
  
 <nav id="pagination">
   
@@ -640,7 +551,7 @@ public class ResourceUtil {
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -696,7 +607,7 @@ public class ResourceUtil {
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
