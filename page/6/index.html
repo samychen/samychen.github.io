@@ -88,10 +88,10 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2016-07-12T06:17:02.000Z"><a href="/2016/07/12/https加密过程/">2016-07-12</a></time>
+        <time datetime="2017-03-15T09:14:43.000Z"><a href="/2017/03/15/原生Android中嵌入Cordova-Webview/">2017-03-15</a></time>
         
   
-    <h1 class="title"><a href="/2016/07/12/https加密过程/">https加密过程</a></h1>
+    <h1 class="title"><a href="/2017/03/15/原生Android中嵌入Cordova-Webview/">原生Android中嵌入Cordova Webview</a></h1>
   
 
     </header>
@@ -100,22 +100,41 @@
       
         
     <div id="toc">
-        
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#创建Cordova安卓项目"><span class="toc-text">创建Cordova安卓项目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#创建Android-Native项目"><span class="toc-text">创建Android Native项目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#将Cordova-Android项目复制到本机Android应用程序"><span class="toc-text">将Cordova Android项目复制到本机Android应用程序</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#拷贝jar包"><span class="toc-text">拷贝jar包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#拷贝www目录"><span class="toc-text">拷贝www目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#拷贝插件"><span class="toc-text">拷贝插件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#拷贝config-xml"><span class="toc-text">拷贝config.xml</span></a></li></ol>
     </div>
 
-        <p>HTTPS其实是有两部分组成：HTTP + SSL / TLS，也就是在HTTP上又加了一层处理加密信息的模块。服务端和客户端的信息传输都会通过TLS进行加密，所以传输的数据都是加密后的数据。具体是如何进行加密，解密，验证的，且看下图。<br><img src="http://files.jb51.net/file_images/article/201212/2012121714270132.png" alt=""></p>
+        <p>&emsp;&emsp;Android实现在当前进程打开网页可以将Cordova中的WebView嵌入Android项目中，实现简单，不需要自己实现，所以掌握如何嵌入WebView对项目快速开发很有帮助</p>
+<p>&emsp;&emsp;官方也有这方面的教程操作，但最新版本的cordova android（4.0.0）对其代码库做了大的改动。这种变化，大多是一种设计模式，使得上面描述的方法不能正常工作。</p>
+<p>&emsp;&emsp;本文将展示如何与cordova Android的新变化合作，嵌入cordova webview在本机Android应用程序。</p>
+<h4 id="创建Cordova安卓项目"><a href="#创建Cordova安卓项目" class="headerlink" title="创建Cordova安卓项目"></a>创建Cordova安卓项目</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">cordova create test_cordova com.example.hello HelloWorld</div><div class="line">cordova platform add android</div><div class="line">cordova plugin add nl.x-services.plugins.toast</div><div class="line">cordova plugin add org.apache.cordova.device</div><div class="line">cordova build</div></pre></td></tr></table></figure>
+<p>上面第三行和第四行是将其他的第三方插件也嵌入安卓原生工程使用</p>
+<h4 id="创建Android-Native项目"><a href="#创建Android-Native项目" class="headerlink" title="创建Android Native项目"></a>创建Android Native项目</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class MainActivity extends Activity &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void startCordovaActivity(View view) &#123;</div><div class="line">        Intent intent = new Intent(this, TestCordovaActivity.class);</div><div class="line">        startActivity(intent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void startCordovaActivityWithLayout(View view) &#123;</div><div class="line">        Intent intent = new Intent(this, TestCordovaWithLayoutActivity.class);</div><div class="line">        startActivity(intent);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <ul>
-<li><ol>
-<li>客户端发起HTTPS请求<br>　　这个没什么好说的，就是用户在浏览器里输入一个https网址，然后连接到server的443端口。</li>
-</ol>
-</li>
-<li>2.务端的配置<br>　　采用HTTPS协议的服务器必须要有一套数字证书，可以自己制作，也可以向组织申请。区别就是自己颁发的证书需要客户端验证通过，才可以继续访问，而使用受信任的公司申请的证书则不会弹出提示页面(startssl就是个不错的选择，有1年的免费服务)。这套证书其实就是一对公钥和私钥。如果对公钥和私钥不太理解，可以想象成一把钥匙和一个锁头，只是全世界只有你一个人有这把钥匙，你可以把锁头给别人，别人可以用这个锁把重要的东西锁起来，然后发给你，因为只有你一个人有这把钥匙，所以只有你才能看到被这把锁锁起来的东西。</li>
-<li>3.传送证书<br>　　这个证书其实就是公钥，只是包含了很多信息，如证书的颁发机构，过期时间等等。</li>
-<li>4.客户端解析证书<br>　　这部分工作是有客户端的TLS来完成的，首先会验证公钥是否有效，比如颁发机构，过期时间等等，如果发现异常，则会弹出一个警告框，提示证书存在问题。如果证书没有问题，那么就生成一个随机值。然后用证书对该随机值进行加密。就好像上面说的，把随机值用锁头锁起来，这样除非有钥匙，不然看不到被锁住的内容。</li>
-<li>5.传送加密信息<br>　　这部分传送的是用证书加密后的随机值，目的就是让服务端得到这个随机值，以后客户端和服务端的通信就可以通过这个随机值来进行加密解密了。</li>
-<li>6.服务段解密信息<br>　　服务端用私钥解密后，得到了客户端传过来的随机值(私钥)，然后把内容通过该值进行对称加密。所谓对称加密就是，将信息和私钥通过某种算法混合在一起，这样除非知道私钥，不然无法获取内容，而正好客户端和服务端都知道这个私钥，所以只要加密算法够彪悍，私钥够复杂，数据就够安全。</li>
-<li>7.传输加密后的信息<br>　　这部分信息是服务段用私钥加密后的信息，可以在客户端被还原。</li>
-<li>8.客户端解密信息<br>　　客户端用之前生成的私钥解密服务段传过来的信息，于是获取了解密后的内容。整个过程第三方即使监听到了数据，也束手无策。</li>
+<li>startCordovaActivity 将转移到一个新活动，其布局是以程序方式创建的cordova webview。</li>
+<li>startCordovaActivity 将转移到一个新的活动，其布局使用xml布局文件定义并嵌入cordova webview。</li>
+</ul>
+<p>TestCordovaActivity<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class TestCordovaActivity extends CordovaActivity &#123;</div><div class="line"></div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        super.init();</div><div class="line">        // Load your application</div><div class="line">         launchUrl = &quot;file:///android_asset/www/index.html&quot;;</div><div class="line">//        launchUrl = &quot;file:///android_asset/www/index2.html&quot;;</div><div class="line">        loadUrl(launchUrl);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>不需要xml布局，加载的是index.html网页</p>
+<p>TestCordovaWithLayoutActivity<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">public class TestCordovaWithLayoutActivity extends CordovaActivity &#123;</div><div class="line"></div><div class="line"></div><div class="line">    /** Called when the activity is first created. */</div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_test_cordova_with_layout);</div><div class="line">        super.init();</div><div class="line">        // Load your application</div><div class="line">        // launchUrl = &quot;file:///android_asset/www/index.html&quot;</div><div class="line">        launchUrl = &quot;file:///android_asset/www/index2.html&quot;;</div><div class="line">        loadUrl(launchUrl);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected CordovaWebView makeWebView() &#123;</div><div class="line">        SystemWebView webView = (SystemWebView)findViewById(R.id.cordovaWebView);</div><div class="line">        return new CordovaWebViewImpl(new SystemWebViewEngine(webView));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void createViews() &#123;</div><div class="line">        //Why are we setting a constant as the ID? This should be investigated</div><div class="line">//        appView.getView().setId(100);</div><div class="line">//        appView.getView().setLayoutParams(new FrameLayout.LayoutParams(</div><div class="line">//                ViewGroup.LayoutParams.MATCH_PARENT,</div><div class="line">//                ViewGroup.LayoutParams.MATCH_PARENT));</div><div class="line">//</div><div class="line">//        setContentView(appView.getView());</div><div class="line"></div><div class="line">        if (preferences.contains(&quot;BackgroundColor&quot;)) &#123;</div><div class="line">            int backgroundColor = preferences.getInteger(&quot;BackgroundColor&quot;, Color.BLACK);</div><div class="line">            // Background of activity:</div><div class="line">            appView.getView().setBackgroundColor(backgroundColor);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        appView.getView().requestFocusFromTouch();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用setContentView显式设置布局xml。需要重写两个方法：</p>
+<ul>
+<li>makeWebView： 它使用R.id.cordovaWebView，在layout xml文件中定义</li>
+<li>createViews ： 我们重写它只是因为它将默认使用setContentView。但是我们想使用我们的xml布局，所以需要它。</li>
+</ul>
+<p>activity_test_cordova_with_layout.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</div><div class="line">    xmlns:tools=&quot;http://schemas.android.com/tools&quot;</div><div class="line">    android:layout_width=&quot;match_parent&quot;</div><div class="line">    android:layout_height=&quot;match_parent&quot;</div><div class="line">    android:orientation=&quot;vertical&quot;</div><div class="line">    tools:context=&quot;com.example.jimmy.embeddedcordovawebviewdemo.TestCordovaWithLayoutActivity&quot;&gt;</div><div class="line"></div><div class="line">    &lt;TextView</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;100dp&quot;</div><div class="line">        android:background=&quot;#FF0000&quot;</div><div class="line">        android:textColor=&quot;#FFFFFF&quot;</div><div class="line">        android:gravity=&quot;center&quot;</div><div class="line">        android:text=&quot;This is native text view&quot;</div><div class="line">        /&gt;</div><div class="line"></div><div class="line">    &lt;org.apache.cordova.engine.SystemWebView</div><div class="line">        android:id=&quot;@+id/cordovaWebView&quot;</div><div class="line">        android:layout_width=&quot;match_parent&quot;</div><div class="line">        android:layout_height=&quot;match_parent&quot;</div><div class="line">        /&gt;</div><div class="line"></div><div class="line">&lt;/LinearLayout&gt;</div></pre></td></tr></table></figure></p>
+<p>为了向后兼容，我们使用cordova库中的org.apache.cordova.engine.SystemWebView,直到4.0.0之前也是可以使用org.apache.cordova.CordovaWebView</p>
+<h4 id="将Cordova-Android项目复制到本机Android应用程序"><a href="#将Cordova-Android项目复制到本机Android应用程序" class="headerlink" title="将Cordova Android项目复制到本机Android应用程序"></a>将Cordova Android项目复制到本机Android应用程序</h4><h4 id="拷贝jar包"><a href="#拷贝jar包" class="headerlink" title="拷贝jar包"></a>拷贝jar包</h4><p>去Apache官方网站下载最新的<a href="https://github.com/apache/cordova-android/releases/tag/4.0.0" target="_blank" rel="external">cordova Android Packet</a>，然后创建jar包。<a href="http://cordova.apache.org/docs/en/5.0.0/guide/platforms/android/webview.html" target="_blank" rel="external">官方网站</a><br>下载好官方压缩文件cordova-android-xxx.zip，解压缩，通过ant工具导航到 <code>/framework</code>目录下，执行ant jar命令，如果提示<br>build fali, you need to create the file’local.properties’ by running ‘android update project -p .’命令，在cmd窗口执行如上命令之后再次执行ant jar<br>将会在当前目录生成cordova-4.0.0.jar<br>拷贝jar包到项目中，在build.gradle中添加依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">compile files(&apos;libs/cordova-4.0.0.jar&apos;)</div></pre></td></tr></table></figure></p>
+<h4 id="拷贝www目录"><a href="#拷贝www目录" class="headerlink" title="拷贝www目录"></a>拷贝www目录</h4><p>目录结构如下<br><strong><code>platforms/android/assets/www</code> -&gt; <code>src/main/assets/www</code></strong></p>
+<h4 id="拷贝插件"><a href="#拷贝插件" class="headerlink" title="拷贝插件"></a>拷贝插件</h4><p><strong>注意：</strong>拷贝<code>platforms/android/src/</code>目录结构下的所有文件，而不是plugins/下的所有文件。因为在运行cordova build命令时，cordova将复制<code>plugins/</code>文件夹下的插件到目录<code>platforms/android/src/</code>下，并执行一些操作。</p>
+<h4 id="拷贝config-xml"><a href="#拷贝config-xml" class="headerlink" title="拷贝config.xml"></a>拷贝config.xml</h4><p><strong>注意：</strong>不要拷贝更目录下的config.xml，要拷贝的是platforms下的config.xml<br>目录结构如下<br><code>platforms/android/res/xml/config.xml</code> -&gt; <code>src/main/res/xml/</code></p>
+<p>整个工程的目录结构如下图所示：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-ec810e0277b57799.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4398977-0254bcf13589b1b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>参考文献：</p>
+<ul>
+<li><a href="http://cordova.apache.org/docs/en/5.0.0/guide_platforms_android_webview.md.html" target="_blank" rel="external">http://cordova.apache.org/docs/en/5.0.0/guide_platforms_android_webview.md.html</a></li>
+<li><a href="http://richardgilmour.co.uk/2013/03/03/embedding-a-cordova-webview-in-a-native-android-app/" target="_blank" rel="external">http://richardgilmour.co.uk/2013/03/03/embedding-a-cordova-webview-in-a-native-android-app/</a></li>
+<li><a href="https://github.com/Adobe-Marketing-Cloud-Apps/app-sample-android-phonegap/wiki/Embed-Webview-in-Android-Fragment" target="_blank" rel="external">https://github.com/Adobe-Marketing-Cloud-Apps/app-sample-android-phonegap/wiki/Embed-Webview-in-Android-Fragment</a></li>
 </ul>
 
       
@@ -125,7 +144,7 @@
         
         
         <div class="alignright">
-          <a href="/2016/07/12/https加密过程/#comment" class="comment-link">Comments</a>
+          <a href="/2017/03/15/原生Android中嵌入Cordova-Webview/#comment" class="comment-link">Comments</a>
         </div>
         
       
@@ -143,10 +162,10 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2016-07-08T06:17:02.000Z"><a href="/2016/07/08/http与https网络请求/">2016-07-08</a></time>
+        <time datetime="2017-03-13T02:03:08.000Z"><a href="/2017/03/13/Cordova-添加默认启动图/">2017-03-13</a></time>
         
   
-    <h1 class="title"><a href="/2016/07/08/http与https网络请求/">http与https网络请求</a></h1>
+    <h1 class="title"><a href="/2017/03/13/Cordova-添加默认启动图/">Cordova 添加默认启动图</a></h1>
   
 
     </header>
@@ -155,27 +174,18 @@
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。"><span class="toc-text">本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#直接使用类HttpsURLConnection访问Web页面"><span class="toc-text">直接使用类HttpsURLConnection访问Web页面</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#将证书导入到TrustStore文件中"><span class="toc-text">将证书导入到TrustStore文件中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#X509证书信任管理器类的实现及应用"><span class="toc-text">X509证书信任管理器类的实现及应用</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Cordova添加默认启动图"><span class="toc-text">Cordova添加默认启动图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-修改config-xml配置文件"><span class="toc-text">1. 修改config.xml配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-修改启动图片"><span class="toc-text">2. 修改启动图片</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-在设备初始化完成后隐藏Splash画面"><span class="toc-text">3.在设备初始化完成后隐藏Splash画面</span></a></li></ol>
     </div>
 
-        <p>HTTPS，即安全的超文本传输协议，采用了SSL技术，被广泛使用以保证Web应用系统的安全性。访问Web应用的编程接口大多封装了SSL，使得访问HTTPS和访问HTTP一样简单。</p>
-<h4 id="本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。"><a href="#本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。" class="headerlink" title="本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。"></a>本文将在简要介绍JSSE的基础上，详细描述使用JSSE访问HTTPS的方法，主要说明了如何访问带有未经验证证书的HTTPS站点。</h4><p>Java安全套接扩展 (Java Secure Socket Extension, JSSE)是实现Internet安全通信的一系列包的集合。它是一个SSL和TLS的纯Java实现，可以透明地提供数据加密、服务器认证、信息完整性等功能，可以使我们像使用普通的套接字一样使用JSSE建立的安全套接字。JSSE是一个开放的标准，不只是Sun公司才能实现一个JSSE，事实上其他公司有自己实现的JSSE。<br>在深入了解JSSE之前，需要了解一个有关Java安全的概念：客户端的TrustStore文件。客户端的TrustStore文件中保存着被客户端所信任的服务器的证书信息。客户端在进行SSL连接时，JSSE将根据这个文件中的证书决定是否信任服务器端的证书。</p>
-<p>JSSE中，有一个信任管理器类负责决定是否信任远端的证书，这个类有如下的处理规则：</p>
+        <h4 id="Cordova添加默认启动图"><a href="#Cordova添加默认启动图" class="headerlink" title="Cordova添加默认启动图"></a>Cordova添加默认启动图</h4><p>&emsp;&emsp;Cordova默认的启动图是Apache默认的logo，如果需要修改默认启动图需要Splash插件，通过CLI语句<code>cordova plugin add org.apache.cordova.splashscreen</code>添加插件</p>
+<h4 id="1-修改config-xml配置文件"><a href="#1-修改config-xml配置文件" class="headerlink" title="1. 修改config.xml配置文件"></a>1. 修改config.xml配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;preference name=&quot;SplashScreen&quot; value=&quot;screen&quot; /&gt; &lt;!-- 不带后缀png的文件名，默认是screen--&gt;</div><div class="line">    &lt;preference name=&quot;SplashScreenDelay&quot; value=&quot;3000&quot; /&gt; &lt;!-- Splash显示时间，默认是3000ms--&gt;</div><div class="line">    &lt;feature name=&quot;SplashScreen&quot;&gt;</div><div class="line">        &lt;param name=&quot;android-package&quot; value=&quot;org.apache.cordova.splashscreen.SplashScreen&quot; /&gt;</div><div class="line">    &lt;/feature&gt;</div></pre></td></tr></table></figure>
+<h4 id="2-修改启动图片"><a href="#2-修改启动图片" class="headerlink" title="2. 修改启动图片"></a>2. 修改启动图片</h4><p>&emsp;&emsp;可以看到启动图片的名字是screen.png,工程下有一些screen.png默认图片了，上面显示的是cordova logo，下面需要把这些图片换成你自己的启动画面，不需要支持的尺寸图片直接删掉就可以了。</p>
+<h4 id="3-在设备初始化完成后隐藏Splash画面"><a href="#3-在设备初始化完成后隐藏Splash画面" class="headerlink" title="3.在设备初始化完成后隐藏Splash画面"></a>3.在设备初始化完成后隐藏Splash画面</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">document.addEventListener(&quot;deviceready&quot;, onDeviceReady, false);  </div><div class="line">function onDeviceReady() &#123;  </div><div class="line">  navigator.splashscreen.hide();  </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果使用了ionic框架，直接在app.js 文件的  .run([‘$ionicPlatform’, function ($ionicPlatform) {   … } 里面加上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">navigator.splashscreen.hide();</div></pre></td></tr></table></figure></p>
 <blockquote>
-<p>1 ) 如果系统属性javax.net.sll.trustStore指定了TrustStore文件，那么信任管理器就去jre安装路径下的lib/security/目录中寻找并使用这个文件来检查证书。<br>2 ) 如果该系统属性没有指定TrustStore文件，它就会去jre安装路径下寻找默认的TrustStore文件，这个文件的相对路径为：lib/security/jssecacerts。<br>3 ) 如果 jssecacerts不存在，但是cacerts存在(它随J2SDK一起发行，含有数量有限的可信任的基本证书)，那么这个默认的TrustStore文件就是cacerts。</p>
+<p>Blockquote</p>
 </blockquote>
-<h4 id="直接使用类HttpsURLConnection访问Web页面"><a href="#直接使用类HttpsURLConnection访问Web页面" class="headerlink" title="直接使用类HttpsURLConnection访问Web页面"></a>直接使用类HttpsURLConnection访问Web页面</h4><p>Java提供了一种非常简洁的方法来访问HTTPS网页，即使用类HttpsURLConnection、URL等。这几个类为支持HTTPS对JSSE相关类做了进一步的封装，例子如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">URL reqURL = new URL(&quot;https://www.sun.com&quot; ); //创建URL对象</div><div class="line">HttpsURLConnection httpsConn = (HttpsURLConnection)reqURL.openConnection();</div><div class="line"></div><div class="line">/*下面这段代码实现向Web页面发送数据，实现与网页的交互访问</div><div class="line">httpsConn.setDoOutput(true); </div><div class="line">OutputStreamWriter out = new OutputStreamWriter(huc.getOutputStream(), &quot;8859_1&quot;); </div><div class="line">out.write( &quot;……&quot; ); </div><div class="line">out.flush(); </div><div class="line">out.close();</div><div class="line">*/</div><div class="line"></div><div class="line">//取得该连接的输入流，以读取响应内容 </div><div class="line">InputStreamReader insr = new InputStreamReader(httpsConn.getInputStream();</div><div class="line"></div><div class="line">//读取服务器的响应内容并显示</div><div class="line">int respInt = insr.read();</div><div class="line">while( respInt != -1)&#123;</div><div class="line">　System.out.print((char)respInt);</div><div class="line">　respInt = insr.read();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>　　这段代码能够正常执行，然而把访问的URL改为<a href="https://login.bjut.edu.cn" target="_blank" rel="external">https://login.bjut.edu.cn</a> 时，程序将抛出异常javax.net.ssl.SSLException，这是由于<a href="https://login.bjut.edu.cn" target="_blank" rel="external">https://login.bjut.edu.cn</a> 站点的安全证书不被JSSE所信任。根据JSSE简介中对信任管理器的分析，一种解决这个问题的方法是按照信任管理器的处理规则，把站点的证书放到证书库文件jssecacerts中，或者把证书存放到任一TrustStore文件中，然后设置系统属性javax.net.sll.trustStore指向该文件。另一种解决方法则是自己实现信任管理器类，让它信任我们指定的证书。下面分别介绍这两种方法。</p>
-<h4 id="将证书导入到TrustStore文件中"><a href="#将证书导入到TrustStore文件中" class="headerlink" title="将证书导入到TrustStore文件中"></a>将证书导入到TrustStore文件中</h4><p>　　Java提供了命令行工具keytool用于创建证书或者把证书从其它文件中导入到Java自己的TrustStore文件中。把证书从其它文件导入到TrustStore文件中的命令行格式为：<br><code>keytool -import -file src_cer_file –keystore dest_cer_store</code><br>其中，src_cer_file为存有证书信息的源文件名，dest_cer_store为目标TrustStore文件。<br>　　在使用keytool之前，首先要取得源证书文件，这个源文件可使用IE浏览器获得，IE浏览器会把访问过的HTTPS站点的证书保存到本地。从IE浏览器导出证书的方法是打开“Internet 选项”，选择“内容”选项卡，点击“证书…”按钮，在打开的证书对话框中，选中一个证书，然后点击“导出…”按钮，按提示一步步将该证书保存到一文件中。最后就可利用keytool把该证书导入到Java的TrustStore文件中。为了能使Java程序找到该文件，应该把这个文件复制到jre安装路径下的lib/security/目录中。</p>
-<p>　　这样，只需在程序中设置系统属性javax.net.sll.trustStore指向文件dest_cer_store，就能使JSSE信任该证书，从而使程序可以访问使用未经验证的证书的HTTPS站点。</p>
-<p>　　使用这种方法，编程非常简单，但需要手工导出服务器的证书。当服务器证书经常变化时，就需要经常进行手工导出证书的操作。下面介绍的实现X509证书信任管理器类的方法将避免手工导出证书的问题。</p>
-<h4 id="X509证书信任管理器类的实现及应用"><a href="#X509证书信任管理器类的实现及应用" class="headerlink" title="X509证书信任管理器类的实现及应用"></a>X509证书信任管理器类的实现及应用</h4><p>　　在JSSE中，证书信任管理器类就是实现了接口X509TrustManager的类。我们可以自己实现该接口，让它信任我们指定的证书。</p>
-<p>　　接口X509TrustManager有下述三个公有的方法需要我们实现：<br>    ⑴ void checkClientTrusted(X509Certificate[] chain, String authType)<br>throws CertificateException<br>           该方法检查客户端的证书，若不信任该证书则抛出异常。由于我们不需要对客户端进行认证，因此我们只需要执行默认的信任管理器的这个方法。JSSE中，默认的信任管理器类为TrustManager。<br>⑵void checkServerTrusted(X509Certificate[] chain, String authType)<br>throws CertificateException </p>
-<p>　　该方法检查服务器的证书，若不信任该证书同样抛出异常。通过自己实现该方法，可以使之信任我们指定的任何证书。在实现该方法时，也可以简单的不做任何处理，即一个空的函数体，由于不会抛出异常，它就会信任任何证书。</p>
-<p>⑶ X509Certificate[] getAcceptedIssuers()<br>返回受信任的X509证书数组。</p>
-<p>自己实现了信任管理器类，如何使用呢？类HttpsURLConnection似乎并没有提供方法设置信任管理器。其实，HttpsURLConnection通过SSLSocket来建立与HTTPS的安全连接，SSLSocket对象是由SSLSocketFactory生成的。HttpsURLConnection提供了方法setSSLSocketFactory(SSLSocketFactory)设置它使用的SSLSocketFactory对象。SSLSocketFactory通过SSLContext对象来获得，在初始化SSLContext对象时，可指定信任管理器对象。下面用一个图简单表示这几个JSSE类的关系：<br><img src="http://dev.yesky.com/imagelist/06/04/d9fe68331950.gif" alt=""><br>假设自己实现的X509TrustManager类的类名为：MyX509TrustManager，下面的代码片断说明了如何使用MyX509TrustManager：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//创建SSLContext对象，并使用我们指定的信任管理器初始化</div><div class="line">TrustManager[] tm = &#123;new MyX509TrustManager ()&#125;; </div><div class="line">SSLContext sslContext = SSLContext.getInstance(&quot;SSL&quot;,&quot;SunJSSE&quot;); </div><div class="line">sslContext.init(null, tm, new java.security.SecureRandom()); </div><div class="line"></div><div class="line">//从上述SSLContext对象中得到SSLSocketFactory对象</div><div class="line">SSLSocketFactory ssf = sslContext.getSocketFactory();</div><div class="line"></div><div class="line">//创建HttpsURLConnection对象，并设置其SSLSocketFactory对象</div><div class="line">HttpsURLConnection httpsConn = (HttpsURLConnection)myURL.openConnection();</div><div class="line">httpsConn.setSSLSocketFactory(ssf);</div></pre></td></tr></table></figure></p>
-<p>这样，HttpsURLConnection对象就可以正常连接HTTPS了，无论其证书是否经权威机构的验证，只要实现了接口X509TrustManager的类MyX509TrustManager信任该证书。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>　　本文主要介绍了在HTTPS的证书未经权威机构认证的情况下，访问HTTPS站点的两种方法，一种方法是把该证书导入到Java的TrustStore文件中，另一种是自己实现并覆盖JSSE缺省的证书信任管理器类。两种方法各有优缺点，第一种方法不会影响JSSE的安全性，但需要手工导入证书；第二种方法虽然不用手工导入证书，但需要小心使用，否则会带来一些安全隐患。</p>
+<p>&emsp;&emsp;</p>
 
       
     </div>
@@ -184,7 +194,7 @@
         
         
         <div class="alignright">
-          <a href="/2016/07/08/http与https网络请求/#comment" class="comment-link">Comments</a>
+          <a href="/2017/03/13/Cordova-添加默认启动图/#comment" class="comment-link">Comments</a>
         </div>
         
       
@@ -202,65 +212,10 @@
     <header>
         <div class="icon"></div>
         
-        <time datetime="2016-07-02T06:11:30.000Z"><a href="/2016/07/02/SSL-socket-详解-概念/">2016-07-02</a></time>
+        <time datetime="2017-03-12T10:24:19.000Z"><a href="/2017/03/12/Cordova手动导入第三方插件/">2017-03-12</a></time>
         
   
-    <h1 class="title"><a href="/2016/07/02/SSL-socket-详解-概念/">SSL+socket 详解-概念</a></h1>
-  
-
-    </header>
-
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、SSL概述"><span class="toc-text">一、SSL概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、SSL体系结构："><span class="toc-text">二、SSL体系结构：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、SSL-Socket双向认证的实现"><span class="toc-text">三、SSL Socket双向认证的实现</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#服务器端需要："><span class="toc-text">服务器端需要：</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#客户端需要："><span class="toc-text">客户端需要：</span></a>
-    </div>
-
-        <h4 id="一、SSL概述"><a href="#一、SSL概述" class="headerlink" title="一、SSL概述"></a>一、SSL概述</h4><p>SSL协议采用数字证书及数字签名进行双端实体认证，用非对称加密算法进行密钥协商，用对称加密算法将数据加密后进行传输以保证数据的保密性，并且通过计算数字摘要来验证数据在传输过程中是否被篡改和伪造，从而为敏感数据的传输提供了一种安全保障手段。</p>
-<p>SSL协议提供的服务主要有：<br>1）认证用户和服务器，确保数据发送到正确的客户机和服务器<br>认证用户和服务器的合法性，使它们能够确信数据将被发送到正确的客户机和服务器上。客户机和服务器都有各自的识别号，这些识别号由公开密钥进行编号，为验证用户是否合法，SSL协议要求在握手交换数据时进行数字认证，以此确保用户的合法性。<br>2）加密数据以防止数据中途被窃取<br>SSL协议所采用的加密技术既有对称密钥技术，也有公开密钥技术。在客户机和服务器进行数据交换前，交换SSL初始握手信息，在SSL握手信息中采用了各种加密技术对其进行加密，以保证其机密性和数据的完整性，并且用数字证书进行鉴别，这样就可以防止非法用户进行破译。<br>3）维护数据的完整性，确保数据在传输过程中不被改变<br>SSL协议采用Hash函数和机密共享的方法提供信息的完整性服务，建立客户机和服务器之间的安全通道，使所有经过SSL协议处理的业务在传输过程中能全部完整准确无误的到达目的地。</p>
-<p>SSL体系结构：<br>SSL协议位于TCP/IP协议模型的网络层和应用层之间,使用TCP来提供一种可靠的端到端的安全服务,它是客户/服务器应用之间的通信不被攻击抓取,并且始终对服务器进行认证,还可以选择对客户进行认证。SSL体系结构如图1所示。</p>
-<h4 id="二、SSL体系结构："><a href="#二、SSL体系结构：" class="headerlink" title="二、SSL体系结构："></a>二、SSL体系结构：</h4><p>SSL协议位于TCP/IP协议模型的网络层和应用层之间,使用TCP来提供一种可靠的端到端的安全服务,它是客户/服务器应用之间的通信不被攻击抓取,并且始终对服务器进行认证,还可以选择对客户进行认证。<br>在SSL通讯中，首先采用非对称加密交换信息，使得服务器获得浏览器端提供的对称加密的密钥，然后利用该密钥进行通讯过程中信息的加密和解密。为了保证消息在传递过程中没有被篡改，可以加密HASH编码来确保信息的完整性。SSL通讯过程，如图2所示。<br>一般情况下，当客户端是保密信息的传递者时，客户端不需要数字证书验证自己身份的真实性，如电子银行的应用，客户需要将自己的账号和密码发送给银行，因此银行的服务器需要安装数字证书来表明自己身份的有效性。在某些应用中，服务器端也需要对客户端的身份进行验证，这时客户端也需要安装数字证书以保证通讯时服务器可以辨别出客户端的身份，验证过程类似于服务器身份的验证过程。</p>
-<h4 id="三、SSL-Socket双向认证的实现"><a href="#三、SSL-Socket双向认证的实现" class="headerlink" title="三、SSL Socket双向认证的实现"></a>三、SSL Socket双向认证的实现</h4><p>SSL Socket通信是对Socket通信的拓展。在Socket通信的基础上添加了一层安全性保护，提供了更高的安全性，包括身份验证、数据加密以及完整性验证。<br>SSL Socket双向认证实现技术： JSSE（Java Security Socket Extension<a href="http://java.chinaitlab.com/" target="_blank" rel="external"></a><a href="http://security.chinaitlab.com/" target="_blank" rel="external"></a>），它实现了SSL和TSL（传输层安全）协议。在JSSE中包含了数据加密，服务器验证，消息完整性和客户端验证等技术。通过使用JSSE，可以在客户机和服务器之间通过TCP/IP协议安全地传输数据。为了实现消息认证：</p>
-<h1 id="服务器端需要："><a href="#服务器端需要：" class="headerlink" title="服务器端需要："></a>服务器端需要：</h1><pre><code>1、KeyStore： 其中保存服务器端的私钥
-2、Trust KeyStore： 其中保存客户端的授权证书
-</code></pre><h1 id="客户端需要："><a href="#客户端需要：" class="headerlink" title="客户端需要："></a>客户端需要：</h1><pre><code>1、KeyStore：其中保存客户端的私钥
-2、Trust KeyStore：其中保存服务端的授权证书
-</code></pre><p>密钥和授权证书的生成方法：<br>使用Java自带的keytool命令，在命令行生成。<br>1、生成服务器端私钥kserver.keystore文件<br>  keytool -genkey -alias serverkey -validity 1 -keystore kserver.keystore<br>2、根据私钥，导出服务器端安全证书<br>keytool -export -alias serverkey -keystore kserver.keystore -file server.crt<br>3、将服务器端证书，导入到客户端的Trust KeyStore中<br>keytool -import -alias serverkey -file server.crt -keystore tclient.keystore<br>4、生成客户端私钥kclient.keystore文件<br>  keytool -genkey -alias clientkey -validity 1  -keystore kclient.keystore<br>5、根据私钥，导出客户端安全证书<br>keytool -export -alias clientkey -keystore kclient.keystore -file client.crt<br>6、将客户端证书，导入到服务器端的Trust KeyStore中<br>keytool -import -alias clientkey -file client.crt -keystore tserver.keystore</p>
-<p>生成的文件分成两组，服务器端保存：kserver.keystore tserver.keystore 客户端保存：kclient.keystore  tclient.kyestore。</p>
-<p>客户端采用kclient.keystore中的私钥进行数据加密，发送给服务端，服务器端采用tserver.keystore中的client.crt证书对数据解密，如果解密成功，证明消息来自可信的客户端，进行逻辑处理； 服务器端采用kserver.keystore中的私钥进行数据加密，发送给客户端，客户端采用tclient.keystore中的server.crt证书对数据解密，如果解密成功，证明消息来自可信的服务器端，进行逻辑处理。如果解密失败，那么证明消息来源错误。不进行逻辑处理。</p>
-<p>SSL Socket双向认证的安全性：<br>（1）可以确保数据传送到正确的服务器端和客户端。<br>（2）可以防止消息传递过程中被窃取。<br>（3）防止消息在传递过程中被修改.。</p>
-<p>在系统运行中可能出现以下情况：<br>（1）   服务器端、客户端都持有正确的密钥和安全证书，此时服务器端和客户端可以进行正常通信。<br>（2）   客户端的密钥和安全证书不正确，此时服务器端和客户端不可以进行正常通信。<br>（3）   客户端未持有密钥和安全证书，此时服务器端和客户端也不可以进行正常通信。</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/07/02/SSL-socket-详解-概念/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-07-01T06:13:23.000Z"><a href="/2016/07/01/Android-使用-HTTPS/">2016-07-01</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/07/01/Android-使用-HTTPS/">Android 使用 HTTPS</a></h1>
+    <h1 class="title"><a href="/2017/03/12/Cordova手动导入第三方插件/">Cordova手动导入第三方插件</a></h1>
   
 
     </header>
@@ -269,178 +224,114 @@
       
         
     <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书-java本身没有BouncyCastle密库"><span class="toc-text">Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书,java本身没有BouncyCastle密库</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#方法-getSslSocketFactory-null-null-null-的第一个参数-本来要传入自签名证书的，当传入null-即可忽略自签名证书。"><span class="toc-text">方法 getSslSocketFactory(null,null,null) 的第一个参数 本来要传入自签名证书的，当传入null 即可忽略自签名证书。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SSLContext-初始化"><span class="toc-text">SSLContext 初始化</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#手动导入第三方插件到Cordova项目中"><span class="toc-text">手动导入第三方插件到Cordova项目中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
 
-        <p>如果你的项目的网络框架是okhttp，那么使用https还是挺简单的，因为okhttp默认支持HTTPS。<a href="https://github.com/square/okhttp/wiki/HTTPS" target="_blank" rel="external">传送门</a><br>Android 使用 HTTPS 配置的步骤。<br>1.step</p>
-<p>配置hostnameVerifier<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">new HostnameVerifier() &#123;</div><div class="line">    @Override public boolean verify(String hostname, SSLSession session) &#123;</div><div class="line"> return true;</div><div class="line">         &#125;</div><div class="line"> &#125;；</div></pre></td></tr></table></figure></p>
-<p>2.step<br>配置 sslSocketFactory<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div></pre></td><td class="code"><pre><div class="line">public static SSLSocketFactory getSslSocketFactory(InputStream[] certificates, InputStream bksFile, String password)&#123;</div><div class="line">        try&#123;</div><div class="line">            TrustManager[] trustManagers = prepareTrustManager(certificates);</div><div class="line">            KeyManager[] keyManagers = prepareKeyManager(bksFile, password);</div><div class="line">            SSLContext sslContext = SSLContext.getInstance(&quot;TLS&quot;);</div><div class="line">            TrustManager trustManager = null;</div><div class="line">            if (trustManagers != null)&#123;</div><div class="line">                trustManager = new MyTrustManager(chooseTrustManager(trustManagers));</div><div class="line">            &#125; else&#123;</div><div class="line">                trustManager = new UnSafeTrustManager();</div><div class="line">            &#125;</div><div class="line">            sslContext.init(keyManagers, new TrustManager[]&#123;trustManager&#125;, new SecureRandom());</div><div class="line">            return sslContext.getSocketFactory();</div><div class="line">        &#125; catch (NoSuchAlgorithmException e)&#123;</div><div class="line">            throw new AssertionError(e);</div><div class="line">        &#125; catch (KeyManagementException e)&#123;</div><div class="line">            throw new AssertionError(e);</div><div class="line">        &#125; catch (KeyStoreException e)&#123;</div><div class="line">            throw new AssertionError(e);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private class UnSafeHostnameVerifier implements HostnameVerifier&#123;</div><div class="line">        @Override</div><div class="line">        public boolean verify(String hostname, SSLSession session)&#123;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static class UnSafeTrustManager implements X509TrustManager&#123;</div><div class="line">        @Override</div><div class="line">        public void checkClientTrusted(X509Certificate[] chain, String authType)throws CertificateException&#123;&#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void checkServerTrusted(X509Certificate[] chain, String authType)throws CertificateException&#123;&#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public X509Certificate[] getAcceptedIssuers()&#123;</div><div class="line">            return new X509Certificate[]&#123;&#125;;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static TrustManager[] prepareTrustManager(InputStream... certificates)&#123;</div><div class="line">        if (certificates == null || certificates.length &lt;= 0) return null;</div><div class="line">        try&#123;</div><div class="line">            CertificateFactory certificateFactory = CertificateFactory.getInstance(&quot;X.509&quot;);</div><div class="line">            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());</div><div class="line">            keyStore.load(null);</div><div class="line">            int index = 0;</div><div class="line">            for (InputStream certificate : certificates)&#123;</div><div class="line">                String certificateAlias = Integer.toString(index++);</div><div class="line">                keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));</div><div class="line">                try&#123;</div><div class="line">                    if (certificate != null)</div><div class="line">                        certificate.close();</div><div class="line">                &#125; catch (IOException e)&#123;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            TrustManagerFactory trustManagerFactory = null;</div><div class="line">            trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());</div><div class="line">            trustManagerFactory.init(keyStore);</div><div class="line">            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();</div><div class="line">            return trustManagers;</div><div class="line">        &#125; catch (NoSuchAlgorithmException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (CertificateException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (KeyStoreException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static KeyManager[] prepareKeyManager(InputStream bksFile, String password)&#123;</div><div class="line">        try&#123;</div><div class="line">            if (bksFile == null || password == null) return null;</div><div class="line">            KeyStore clientKeyStore = KeyStore.getInstance(&quot;BKS&quot;);</div><div class="line">            clientKeyStore.load(bksFile, password.toCharArray());</div><div class="line">            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());</div><div class="line">            keyManagerFactory.init(clientKeyStore, password.toCharArray());</div><div class="line">            return keyManagerFactory.getKeyManagers();</div><div class="line">        &#125; catch (KeyStoreException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (NoSuchAlgorithmException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (UnrecoverableKeyException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (CertificateException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (IOException e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static X509TrustManager chooseTrustManager(TrustManager[] trustManagers)&#123;</div><div class="line">        for (TrustManager trustManager : trustManagers)&#123;</div><div class="line">            if (trustManager instanceof X509TrustManager)&#123;</div><div class="line">                return (X509TrustManager) trustManager;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static class MyTrustManager implements X509TrustManager&#123;</div><div class="line">        private X509TrustManager defaultTrustManager;</div><div class="line">        private X509TrustManager localTrustManager;</div><div class="line"></div><div class="line">        public MyTrustManager(X509TrustManager localTrustManager) throws NoSuchAlgorithmException, KeyStoreException&#123;</div><div class="line">            TrustManagerFactory var4 = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());</div><div class="line">            var4.init((KeyStore) null);</div><div class="line">            defaultTrustManager = chooseTrustManager(var4.getTrustManagers());</div><div class="line">            this.localTrustManager = localTrustManager;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException&#123;&#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException&#123;</div><div class="line">            try&#123;</div><div class="line">                defaultTrustManager.checkServerTrusted(chain, authType);</div><div class="line">            &#125; catch (CertificateException ce)&#123;</div><div class="line">                localTrustManager.checkServerTrusted(chain, authType);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public X509Certificate[] getAcceptedIssuers()&#123;</div><div class="line">            return new X509Certificate[0];//当使用证书链时，第一个证书总是发送者的</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<h4 id="Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书-java本身没有BouncyCastle密库"><a href="#Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书-java本身没有BouncyCastle密库" class="headerlink" title="Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书,java本身没有BouncyCastle密库"></a>Android的私钥和信任证书的格式必须是BKS格式的，通过配置本地JDK，让keytool可以生成BKS格式的私钥和信任证书,java本身没有BouncyCastle密库</h4><p>调用 getSslSocketFactory(null,null,null) 即可。<br>3.step<br>设置OkhttpClient。<br><img src="http://upload-images.jianshu.io/upload_images/4398977-e0a539f940e4ae65.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
-<h4 id="方法-getSslSocketFactory-null-null-null-的第一个参数-本来要传入自签名证书的，当传入null-即可忽略自签名证书。"><a href="#方法-getSslSocketFactory-null-null-null-的第一个参数-本来要传入自签名证书的，当传入null-即可忽略自签名证书。" class="headerlink" title="方法 getSslSocketFactory(null,null,null) 的第一个参数 本来要传入自签名证书的，当传入null 即可忽略自签名证书。"></a>方法 getSslSocketFactory(null,null,null) 的第一个参数 本来要传入自签名证书的，当传入null 即可忽略自签名证书。</h4><p>如果你想尝试不忽略自签名证书 你可以调用下面的方法获取 SSLSocketFactory。并设置到OkhttpClient中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">public static SSLSocketFactory getSSlFactory(Context context) &#123;</div><div class="line"></div><div class="line">       try &#123;</div><div class="line">           CertificateFactory cf = CertificateFactory.getInstance(&quot;X.509&quot;);</div><div class="line">           InputStream caInput = new BufferedInputStream(context.getAssets().open(&quot;client.cer&quot;));//把证书打包在asset文件夹中</div><div class="line">           Certificate ca;</div><div class="line">           try &#123;</div><div class="line">               ca = cf.generateCertificate(caInput);</div><div class="line">               LogUtil.d(&quot;Longer&quot;, &quot;ca=&quot; + ((X509Certificate) ca).getSubjectDN());</div><div class="line">               LogUtil.d(&quot;Longer&quot;, &quot;key=&quot; + ((X509Certificate) ca).getPublicKey());</div><div class="line">           &#125; finally &#123;</div><div class="line">               caInput.close();</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           // Create a KeyStore containing our trusted CAs</div><div class="line">           String keyStoreType = KeyStore.getDefaultType();</div><div class="line">           KeyStore keyStore = KeyStore.getInstance(keyStoreType);</div><div class="line">           keyStore.load(null, null);</div><div class="line">           keyStore.setCertificateEntry(&quot;ca&quot;, ca);</div><div class="line"></div><div class="line">           // Create a TrustManager that trusts the CAs in our KeyStore</div><div class="line">           String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();</div><div class="line">           TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);</div><div class="line">           tmf.init(keyStore);</div><div class="line"></div><div class="line">           // Create an SSLContext that uses our TrustManager</div><div class="line">           SSLContext s = SSLContext.getInstance(&quot;TLSv1&quot;, &quot;AndroidOpenSSL&quot;);</div><div class="line">           s.init(null, tmf.getTrustManagers(), null);</div><div class="line"></div><div class="line">           return s.getSocketFactory();</div><div class="line">       &#125; catch (CertificateException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (IOException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (NoSuchAlgorithmException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (KeyStoreException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (KeyManagementException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125; catch (NoSuchProviderException e) &#123;</div><div class="line">           e.printStackTrace();</div><div class="line">       &#125;</div><div class="line">       return null;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
-<p>通过上面的几步配置即可使用https的自签名证书 和 单向验证的Https了。<br>Glide 访问Https的图片<br>1.step<br>在build.gradle 引入下面的aar</p>
+        <h4 id="手动导入第三方插件到Cordova项目中"><a href="#手动导入第三方插件到Cordova项目中" class="headerlink" title="手动导入第三方插件到Cordova项目中"></a>手动导入第三方插件到Cordova项目中</h4><p>&emsp;&emsp;Cordova项目中可以自定义插件，也可以从官方和其他渠道通过命令行导入工程中，因为需求总是在变，有时候第三方插件里面还包含不需要用到的功能，所有我们需要手动导入。</p>
+<p>&emsp;&emsp;采用github中的ImagePicker插件来说明手动导入过程。首先从guihub上查看plugin.xml的内容，我们需要实现图库选择图片的功能只需要ImagePicker这个类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;config-file target=&quot;res/xml/config.xml&quot; parent=&quot;/*&quot;&gt;</div><div class="line">                        &lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div><div class="line">                &lt;/config-file&gt;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;source-file src=&quot;src/android/com/synconset/ImagePicker/ImagePicker.java&quot; target-dir=&quot;src/com/synconset&quot; /&gt;</div></pre></td></tr></table></figure>
+<p>初步看出需要在config.xml中配置如下内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;feature name=&quot;ImagePicker&quot;&gt;</div><div class="line">                                &lt;param name=&quot;android-package&quot; value=&quot;com.synconset.ImagePicker&quot;/&gt;</div><div class="line">                        &lt;/feature&gt;</div></pre></td></tr></table></figure></p>
+<p>然后把ImagePicker.java拷贝到工程中，目录结构为/ser/com/synconset/ImagePicker.java。<br>&emsp;&emsp;接着我们需要在把github中的www目录结构中的imagepicker.js文件复制到我们的工程中，目录结构是assets/www/plugins/..，我的目录结构是assets/www/plugins/imagepicker/www/imagepicker.js</p>
+<p><strong>注意：</strong>直接拷贝js文件还需要配置js文件，最外围默认是没有cordova定义语句的，在js文件最外围拷贝如下代码，第三方js文件不知道我们定义的插件ID，需要我们自己配置，我的项目中的ID就是com.synconset.ImagePicker，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cordova.define(&quot;com.synconset.ImagePicker&quot;, function(require, exports, module) &#123;</div><div class="line"></div><div class="line">module.exports = new ImagePicker()</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
 <blockquote>
-<p>/<em>提供的Module</em>/compile ‘com.github.bumptech.glide:okhttp3-integration:1.4.0@aar’</p>
+<p>默认创建插件对象的语句是window.imagePicker = new ImagePicker();window.imagePicker 就是我在注册插件时配置好了的，当然也可以用上面的<code>module.exports = new ImagePicker()</code>来创建</p>
 </blockquote>
-<p>2.step<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">OkHttpClient okhttpClient = new OkHttpClient.Builder()</div><div class="line">                .connectTimeout(30, TimeUnit.SECONDS)</div><div class="line">                .retryOnConnectionFailure(true) //设置出现错误进行重新连接。</div><div class="line">                .connectTimeout(15, TimeUnit.SECONDS)</div><div class="line">                .readTimeout(60 * 1000, TimeUnit.MILLISECONDS)</div><div class="line">                .sslSocketFactory(HttpsUtils.getSslSocketFactory(null,null,null))</div><div class="line">                .hostnameVerifier(new HostnameVerifier() &#123;</div><div class="line">                    @Override</div><div class="line">                    public boolean verify(String hostname, SSLSession session) &#123;</div><div class="line">                        return true;</div><div class="line">                    &#125;</div><div class="line">                &#125;)</div><div class="line">                 .build();</div><div class="line">        //让Glide能用HTTPS</div><div class="line">        Glide.get(this).register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(okhttpClient));</div></pre></td></tr></table></figure></p>
-<p>设置已经验证证书的的OkhttpClient 到Glide 既可。<br><a href="http://hukai.me/android-training-course-in-chinese/security/security-ssl.html" target="_blank" rel="external">google开发https参考</a></p>
-<h4 id="SSLContext-初始化"><a href="#SSLContext-初始化" class="headerlink" title="SSLContext 初始化"></a>SSLContext 初始化</h4><p>public final void init(<a href="http://www.cjsdn.net/Doc/JDK60/javax/net/ssl/KeyManager.html" target="_blank" rel="external">KeyManager</a>[] km,<br><a href="http://www.cjsdn.net/Doc/JDK60/javax/net/ssl/TrustManager.html" target="_blank" rel="external">TrustManager</a>[] tm,<br><a href="http://www.cjsdn.net/Doc/JDK60/java/security/SecureRandom.html" target="_blank" rel="external">SecureRandom</a> random) throws <a href="http://www.cjsdn.net/Doc/JDK60/java/security/KeyManagementException.html" target="_blank" rel="external">KeyManagementException</a></p>
-<p>初始化此上下文。前两个参数都可以为 null，在这种情况下将搜索装入的安全提供者来寻找适当工厂的最高优先级实现。同样，安全的 random 参数也可以为 null，在这种情况下将使用默认的实现。只有数组中的第一个特定密钥和/或信任管理器实现类型的实例被使用。（例如，只有数组中的第一个 javax.net.ssl.X509KeyManager 被使用。）</p>
-<p><strong>参数：</strong><br>km</p>
-<ul>
-<li>验证密钥源或 null<br>tm</li>
-<li>同位体验证信任决策源或 null<br>random</li>
-<li>此生成器的随机源或 null<br><strong>抛出：</strong><br><a href="http://www.cjsdn.net/Doc/JDK60/java/security/KeyManagementException.html" target="_blank" rel="external">KeyManagementException</a><br><a href="http://blog.csdn.net/zdx1515888659/article/details/44593967" target="_blank" rel="external">java SSLSocket</a></li>
-</ul>
+<p>&emsp;&emsp;最后我们需要在assets/www/cordova_plugins.js中配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">             &quot;id&quot;: &quot;com.synconset.ImagePicker&quot;,</div><div class="line">             &quot;file&quot;: &quot;plugins/imagepicker/www/imagepicker.js&quot;,</div><div class="line">             &quot;merges&quot;: [</div><div class="line">                 &quot;window.imagePicker&quot;</div><div class="line">             ]</div><div class="line">         &#125;</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;然后这时候ImagePicker.java报找不到MultiImageChooserActivity类，把需要的类一并拷贝到项目中，导入的Activity需要在清单文件中注册</p>
+<p>&emsp;&emsp;运行到模拟器上，在<br><code>setContentView(fakeR.getId(&quot;layout&quot;, &quot;multiselectorgrid&quot;));</code>出错，因为项目中没有找到multiselectrgrid.xml文件，在res中新建layout文件夹把需要的文件拷贝进去，之后在<br><code>BitmapFactory.decodeResource(getResources(), fakeR.getId(&quot;drawable&quot;, &quot;loading_icon&quot;));</code>报找不到图片，将需要的图片也拷贝进去。</p>
+<blockquote>
+<p>使用getIdentifier()方法可以方便的获各应用包下的指定资源ID。<br>方式一<br>int indentify = getResources().getIdentifier(“com.test.demo:drawable/icon”,null,null);<br>第一个参数格式是：包名 + : +资源文件夹名 + / +资源名；是这种格式 然后其他的可以为null<br>方式二<br>intindentify= getResources().getIdentifier(“icon”, “drawable”, “com.test.demo”);<br>第一个参数为ID名，第二个为资源属性是ID或者是Drawable，第三个为包名。</p>
+</blockquote>
+<pre><code>import java.lang.reflect.Field;
+import android.content.Context;
 
-      
-    </div>
-    <footer>
-      
-        
-        
-        <div class="alignright">
-          <a href="/2016/07/01/Android-使用-HTTPS/#comment" class="comment-link">Comments</a>
-        </div>
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
+public class ResourceUtil {
+    private static Context sContext;
 
+    public static void init(Context context) {
+        if (context != null)
+            sContext = context;
+    }
 
+    public static int getLayoutId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;layout&quot;, sContext.getPackageName());
+    }
 
+    public static int getStringId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;string&quot;,
+                sContext.getPackageName());
+    }
 
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-        <div class="icon"></div>
-        
-        <time datetime="2016-06-07T08:09:54.000Z"><a href="/2016/06/07/App启动优化/">2016-06-07</a></time>
-        
-  
-    <h1 class="title"><a href="/2016/06/07/App启动优化/">App启动优化</a></h1>
-  
+    public static int getDrawableId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;drawable&quot;, sContext.getPackageName());
+    }
 
-    </header>
+    public static int getStyleId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;style&quot;,
+                sContext.getPackageName());
+    }
 
-    <div class="entry">
-      
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#一、工具：adb-或Python"><span class="toc-text">一、工具：adb 或Python</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二、热启动"><span class="toc-text">二、热启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三、冷启动"><span class="toc-text">三、冷启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么会出现白屏"><span class="toc-text">为什么会出现白屏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何缩短初始化时间"><span class="toc-text">如何缩短初始化时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
-    </div>
+    public static int getId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;id&quot;,
+                sContext.getPackageName());
+    }
 
-        <p>&emsp;&emsp;对于Android平台上的线程优先级设置来说可以处理很多并发线程的阻塞问题，比如很多无关紧要的线程会占用大量的CPU时间，虽然通过了MultiThread来解决慢速I/O但是合理分配优先级对于并发编程来说十分重要。Android在线程方面主要使用的是Java本身的Thread类，我们可以在Thread或Runnable接口中的run方法首句加入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND); //设置线程优先级为后台，这样当多个线程并发后很多无关紧要的线程分配的CPU时间将会减少，有利于主线程的处理</div></pre></td></tr></table></figure></p>
-<p>现场优先级：</p>
-<p>int THREAD_PRIORITY_AUDIO //标准音乐播放使用的线程优先级</p>
-<p>int THREAD_PRIORITY_BACKGROUND //标准后台程序</p>
-<p>int THREAD_PRIORITY_DEFAULT // 默认应用的优先级</p>
-<p>int THREAD_PRIORITY_DISPLAY //标准显示系统优先级，主要是改善UI的刷新</p>
-<p>int THREAD_PRIORITY_FOREGROUND //标准前台线程优先级</p>
-<p>int THREAD_PRIORITY_LESS_FAVORABLE //低于favorable</p>
-<p>int THREAD_PRIORITY_LOWEST //有效的线程最低的优先级</p>
-<p>int THREAD_PRIORITY_MORE_FAVORABLE //高于favorable</p>
-<p>int THREAD_PRIORITY_URGENT_AUDIO //标准较重要音频播放优先级</p>
-<p>int THREAD_PRIORITY_URGENT_DISPLAY //标准较重要显示优先级，对于输入事件同样适用。</p>
-<h4 id="一、工具：adb-或Python"><a href="#一、工具：adb-或Python" class="headerlink" title="一、工具：adb 或Python"></a>一、工具：adb 或Python</h4><p>adb计算app启动时间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">adb shell am start -w packagename/activity</div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;三个返回结果ThisTime，TotalTime，WaitTime</p>
-<p>&emsp;&emsp;WaitTime就是app启动时间：WaitTime=startTime-endTime</p>
-<p>&emsp;&emsp;startTime：记录的刚准备调用startActivityAndWait()的时间点</p>
-<p>&emsp;&emsp;endTime：记录的是startActivityAndWait()函数调用返回的时间点</p>
-<p>&emsp;&emsp;ThisTime,TotalTime的计算在frameworks\base\services\core\java\com\android\server\am\ActivityRecord.java文件的reportLaunchTimeLocked()函数中。</p>
-<ul>
-<li><p>curTime表示该函数调用的时间点.</p>
-</li>
-<li><p>displayStartTime表示一连串启动Activity中的最后一个Activity的启动时间点.</p>
-</li>
-<li><p>mLaunchStartTime表示一连串启动Activity中第一个Activity的启动时间点.</p>
-</li>
-</ul>
-<p>&emsp;&emsp;displayStartTime和mLaunchStartTime的区别：分两种情况:</p>
-<p>&emsp;&emsp;正常情况下点击桌面图标只启动一个有界面的 Activity，此时 displayStartTime 与mLaunchStartTime 便指向同一时间点，此时 ThisTime=TotalTime。另一种情况是点击桌面图标应用会先启动一个无界面的 Activity 做逻辑处理(如占位界面)，接着又启动一个有界面的Activity，在这种启动一连串 Activity 的情况下（知乎的启动就是属于这种情况），displayStartTime 便指向最后一个 Activity 的开始启动时间点，mLaunchStartTime 指向第一个无界面Activity的开始启动时间点，此时 ThisTime！=TotalTime。这两种情况如下图：</p>
-<p>&emsp;&emsp;如果只关心某个应用自身启动耗时，参考TotalTime；如果关心系统启动应用耗时，参考WaitTime；如果关心应用有界面Activity启动耗时，参考ThisTime。</p>
-<h4 id="二、热启动"><a href="#二、热启动" class="headerlink" title="二、热启动"></a>二、热启动</h4><p>&emsp;&emsp;如果是你按Back键，并没有将应用进程杀掉的话，那么执行上述命令就会快一些，因为不用创建进程了，只需要启动一个Activity即可。这也就是我们说的应用热启动。</p>
-<p>&emsp;&emsp;游戏启动的话，就不适用用命令行的方法来启动了，因为从用户点击桌面图标到登录界面，既有系统的部分也有游戏自己的部分。</p>
-<p>&emsp;&emsp;系统部分：游戏也有一个 Activity，所以启动的时候还是会去启动这个 Activity，所以系统启动部分也就是用户点击桌面桌面响应到这个Activity启动。</p>
-<p>&emsp;&emsp;游戏部分：一般游戏的主 Activity 启动后，还会做一些比较耗时的事情，这时候你看到的界面是不能操作的，比如：加载游戏数据、联网更新数据、读取和更新配置文件、游戏引擎初始化等操作。从游戏开发的角度来看，到了真正用户能操作的界面才算是一个游戏真正加载完成的时间。</p>
-<p>&emsp;&emsp;那么这个时间，就得使用 Log 来记录了，因为加载游戏数据、联网更新数据、读取和更新配置文件、游戏引擎初始化这些操作，都是游戏自己的逻辑，与系统无关，所以得由游戏自己定义加载完成的点。</p>
-<p>&emsp;&emsp;对于游戏的启动时间，我们更倾向于计算从点击桌面图标到用户可以与游戏进行交互这个时间段作为一个游戏的启动时间</p>
-<h4 id="三、冷启动"><a href="#三、冷启动" class="headerlink" title="三、冷启动"></a>三、冷启动</h4><p>&emsp;&emsp;应用不在后台时第一次启动，系统和App本身都有更多的工作要从头开始！、</p>
-<p>&emsp;&emsp;应用在冷启动之前，要执行三个任务：</p>
-<ol>
-<li><p>加载启动App；</p>
-</li>
-<li><p>App启动之后立即展示出一个空白的Window；</p>
-</li>
-<li><p>创建App的进程；</p>
-</li>
-</ol>
-<p>&emsp;&emsp;而这三个任务执行完毕之后会马上执行以下任务：</p>
-<ol>
-<li>创建App对象；</li>
-</ol>
-<p>5.启动Main Thread；</p>
-<p>6.创建启动的Activity对象；</p>
-<ol>
-<li><p>加载View；</p>
-</li>
-<li><p>布置屏幕；</p>
-</li>
-<li><p>进行第一次绘制；</p>
-</li>
-</ol>
-<p>&emsp;&emsp;而一旦App进程完成了第一次绘制，系统进程就会用Main Activity替换已经展示的Background Window，此时用户就可以使用App了。</p>
-<p>&emsp;&emsp;作为普通应用，App进程的创建等环节我们是无法主动控制的，可以优化的也就是Application、Activity创建以及回调等过程。</p>
-<p>&emsp;&emsp;同样，Google也给出了启动加速的方向：</p>
-<p>&emsp;&emsp;利用提前展示出来的Window，快速展示出来一个界面，给用户快速反馈的体验；</p>
-<p>&emsp;&emsp;避免在启动时做密集沉重的初始化（Heavy app initialization）；</p>
-<p>&emsp;&emsp;定位问题：避免I/O操作、反序列化、网络操作、布局嵌套等。</p>
-<p>&emsp;&emsp;备注：方向1属于治标不治本，只是表面上快；方向2、3可以真实的加快启动速度。</p>
-<h4 id="为什么会出现白屏"><a href="#为什么会出现白屏" class="headerlink" title="为什么会出现白屏"></a>为什么会出现白屏</h4><p>通过清单文件可以看见默认配置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">activity</span>    </span></div><div class="line">    <span class="attr">android:name</span>=<span class="string">".StartPageActivity"</span>    </div><div class="line">    <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span>&gt;    </div><div class="line">        <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>        </div><div class="line">            <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;启动界面在完全绘制完页面布局前默认会有白屏或黑屏现象，这是我们可以设置默认主题布局为透明<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"AppBlackTheme"</span> <span class="attr">parent</span>=<span class="string">"Theme.AppCompat.Light.NoActionBar"</span>&gt;</span><span class="xml">    </span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowIsTranslucent"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowBackground"</span>&gt;</span>@android:color/transparent<span class="tag">&lt;/<span class="name">item</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>添加到activity标签中<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">activity</span>    </span></div><div class="line">    <span class="attr">android:name</span>=<span class="string">".StartPageActivity"</span>    </div><div class="line">    <span class="attr">android:theme</span>=<span class="string">"@style/AppBlackTheme"</span></div><div class="line">    <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span>&gt;    </div><div class="line">        <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>        </div><div class="line">            <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>而官方给出的做法是采用Activity的windowBackground主题属性来为启动的Activity提供一个简单的drawable。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 防止欢迎页白屏或者黑屏，设置图片 --&gt;</div><div class="line">    &lt;style name=&quot;SplashTheme&quot; parent=&quot;AppTheme&quot;&gt;</div><div class="line">        &lt;item name=&quot;android:windowBackground&quot;&gt;@drawable/welcome1&lt;/item&gt;</div><div class="line">        &lt;item name=&quot;android:windowFullscreen&quot;&gt;true&lt;/item&gt;</div><div class="line">        &lt;item name=&quot;windowNoTitle&quot;&gt;true&lt;/item&gt;</div><div class="line">        &lt;!--&lt;item name=&quot;android:windowIsTranslucent&quot;&gt;false&lt;/item&gt;--&gt;</div><div class="line">        &lt;!--&lt;item name=&quot;android:windowDisablePreview&quot;&gt;true&lt;/item&gt;--&gt;</div><div class="line">    &lt;/style&gt;</div></pre></td></tr></table></figure></p>
-<p>welcome.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;layer-list&gt; xmlns: android=&quot;&quot; android:opacity=&quot;opaque&quot;&gt;</div><div class="line">	&lt;item android:drawable=&quot;@android:color/white&quot;/&gt;</div><div class="line">	&lt;item&gt;</div><div class="line">		&lt;bitmap android:src=&quot;@drawable/spalash&quot; android:gravity=&quot;center&quot;/&gt;</div><div class="line">	&lt;/item&gt;</div><div class="line">	&lt;/layer-list&gt;</div></pre></td></tr></table></figure></p>
-<p>当然welcome也可以是一张图片<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;activity</div><div class="line">            android:name=&quot;.activity.WelcomeActivity&quot;</div><div class="line">            android:theme=&quot;@style/SplashTheme&quot;</div><div class="line">            android:screenOrientation=&quot;portrait&quot;&gt;</div><div class="line">            &lt;intent-filter&gt;</div><div class="line">                &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;</div><div class="line"></div><div class="line">                &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;</div><div class="line">            &lt;/intent-filter&gt;</div><div class="line">&lt;/activity&gt;</div></pre></td></tr></table></figure></p>
-<p>也可以在代码中修改，不用再清单文件中修改，只需在super.onCreate()方法前调用setThreme(R.style.SplashTheme)即可</p>
-<ol>
-<li><p>初始化时间过长<br>APP如果引入第三方服务过多，那么初始化第三方服务(初始化application)需要的时间也越长<br><img src="https://user-gold-cdn.xitu.io/2017/1/10/095de64d7062e30472d9b24273c8bbbc?_=6288399" alt="enter image description here"></p>
-<p>Tinker以及MultiDex的初始化最先执行</p>
-</li>
-</ol>
-<h4 id="如何缩短初始化时间"><a href="#如何缩短初始化时间" class="headerlink" title="如何缩短初始化时间"></a>如何缩短初始化时间</h4><p>方法一 ：IntentService</p>
-<p>&emsp;&emsp;IntentService是继承于Service并处理异步请求的一个类，在IntentService内有一个工作线程来处理耗时操作，启动IntentService的方式和启动传统Service一样，同时，当任务执行完后，IntentService会自动停止，而不需要我们去手动控制。另外，可以启动IntentService多次，而每一个耗时操作会以工作队列的方式在IntentService的onHandleIntent回调方法中执行，并且，每次只会执行一个工作线程，执行完第一个再执行第二个，以此类推。而且，所有请求都在一个单线程中，不会阻塞应用程序的主线程（UI Thread），同一时间只处理一个请求。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class InitializeService extends IntentService &#123;    </div><div class="line">    private static final String ACTION_INIT_WHEN_APP_CREATE = &quot;com.example.appstart.service.action.INIT&quot;;    </div><div class="line">    public InitializeService() &#123;        </div><div class="line">        super(&quot;InitializeService&quot;);    </div><div class="line">    &#125;    </div><div class="line">    public static void start(Context context) &#123;        </div><div class="line">        Intent intent = new Intent(context, InitializeService.class);</div><div class="line">        intent.setAction(ACTION_INIT_WHEN_APP_CREATE);        </div><div class="line">        context.startService(intent);    </div><div class="line">    &#125;    </div><div class="line">    @Override    </div><div class="line">    protected void onHandleIntent(Intent intent) &#123;        </div><div class="line">        if (intent != null) &#123;            </div><div class="line">            final String action = intent.getAction();            </div><div class="line">            if (ACTION_INIT_WHEN_APP_CREATE.equals(action)) &#123;               </div><div class="line">                //初始化操作（耗时操作）</div></pre></td></tr></table></figure></p>
-<pre><code>        }        
-    }    
+    public static int getColorId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;color&quot;, sContext.getPackageName());
+    }
+
+    public static int getDimenId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;dimen&quot;,
+                sContext.getPackageName());
+    }
+
+    public static int getAnimId(String paramString) {
+        if (sContext == null)
+            return 0;
+        return sContext.getResources().getIdentifier(paramString, &quot;anim&quot;, sContext.getPackageName());
+    }
+
+    // 通过反射实现
+    public static final int[] getStyleableIntArray(String name) {
+        try {
+            if (sContext == null)
+                return null;
+            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
+            int[] ret = (int[]) field.get(null);
+            return ret;
+        } catch (Throwable t) {
+        }
+        return null;
+    }
+
+    public static final int getStyleableIntArrayIndex(String name) {
+        try {
+            if (sContext == null)
+                return 0;
+            // use reflection to access the resource class
+            Field field = Class.forName(sContext.getPackageName() + &quot;.R$styleable&quot;).getDeclaredField(name);
+            int ret = (Integer) field.get(null);
+            return ret;
+        } catch (Throwable t) {
+        }
+        return 0;
+    }
 }
-</code></pre><p>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&amp;emsp;&amp;emsp;在application的onCreate方法中执行就行了，但是如果进入到主界面执行第三方功能的时候还没有初始化完，就会出现第三方库异常</div><div class="line"></div><div class="line">方法二：使用EventBus</div><div class="line"></div><div class="line">&amp;emsp;&amp;emsp;考虑异步初始化，不阻塞现场，延迟部分第三方服务的初始化，Tinker和MultiDex还是在Application主线程初始化</div><div class="line">![enter image description here](http://upload-images.jianshu.io/upload_images/1316299-4e98e3db89f91fe1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)</div><div class="line">项目修改：</div><div class="line">1. 将友盟、Bugly、听云、GrowingIO、BlockCanary等组件放在WorkThread中初始化；</div><div class="line">2. 延迟地图定位、ImageLoader、自有统计等组件的初始化：地图及自有统计(GrowingIO)延迟4秒，此时应用已经打开；而ImageLoader</div><div class="line">因为调用关系不能异步以及过久延迟，初始化从Application延迟到SplashActivity；而EventBus因为再Activity中使用所以必须在Application中初始化。</div><div class="line"> ![enter image description here](https://user-gold-cdn.xitu.io/2017/1/10/868beba5d61f7b4947caf1f0d1ba9f7f?_=6288399)</div><div class="line">&amp;emsp;&amp;emsp; 上面初始化即把初始化代码定义在application中，但是不立即调用，而使用eventbus发送消息再进行调用</div><div class="line">通过adb命令查看启动时间</div></pre></td></tr></table></figure></p>
-<p>adb shell am start -W [packageName]/[packageName.MainActivity]<br>```<br>项目中除听云之外其余所有三方组件都抢占先机，在Application主线程初始化<br>卡顿主要发生在：</p>
-<ul>
-<li>部分数据库及IO的操作发生在首屏Activity主线程；</li>
-<li>Application中创建了线程池，Thread、ThreadPoolExecutor、AsyncTask、HandlerThread、IntentService等都各有利弊；例如通常情况下ThreadPoolExecutor比Thread更加高效、优势明显，但是特定场景下单个时间点的表现Thread会比ThreadPoolExecutor好：同样的创建对象，ThreadPoolExecutor的开销明显比Thread大；</li>
-<li>首屏Activity网络请求密集；</li>
-<li>工作线程使用未设置优先级；</li>
-<li>信息未缓存，重复获取同样信息；</li>
-</ul>
-<p>项目修改：</p>
-<ol>
-<li><p>数据库及IO操作都移到工作线程，并且设置线程优先级为THREAD_PRIORITY_BACKGROUND，这样工作线程最多能获取到10%的时间片，优先保证主线程执行。</p>
-</li>
-<li><p>流程梳理，延后执行；</p>
-</li>
-</ol>
-<p><img src="https://user-gold-cdn.xitu.io/2017/1/10/032202be364c3f36a630017421b0db1a?_=6288399" alt="enter image description here"><br>&emsp;&emsp;通过以上三步及三方组件的优化：Application以及首屏Activity回调期间主线程就没有耗时、争抢资源等情况了。</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;并不是每一个组件的初始化以及操作都可以异步或延迟。是否可以取决组件的调用关系以及自己项目具体业务的需要。保证一个准则：<strong>可以异步的都异步，不可以异步的尽量延迟。让应用先启动，再操作。</strong></p>
-<p>通用优化包含以下几点：</p>
-<ul>
-<li>利用主题快速显示界面；</li>
-<li>异步初始化组件；</li>
-<li>梳理业务逻辑，延迟初始化组件、操作；</li>
-<li>正确使用线程；</li>
-<li>去掉无用代码、重复逻辑等。</li>
-</ul>
+</code></pre><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>&emsp;&emsp;总之，Cordova手动导入第三方插件过程就是这个过程，我们需要的就是拷贝文件然后配置好需要配置的地方就行，项目报找不到插件的方法就一定是配置出了问题，其他大多数问题就是所需要的资源文件问题。</p>
 
       
     </div>
@@ -449,7 +340,137 @@
         
         
         <div class="alignright">
-          <a href="/2016/06/07/App启动优化/#comment" class="comment-link">Comments</a>
+          <a href="/2017/03/12/Cordova手动导入第三方插件/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2017-03-08T07:18:38.000Z"><a href="/2017/03/08/Cordova-HelloWorld/">2017-03-08</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/03/08/Cordova-HelloWorld/">Cordova HelloWorld</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#MainActivity-java"><span class="toc-text">MainActivity.java</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#index-html"><span class="toc-text">index.html</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#index-js"><span class="toc-text">index.js</span></a></li></ol>
+    </div>
+
+        <p>创建第一个Helloworld项目，现在来分析运行机制</p>
+<h4 id="MainActivity-java"><a href="#MainActivity-java" class="headerlink" title="MainActivity.java"></a>MainActivity.java</h4><p>&emsp;&emsp;我们已经将MainActivity导入到了eclipse中。打开scr下com.example.hello下的MainActivity.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public class MainActivity extends CordovaActivity</div><div class="line">&#123;</div><div class="line">    @Override</div><div class="line">    public void onCreate(Bundle savedInstanceState)</div><div class="line">    &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line"></div><div class="line">        // enable Cordova apps to be started in the background</div><div class="line">        Bundle extras = getIntent().getExtras();</div><div class="line">        if (extras != null &amp;&amp; extras.getBoolean(&quot;cdvStartInBackground&quot;, false)) &#123;</div><div class="line">            moveTaskToBack(true);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Set by &lt;content src=&quot;index.html&quot; /&gt; in config.xml</div><div class="line">        loadUrl(launchUrl);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>　　loadUrl(launchUrl);会在当前的WebView中去加载首页，当然这个首页是我们自己配置的，在res/xml/config.xml中。<content src="index.html">。这个路径都是指的assets/www下的路径。</content></p>
+<p>　　这样这个app启动的时候会首先调用这个MainActivity(当然这是在AndroidManifest.xml中配置的)，然后Activity启动的时候会将index.html加载在其WebView中，然后我们就看到了Cordova的页面。</p>
+<h4 id="index-html"><a href="#index-html" class="headerlink" title="index.html"></a>index.html</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;cordova.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot; src=&quot;js/index.js&quot;&gt;&lt;/script&gt;</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;在显示这个index页面的时候，会加载两个js文件。cordova.js就是cordova的api，调用原生内容用的，相当于jar包。</p>
+<h4 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">var app = &#123;</div><div class="line">    // 初始化方法，会调用绑定事件的方法</div><div class="line">    initialize: function() &#123;</div><div class="line">        this.bindEvents();</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 绑定事件的方法,事件可以是这些:</div><div class="line">    // &apos;load&apos;, &apos;deviceready&apos;, &apos;offline&apos;, and &apos;online&apos;.</div><div class="line">    //该事件是在 cordova 载入完成后发生的事件，它表示cordova 加载完成并准备访问，yourCallbackFunction，相当于程序的入口功能</div><div class="line">    bindEvents: function() &#123;</div><div class="line">        document.addEventListener(&apos;deviceready&apos;, this.onDeviceReady, false);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // deviceready 后事件处理</div><div class="line">    onDeviceReady: function() &#123;</div><div class="line">        app.receivedEvent(&apos;deviceready&apos;);</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 事件处理，更新DOM，改变两个元素的css</div><div class="line">    receivedEvent: function(id) &#123;</div><div class="line">        var parentElement = document.getElementById(id);</div><div class="line">        var listeningElement = parentElement.querySelector(&apos;.listening&apos;);</div><div class="line">        var receivedElement = parentElement.querySelector(&apos;.received&apos;);</div><div class="line"></div><div class="line">        listeningElement.setAttribute(&apos;style&apos;, &apos;display:none;&apos;);</div><div class="line">        receivedElement.setAttribute(&apos;style&apos;, &apos;display:block;&apos;);</div><div class="line"></div><div class="line">        console.log(&apos;Received Event: &apos; + id);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">//调用初始化方法</div><div class="line">app.initialize();</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;加载index.js之后，程序会首先调用初始化方法，初始化的时候会去绑定事件监听：document.addEventListener(‘deviceready’, this.onDeviceReady, false);</p>
+<p>&emsp;&emsp;deviceready事件：该事件是在 cordova 载入完成后发生的事件，它表示cordova 加载完成并准备访问，你传进去的回调函数，相当于程序的入口函数。</p>
+<p>&emsp;&emsp;当cordova准备好的时候，会去首先执行你传进去的回调函数，这里是onDeviceReady()。这个方法会改变DOM元素的css样式。</p>
+<p>&emsp;&emsp;最终效果就是，当cordova没有加载完的时候，页面上Apache Cordova下面那里显示的是：Connecting to Device（背景是灰色）。加载完之后，cordova准备好之后，原来显示的消失，现在显示的是：Device is Ready（背景是绿色）</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/03/08/Cordova-HelloWorld/#comment" class="comment-link">Comments</a>
+        </div>
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+        <div class="icon"></div>
+        
+        <time datetime="2017-03-07T05:40:51.000Z"><a href="/2017/03/07/Cordova入门/">2017-03-07</a></time>
+        
+  
+    <h1 class="title"><a href="/2017/03/07/Cordova入门/">Cordova入门</a></h1>
+  
+
+    </header>
+
+    <div class="entry">
+      
+        
+    <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#创建APP"><span class="toc-text">创建APP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#添加平台"><span class="toc-text">添加平台</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#安装构建先决条件"><span class="toc-text">安装构建先决条件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#构建App"><span class="toc-text">构建App</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#运行"><span class="toc-text">运行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#添加插件"><span class="toc-text">添加插件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用-merges自定义每个平台"><span class="toc-text">使用 merges自定义每个平台</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#更新Cordova和你的项目"><span class="toc-text">更新Cordova和你的项目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+
+        <p>&emsp;&emsp;由于公司业务发展需求，最近都在研究混合式开发APP，项目采用的Apache的Cordova框架，这篇文章就是所有编程语言的第一步，创建第一个Cordova安卓平台HellWorld</p>
+<h4 id="创建APP"><a href="#创建APP" class="headerlink" title="创建APP"></a>创建APP</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova create hello com.example.hello HelloWorld</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;这将会为你的cordova应用创造必须的目录。默认情况下，cordova create命令生成基于web的应用程序的骨骼，项目的主页是 www/index.html 文件。</p>
+<h4 id="添加平台"><a href="#添加平台" class="headerlink" title="添加平台"></a>添加平台</h4><p>&emsp;&emsp;所有后续命令都需要在项目目录或者项目目录的任何子目录运行:先进入项目目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cd hello</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;给你的App添加目标平台。我们将会添加’ios’和’android’平台，并确保他们保存在了config.xml中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cordova platform add ios --save</div><div class="line">$ cordova platform add android --save</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;检查你当前平台设置状况，查看平台:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova platform ls</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;删除平台<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&amp; cordova platform remove android</div><div class="line">&amp; cordova platform rm android</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;运行add或者remove平台的命令将会影响项目 platforms的内容，在这个目录中每个指定平台都有一个子目录</p>
+<blockquote>
+<p>注意:在你使用CLI创建应用的时候， 不要 修改/platforms/目录中的任何文件。当准备构建应用或者重新安装插件时这个目录通常会被重写。</p>
+</blockquote>
+<h4 id="安装构建先决条件"><a href="#安装构建先决条件" class="headerlink" title="安装构建先决条件"></a>安装构建先决条件</h4><p>&emsp;&emsp;要构建和运行App，你需要安装每个你需要平台的SDK。另外，当你使用浏览器开发你可以添加 browser平台，它不需要任何平台SDK。</p>
+<p>&emsp;&emsp;检测你是否满足构建平台的要求:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">$ cordova requirements</div><div class="line">Requirements check results for android:</div><div class="line">Java JDK: installed .</div><div class="line">Android SDK: installed</div><div class="line">Android target: installed android-19,android-21,android-22,android-23,Google Inc.:Google APIs:19,Google Inc.:Google APIs (x86 System Image):19,Google Inc.:Google APIs:23</div><div class="line">Gradle: installed</div><div class="line"></div><div class="line">Requirements check results for ios:</div><div class="line">Apple OS X: not installed</div><div class="line">Cordova tooling for iOS requires Apple OS X</div><div class="line">Error: Some of requirements check failed</div></pre></td></tr></table></figure></p>
+<h4 id="构建App"><a href="#构建App" class="headerlink" title="构建App"></a>构建App</h4><p>&emsp;&emsp;默认情况下, cordova create生产基于web应用程序的骨架，项目开始页面位于www/index.html文件。任何初始化任务应该在www/js/index.js文件中的<a href="http://cordova.axuer.com/docs/zh-cn/latest/cordova/events/events.html#deviceready" target="_blank" rel="external">deviceready</a>事件的事件处理函数中。<br>运行下面命令为<em>所有</em>添加的平台构建:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova build</div></pre></td></tr></table></figure></p>
+<p>你可以在每次构建中选择限制平台范围<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova build android</div></pre></td></tr></table></figure></p>
+<h4 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h4><p>模拟器上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova emulate android</div></pre></td></tr></table></figure></p>
+<p>浏览器上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova serve android</div></pre></td></tr></table></figure></p>
+<p>浏览器访问<a href="http://localhost:8000/" target="_blank" rel="external">http://localhost:8000</a>即可<br>真机上运行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova run android</div></pre></td></tr></table></figure></p>
+<h4 id="添加插件"><a href="#添加插件" class="headerlink" title="添加插件"></a>添加插件</h4><p>&emsp;&emsp;你可以修改默认生成的App通过标准的web技术，但是App要接触设备级别的特性，就需要你添加插件了。<br>&emsp;&emsp;一个<em>插件</em> 通过JavascriptAPI暴露原生SDK功能。插件通常由npm分发，你可以搜索他们在 <a href="http://cordova.axuer.com/plugins/" target="_blank" rel="external">插件搜索页</a>。一些关键的API由Apache Cordova开源项目提供并且这些插件是作为[核心插件API]的。你也可以使用CLI启动搜索页:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ cordova plugin search camera</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;plugin要添加camera插件，我们需要指定camera的npm包名:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ cordova plugin add cordova-plugin-camera</div><div class="line">Fetching plugin &quot;cordova-plugin-camera@~2.1.0&quot; via npm</div><div class="line">Installing &quot;cordova-plugin-camera&quot; for android</div><div class="line">Installing &quot;cordova-plugin-camera&quot; for ios</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;插件也可以通过目录或者git仓库添加。<br>&emsp;&emsp;使用 plugin ls (或者 plugin list, 或者 plugin自己)查看当前安装的插件。每个插件现实它的标识:</p>
+<h4 id="使用-merges自定义每个平台"><a href="#使用-merges自定义每个平台" class="headerlink" title="使用 merges自定义每个平台"></a>使用 merges自定义每个平台</h4><p>&emsp;&emsp;虽然Cordova允许你轻松的部署App在各个平台，但是有时我们需要在某些平台做一些自定义。在这种情况下， 不要想去修改顶级platforms目录下的www目录，因为，通常会被顶级 www目录的跨平台源码替换<br>&emsp;&emsp;取而代之，顶级merges目录提供了特定平台部署特定资源的地方。每个特定平台在merges中的子目录反映了www 源代码树中的结构， 允许你重写和添加文件。例如，这是如何使用merges来提供Android设备中的默认字体大小。</p>
+<ul>
+<li><p>编辑www/index.html文件,添加link标签来添加额外的css文件, overrides.css在这种情况下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;css/overrides.css&quot; /&gt;</div></pre></td></tr></table></figure>
+</li>
+<li><p>（可选）创建一个空的www/css/overrides.css文件，适合所有非Android构建，来防止文件找不到的错误。</p>
+</li>
+<li>在merges/android里面创建一个css子目录,然后添加对应的overrides.css文件。特定的CSS重写www/css/index.css文件中的12px的默认大小，例子:<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">body &#123; font-size:14px; &#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>&emsp;&emsp;当你重写构建项目，Android具有自定义的字体大小，而其他平台的不变。<br>&emsp;&emsp;你也可以在merges目录中添加www目录中不存在的文件。例如，一个应用程序在iOS界面中要包含一个 <em>后退按钮</em>,存储在merges/ios/img/back_button.png<br>,而Android版本则可以捕获<a href="http://cordova.axuer.com/docs/zh-cn/latest/cordova/events/events.html#backbutton" target="_blank" rel="external">后退按钮</a>事件通过对应的硬件按钮。</p>
+<h4 id="更新Cordova和你的项目"><a href="#更新Cordova和你的项目" class="headerlink" title="更新Cordova和你的项目"></a>更新Cordova和你的项目</h4><p>在安装cordova工具之后，你可以运行下面命令更新到最新版本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm update -g cordova</div></pre></td></tr></table></figure></p>
+<p>用下面语法安装指定版本:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ sudo npm install -g cordova@3.1.0-0.2.0</div></pre></td></tr></table></figure></p>
+<p>运行cordova -v查看当前版本。要查找最新的cordova版本，可以运行:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm info cordova version</div></pre></td></tr></table></figure></p>
+<p>更新完cordova后，更新目标项目的平台:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ cordova platform update android --save</div><div class="line">$ cordova platform update ios --save</div></pre></td></tr></table></figure></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>hybrid app相对native app来说开发起来速度快，相对容易，但是没有native那么流畅，性能和体验稍微差些。并且文件大小相差也很大，同样一个应用native只要几k，而hybrid却要几兆。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        <div class="alignright">
+          <a href="/2017/03/07/Cordova入门/#comment" class="comment-link">Comments</a>
         </div>
         
       
@@ -475,7 +496,7 @@
   
 <div class="widget tag">
   <h3 class="title" id="categories">分类</h3>
-     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
+     <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Cordova/">Cordova</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/MQTT/">MQTT</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/OpenCV/">OpenCV</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SSL/">SSL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kotlin/">kotlin</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/pjsip/">pjsip</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/安卓直播开发/">安卓直播开发</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a><span class="category-list-count">7</span></li></ul> 
 </div>
  
 
@@ -531,7 +552,7 @@
   
   <div class="widget tag">
     <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
+	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/">公元 2018 年</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/">公元 2017 年</a><span class="archive-list-count">22</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/">公元 2016 年</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/">公元 2015 年</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/">公元 2014 年</a><span class="archive-list-count">10</span></li></ul>
   </div>
 
 </aside>
